@@ -1,0 +1,36 @@
+{
+  "name": "@lit-dashboard/widget",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "lit-element": "^2.2.1",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/node": "^7.8.4",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "rollup": "^1.31.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "rollup index.js --format umd --name 'Webbit' --file ./dist/webbit.js -c",
+    "build": "babel src --out-dir ./",
+    "start": "babel src --watch --out-dir ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lit-dashboard/widget.git"
+  },
+  "author": "Amory Galili",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lit-dashboard/widget/issues"
+  },
+  "homepage": "https://github.com/lit-dashboard/widget#readme"
+}
