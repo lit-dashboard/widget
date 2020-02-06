@@ -8,7 +8,7 @@ export default {
     name: 'Webbit',
     globals: {
       'lodash': '_',
-      '@lit-dashboard/store': 'WebbitStore'
+      '@webbitjs/store': 'WebbitStore'
     }
   },
   plugins: [

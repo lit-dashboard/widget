@@ -3,8 +3,9 @@ import { isNull, forEach, isPlainObject } from 'lodash';
 import { 
   hasSourceManager,
   getSourceManager,
-  getSourceProvider
-} from '@lit-dashboard/store';
+  getSourceProvider,
+  sourceProviderAdded
+} from '@webbitjs/store';
 
 export default class Webbit extends LitElement {
 
@@ -40,7 +41,7 @@ export default class Webbit extends LitElement {
             this._dispatchPropertyChange(name, oldValue, value.__value__);
             return;
           } else if (typeof this.sourceKey === 'string' && sourceProvider) {
-            const source = this.sourceManager.getSource(this.sourceKey);
+            const source = this.sourceManager.getRawSource(this.sourceKey);
             if (source) {
               const propSource = source.__sources__[name];
 
@@ -67,19 +68,16 @@ export default class Webbit extends LitElement {
     Object.defineProperty(this, 'sourceProvider', {
       get() {
         return this._sourceProvider;
-      },
+      },      
       set(value) {
-        if (hasSourceManager(value)) {
-          const oldValue = this._sourceProvider;
-          this._sourceProvider = value;
-          this.sourceManager = getSourceManager(value);
-          this.requestUpdate('sourceProvider', oldValue);
-          this._dispatchSourceProviderChange();
+        const oldValue = this._sourceProvider;
+        this._sourceProvider = value;
+        this.requestUpdate('sourceProvider', oldValue);
+        this._dispatchSourceProviderChange();
 
-          if (this._unsubscribeSource) {
-            this._unsubscribeSource();
-          }
-          this.sourceKey = this.sourceKey;
+        if (hasSourceManager(value)) { 
+          this.sourceManager = getSourceManager(value);
+          this._subscribeToSource();
         }
       }
     });
@@ -89,25 +87,11 @@ export default class Webbit extends LitElement {
         return this._sourceKey;
       },
       set(value) {
-
-        if (isNull(value) || isNull(this.sourceManager)) {
-          return;
-        }
-
-        if (this._unsubscribeSource) {
-          this._unsubscribeSource();
-        }
-
         const oldValue = this._sourceKey;
         this._sourceKey = value;
         this.requestUpdate('sourceKey', oldValue);
         this._dispatchSourceKeyChange();
-
-        this._unsubscribeSource = this.sourceManager.subscribe(value, source => {
-          if (typeof source !== 'undefined') {
-            this._setPropsFromSource(source);
-          }
-        }, true);
+        this._subscribeToSource();
       }
     });
 
@@ -121,6 +105,27 @@ export default class Webbit extends LitElement {
       this.resized();
     });
     resizeObserver.observe(this);
+
+    sourceProviderAdded(providerName => {
+      if (providerName === this.sourceProvider) {
+        this.sourceManager = getSourceManager(providerName);
+        this._subscribeToSource();
+      }
+    });
+  }
+
+  _subscribeToSource() {
+    if (this._unsubscribeSource) {
+      this._unsubscribeSource();
+    }
+
+    if (this.sourceKey && this.sourceManager) {
+      this._unsubscribeSource = this.sourceManager.subscribe(this.sourceKey, source => {
+        if (typeof source !== 'undefined') {
+          this._setPropsFromSource(source);
+        }
+      }, true);
+    }
   }
 
   async _addToRegistry() {

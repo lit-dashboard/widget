@@ -1,5 +1,5 @@
 {
-  "name": "@lit-dashboard/webbit",
+  "name": "@webbitjs/webbit",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
@@ -23,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lit-dashboard/widget.git"
+    "url": "git+https://github.com/webbitjs/webbit.git"
   },
   "author": "Amory Galili",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lit-dashboard/widget/issues"
+    "url": "https://github.com/webbitjs/webbit/issues"
   },
-  "homepage": "https://github.com/lit-dashboard/widget#readme"
+  "homepage": "https://github.com/webbitjs/webbit#readme"
 }
