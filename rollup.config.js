@@ -1,19 +1,43 @@
 import resolve from '@rollup/plugin-node-resolve';
+import uglify from 'rollup-plugin-uglify-es';
+import babel from 'rollup-plugin-babel';
 
-export default {
-  input: './src/index.js',
-  output: {
-    file: './dist/webbit.js',
-    format: 'umd',
-    name: 'Webbit',
-    globals: {
-      'lodash': '_',
-      '@webbitjs/store': 'WebbitStore'
-    }
+export default [
+  {
+    input: './src/index.js',
+    output: {
+      file: './dist/webbit.js',
+      format: 'umd',
+      name: 'Webbit',
+      globals: {
+        'lodash': '_',
+        '@webbitjs/store': 'WebbitStore'
+      }
+    },
+    plugins: [
+      babel(),
+      resolve({
+        only: ['lit-element', 'lit-html']
+      })
+    ]
   },
-  plugins: [
-    resolve({
-      only: ['lit-element', 'lit-html']
-    })
-  ]
-}
+  {
+    input: './src/index.js',
+    output: {
+      file: './dist/webbit.min.js',
+      format: 'umd',
+      name: 'Webbit',
+      globals: {
+        'lodash': '_',
+        '@webbitjs/store': 'WebbitStore'
+      }
+    },
+    plugins: [
+      babel(),
+      resolve({
+        only: ['lit-element', 'lit-html']
+      }),
+      uglify()
+    ]
+  }
+]
