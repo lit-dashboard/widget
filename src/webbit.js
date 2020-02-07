@@ -1,5 +1,6 @@
 import { LitElement } from 'lit-element';
-import { isNull, forEach, isPlainObject } from 'lodash';
+import isPlainObject from './isplainobject';
+
 import { 
   hasSourceManager,
   getSourceManager,
@@ -12,15 +13,16 @@ export default class Webbit extends LitElement {
   constructor() {
     super();
 
-    forEach(this.constructor.properties, (property, name) => {
+    for (let name in this.constructor.properties) {
+      const property = this.constructor.properties[name];
       if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
-        return;
+        continue;
       }
 
       const { type, attribute, reflect, structure } = property;
 
       if (attribute === false || !reflect) {
-        return;
+        continue;
       }
 
       Object.defineProperty(this, name, {
@@ -63,7 +65,7 @@ export default class Webbit extends LitElement {
           this._dispatchPropertyChange(name, oldValue, value);
         }
       });
-    });
+    }
 
     Object.defineProperty(this, 'sourceProvider', {
       get() {
@@ -183,15 +185,16 @@ export default class Webbit extends LitElement {
 
   _setPropsFromSource(source) {
 
-    forEach(this.constructor.properties, (property, name) => {
+    for (let name in this.constructor.properties) {
+      const property = this.constructor.properties[name];
       if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
-        return;
+        continue;
       }
 
       const { type, attribute, reflect, structure, primary } = property;
 
       if (attribute === false || !reflect) {
-        return;
+        continue;
       }
 
       const propSource = source[name];
@@ -209,12 +212,12 @@ export default class Webbit extends LitElement {
           __value__: propSource
         }
       }
-    });
+    };
   }
 
   
   hasSource() {
-    return !isNull(this.sourceKey) && typeof this.sourceKey !== 'undefined';
+    return typeof this.sourceKey !== 'null' && typeof this.sourceKey !== 'undefined';
   }
 
   resized() {}

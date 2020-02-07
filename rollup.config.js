@@ -10,14 +10,16 @@ export default [
       format: 'umd',
       name: 'Webbit',
       globals: {
-        'lodash': '_',
         '@webbitjs/store': 'WebbitStore'
       }
     },
     plugins: [
       babel(),
       resolve({
-        only: ['lit-element', 'lit-html']
+        only: [
+          'lit-element', 
+          'lit-html'
+        ]
       })
     ]
   },
@@ -28,14 +30,16 @@ export default [
       format: 'umd',
       name: 'Webbit',
       globals: {
-        'lodash': '_',
         '@webbitjs/store': 'WebbitStore'
       }
     },
     plugins: [
       babel(),
       resolve({
-        only: ['lit-element', 'lit-html']
+        only: [
+          'lit-element', 
+          'lit-html'        
+        ]
       }),
       uglify()
     ]
