@@ -3461,18 +3461,24 @@
       });
       resizeObserver.observe(this);
       store.sourceProviderAdded(providerName => {
+        console.log("PROVIDER ADDED:", providerName);
+
         if (providerName === this.sourceProvider) {
           this.sourceManager = store.getSourceManager(providerName);
 
           this._subscribeToSource();
         }
       });
+      console.log('sourceProviderAdded:', store.sourceProviderAdded);
+      console.log("manager:", store.getSourceManager('NetworkTables'));
     }
 
     _subscribeToSource() {
       if (this._unsubscribeSource) {
         this._unsubscribeSource();
       }
+
+      console.log('_subscribeToSource', this.sourceKey, this.sourceManager);
 
       if (this.sourceKey && this.sourceManager) {
         this._unsubscribeSource = this.sourceManager.subscribe(this.sourceKey, source => {

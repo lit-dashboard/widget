@@ -2,8 +2,7 @@ import { LitElement } from 'lit-element';
 import isPlainObject from './isplainobject';
 
 import { 
-  hasSourceManager,
-  getSourceManager,
+  hasSourceProvider,
   getSourceProvider,
   sourceProviderAdded
 } from '@webbitjs/store';
@@ -43,7 +42,7 @@ export default class Webbit extends LitElement {
             this._dispatchPropertyChange(name, oldValue, value.__value__);
             return;
           } else if (typeof this.sourceKey === 'string' && sourceProvider) {
-            const source = this.sourceManager.getRawSource(this.sourceKey);
+            const source = sourceProvider.getRawSource(this.sourceKey);
             if (source) {
               const propSource = source.__sources__[name];
 
@@ -77,8 +76,7 @@ export default class Webbit extends LitElement {
         this.requestUpdate('sourceProvider', oldValue);
         this._dispatchSourceProviderChange();
 
-        if (hasSourceManager(value)) { 
-          this.sourceManager = getSourceManager(value);
+        if (hasSourceProvider(value)) { 
           this._subscribeToSource();
         }
       }
@@ -98,7 +96,6 @@ export default class Webbit extends LitElement {
     });
 
     this.sourceProvider = null;
-    this.sourceManager = null;
     this.sourceKey = null;
     this._unsubscribeSource = null;
     this._addToRegistry();
@@ -110,19 +107,21 @@ export default class Webbit extends LitElement {
 
     sourceProviderAdded(providerName => {
       if (providerName === this.sourceProvider) {
-        this.sourceManager = getSourceManager(providerName);
         this._subscribeToSource();
       }
     });
   }
 
   _subscribeToSource() {
+
     if (this._unsubscribeSource) {
       this._unsubscribeSource();
     }
 
-    if (this.sourceKey && this.sourceManager) {
-      this._unsubscribeSource = this.sourceManager.subscribe(this.sourceKey, source => {
+    const sourceProvider = getSourceProvider(this.sourceProvider);
+
+    if (this.sourceKey && sourceProvider) {
+      this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
         if (typeof source !== 'undefined') {
           this._setPropsFromSource(source);
         }
