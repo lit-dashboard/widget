@@ -1,10 +1,10 @@
 {
   "name": "@webbitjs/webbit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "src/index.js",
   "dependencies": {
-    "@webbitjs/store": "^1.0.0",
+    "@webbitjs/store": "^1.0.1",
     "lit-element": "^2.2.1"
   },
   "devDependencies": {
