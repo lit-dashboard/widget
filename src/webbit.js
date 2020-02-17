@@ -36,7 +36,7 @@ export default class Webbit extends LitElement {
           const sourceProvider = getSourceProvider(this.sourceProvider);
 
           if (isPlainObject(value) && value.__fromSource__) {
-            const oldValue = this._value;
+            const oldValue = this[`_${name}`];
             this[`_${name}`] = value.__value__;
             this.requestUpdate(name, oldValue);
             this._dispatchPropertyChange(name, oldValue, value.__value__);
@@ -58,7 +58,7 @@ export default class Webbit extends LitElement {
             }
           }
 
-          const oldValue = this._value;
+          const oldValue = this[`_${name}`];
           this[`_${name}`] = value;
           this.requestUpdate(name, oldValue);
           this._dispatchPropertyChange(name, oldValue, value);
