@@ -3462,6 +3462,13 @@
           this._subscribeToSource();
         }
       });
+      store.defaultSourceProviderSet(defaultSourceProvider => {
+        if (!this.sourceProvider) {
+          this.sourceProvider = defaultSourceProvider;
+        }
+
+        this._subscribeToSource();
+      });
     }
 
     _subscribeToSource() {

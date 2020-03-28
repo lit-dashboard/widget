@@ -5,7 +5,8 @@ import {
   hasSourceProvider,
   getSourceProvider,
   sourceProviderAdded,
-  getDefaultSourceProvider
+  getDefaultSourceProvider,
+  defaultSourceProviderSet
 } from '@webbitjs/store';
 
 export default class Webbit extends LitElement {
@@ -110,6 +111,13 @@ export default class Webbit extends LitElement {
       if (providerName === this.sourceProvider) {
         this._subscribeToSource();
       }
+    });
+
+    defaultSourceProviderSet(defaultSourceProvider => {
+      if (!this.sourceProvider) {
+        this.sourceProvider = defaultSourceProvider;
+      }
+      this._subscribeToSource();
     });
   }
 
