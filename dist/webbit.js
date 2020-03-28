@@ -3372,7 +3372,7 @@
             var sourceProvider = store.getSourceProvider(this.sourceProvider);
 
             if (isPlainObject(value) && value.__fromSource__) {
-              var _oldValue = this._value;
+              var _oldValue = this["_".concat(name)];
               this["_".concat(name)] = value.__value__;
               this.requestUpdate(name, _oldValue);
 
@@ -3380,7 +3380,7 @@
 
               return;
             } else if (typeof this.sourceKey === 'string' && sourceProvider) {
-              var source = this.sourceManager.getRawSource(this.sourceKey);
+              var source = sourceProvider.getRawSource(this.sourceKey);
 
               if (source) {
                 var propSource = source.__sources__[name];
@@ -3397,7 +3397,7 @@
               }
             }
 
-            var oldValue = this._value;
+            var oldValue = this["_".concat(name)];
             this["_".concat(name)] = value;
             this.requestUpdate(name, oldValue);
 
@@ -3415,7 +3415,7 @@
 
       Object.defineProperty(this, 'sourceProvider', {
         get() {
-          return this._sourceProvider;
+          return this._sourceProvider || store.getDefaultSourceProvider();
         },
 
         set(value) {
@@ -3425,9 +3425,7 @@
 
           this._dispatchSourceProviderChange();
 
-          if (store.hasSourceManager(value)) {
-            this.sourceManager = store.getSourceManager(value);
-
+          if (store.hasSourceProvider(value)) {
             this._subscribeToSource();
           }
         }
@@ -3450,7 +3448,6 @@
 
       });
       this.sourceProvider = null;
-      this.sourceManager = null;
       this.sourceKey = null;
       this._unsubscribeSource = null;
 
@@ -3461,16 +3458,10 @@
       });
       resizeObserver.observe(this);
       store.sourceProviderAdded(providerName => {
-        console.log("PROVIDER ADDED:", providerName);
-
         if (providerName === this.sourceProvider) {
-          this.sourceManager = store.getSourceManager(providerName);
-
           this._subscribeToSource();
         }
       });
-      console.log('sourceProviderAdded:', store.sourceProviderAdded);
-      console.log("manager:", store.getSourceManager('NetworkTables'));
     }
 
     _subscribeToSource() {
@@ -3478,10 +3469,10 @@
         this._unsubscribeSource();
       }
 
-      console.log('_subscribeToSource', this.sourceKey, this.sourceManager);
+      var sourceProvider = store.getSourceProvider(this.sourceProvider);
 
-      if (this.sourceKey && this.sourceManager) {
-        this._unsubscribeSource = this.sourceManager.subscribe(this.sourceKey, source => {
+      if (this.sourceKey && sourceProvider) {
+        this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
           if (typeof source !== 'undefined') {
             this._setPropsFromSource(source);
           }

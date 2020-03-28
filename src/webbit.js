@@ -4,7 +4,8 @@ import isPlainObject from './isplainobject';
 import { 
   hasSourceProvider,
   getSourceProvider,
-  sourceProviderAdded
+  sourceProviderAdded,
+  getDefaultSourceProvider
 } from '@webbitjs/store';
 
 export default class Webbit extends LitElement {
@@ -68,7 +69,7 @@ export default class Webbit extends LitElement {
 
     Object.defineProperty(this, 'sourceProvider', {
       get() {
-        return this._sourceProvider;
+        return this._sourceProvider || getDefaultSourceProvider();
       },      
       set(value) {
         const oldValue = this._sourceProvider;
