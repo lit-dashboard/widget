@@ -3387,11 +3387,11 @@
 
                 if (typeof propSource === 'undefined') {
                   if (this.constructor.properties[name].primary && source.__fromProvider__) {
-                    sourceProvider.updateFromUser(this.sourceKey, value);
+                    sourceProvider.userUpdate(this.sourceKey, value);
                     return;
                   }
                 } else if (propSource.__fromProvider__) {
-                  sourceProvider.updateFromUser(propSource.__key__, value);
+                  sourceProvider.userUpdate(propSource.__key__, value);
                   return;
                 }
               }
