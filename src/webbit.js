@@ -13,7 +13,6 @@ export default class Webbit extends LitElement {
 
   constructor() {
     super();
-    console.log("???");
 
     for (let name in this.constructor.properties) {
       const property = this.constructor.properties[name];
@@ -124,23 +123,14 @@ export default class Webbit extends LitElement {
 
   _subscribeToSource() {
 
-    console.log('_subscribeToSource called 1');
-
     if (this._unsubscribeSource) {
       this._unsubscribeSource();
     }
 
-    console.log('_subscribeToSource called 2');
-
     const sourceProvider = getSourceProvider(this.sourceProvider);
 
-    console.log('_subscribeToSource called 3', sourceProvider);
-
-
     if (this.sourceKey && sourceProvider) {
-      console.log("SUBSCRIBE:", this.sourceKey);
       this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
-        console.log("value:", this.sourceKey, source);
         if (typeof source !== 'undefined') {
           this._setPropsFromSource(source);
         }

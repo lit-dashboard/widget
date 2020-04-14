@@ -3338,7 +3338,6 @@
 
       super();
       _this = this;
-      console.log("???");
 
       var _loop = function _loop(name) {
         var property = _this.constructor.properties[name];
@@ -3473,21 +3472,14 @@
     }
 
     _subscribeToSource() {
-      console.log('_subscribeToSource called 1');
-
       if (this._unsubscribeSource) {
         this._unsubscribeSource();
       }
 
-      console.log('_subscribeToSource called 2');
       var sourceProvider = store.getSourceProvider(this.sourceProvider);
-      console.log('_subscribeToSource called 3', sourceProvider);
 
       if (this.sourceKey && sourceProvider) {
-        console.log("SUBSCRIBE:", this.sourceKey);
         this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
-          console.log("value:", this.sourceKey, source);
-
           if (typeof source !== 'undefined') {
             this._setPropsFromSource(source);
           }
