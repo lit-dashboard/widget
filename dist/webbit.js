@@ -3332,6 +3332,10 @@
     return typeof Ctor == 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
   }
 
+  function isSourceObject(value) {
+    return value instanceof Object && value !== null && value.constructor.name === 'Source';
+  }
+
   class Webbit extends LitElement {
     constructor() {
       var _this;
@@ -3569,7 +3573,7 @@
         var propSource = source[name];
 
         if (typeof propSource === 'undefined') {
-          if (primary) {
+          if (primary && !isSourceObject(source)) {
             this[name] = {
               __fromSource__: true,
               __value__: source

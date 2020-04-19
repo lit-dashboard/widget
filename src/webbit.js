@@ -9,6 +9,14 @@ import {
   defaultSourceProviderSet
 } from '@webbitjs/store';
 
+function isSourceObject(value) {
+  return (
+    value instanceof Object
+    && value !== null
+    && value.constructor.name === 'Source'
+  );
+}
+
 export default class Webbit extends LitElement {
 
   constructor() {
@@ -208,7 +216,7 @@ export default class Webbit extends LitElement {
       const propSource = source[name];
 
       if (typeof propSource === 'undefined') {
-        if (primary) {
+        if (primary && !isSourceObject(source)) {
           this[name] = {
             __fromSource__: true,
             __value__: source
