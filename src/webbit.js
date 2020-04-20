@@ -43,11 +43,14 @@ export default class Webbit extends LitElement {
           return this[`_${name}`];
         },
         set(value) {
+          const setter = this.constructor.properties[name].set;
           const sourceProvider = getSourceProvider(this.sourceProvider);
 
           if (isPlainObject(value) && value.__fromSource__) {
             const oldValue = this[`_${name}`];
-            this[`_${name}`] = value.__value__;
+            this[`_${name}`] = typeof setter === 'function' 
+              ? setter.bind(this)(value.__value__)
+              : value.__value__;
             this.requestUpdate(name, oldValue);
             this._dispatchPropertyChange(name, oldValue, value.__value__);
             return;
@@ -69,7 +72,9 @@ export default class Webbit extends LitElement {
           }
 
           const oldValue = this[`_${name}`];
-          this[`_${name}`] = value;
+          this[`_${name}`] = typeof setter === 'function' 
+            ? setter.bind(this)(value)
+            : value;
           this.requestUpdate(name, oldValue);
           this._dispatchPropertyChange(name, oldValue, value);
         }

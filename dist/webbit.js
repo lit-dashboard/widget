@@ -3373,11 +3373,12 @@
           },
 
           set(value) {
+            var setter = this.constructor.properties[name].set;
             var sourceProvider = store.getSourceProvider(this.sourceProvider);
 
             if (isPlainObject(value) && value.__fromSource__) {
               var _oldValue = this["_".concat(name)];
-              this["_".concat(name)] = value.__value__;
+              this["_".concat(name)] = typeof setter === 'function' ? setter.bind(this)(value.__value__) : value.__value__;
               this.requestUpdate(name, _oldValue);
 
               this._dispatchPropertyChange(name, _oldValue, value.__value__);
@@ -3402,7 +3403,7 @@
             }
 
             var oldValue = this["_".concat(name)];
-            this["_".concat(name)] = value;
+            this["_".concat(name)] = typeof setter === 'function' ? setter.bind(this)(value) : value;
             this.requestUpdate(name, oldValue);
 
             this._dispatchPropertyChange(name, oldValue, value);
