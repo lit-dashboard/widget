@@ -3589,7 +3589,7 @@
     }
 
     hasSource() {
-      return typeof this.sourceKey !== 'null' && typeof this.sourceKey !== 'undefined';
+      return this.sourceKey !== null && typeof this.sourceKey !== 'undefined';
     }
 
     resized() {}
