@@ -2,13 +2,27 @@ const registered = {};
 const webbits = {};
 const createdListeners = [];
 
+function isInstanceOfWebbit(constructor) {
+  if (!(constructor instanceof Object)) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(constructor);
+
+  if (prototype.name === 'Webbit') {
+    return true;
+  }
+
+  return isInstanceOfWebbit(prototype);
+}
+
 const registry = {
   define: (name, constructor, options) => {
     if (customElements.get(name)) {
       return;
     }
 
-    if (Object.getPrototypeOf(constructor).name !== 'Webbit') {
+    if (!isInstanceOfWebbit(constructor)) {
       return;
     }
 
