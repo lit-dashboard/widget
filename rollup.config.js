@@ -8,9 +8,9 @@ export default [
     output: {
       file: './dist/webbit.js',
       format: 'umd',
-      name: 'Webbit',
+      name: 'webbit',
       globals: {
-        '@webbitjs/store': 'WebbitStore'
+        '@webbitjs/store': 'webbitStore'
       }
     },
     plugins: [
@@ -28,9 +28,9 @@ export default [
     output: {
       file: './dist/webbit.min.js',
       format: 'umd',
-      name: 'Webbit',
+      name: 'webbit',
       globals: {
-        '@webbitjs/store': 'WebbitStore'
+        '@webbitjs/store': 'webbitStore'
       }
     },
     plugins: [

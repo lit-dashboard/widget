@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@webbitjs/store')) :
   typeof define === 'function' && define.amd ? define(['exports', '@webbitjs/store'], factory) :
-  (global = global || self, factory(global.Webbit = {}, global.WebbitStore));
+  (global = global || self, factory(global.webbit = {}, global.webbitStore));
 }(this, (function (exports, store) { 'use strict';
 
   function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
