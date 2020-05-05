@@ -98,13 +98,7 @@
       return false;
     }
 
-    var prototype = Object.getPrototypeOf(constructor);
-
-    if (prototype.name === 'Webbit') {
-      return true;
-    }
-
-    return isInstanceOfWebbit(prototype);
+    return constructor.__WEBBIT_CLASSNAME__ === 'Webbit';
   }
 
   var registry = {
@@ -3348,10 +3342,14 @@
   }
 
   function isSourceObject(value) {
-    return value instanceof Object && value !== null && value.constructor.name === 'Source';
+    return value instanceof Object && value !== null && value.constructor.__WEBBIT_CLASSNAME__ === 'Source';
   }
 
   class Webbit extends LitElement {
+    static get __WEBBIT_CLASSNAME__() {
+      return 'Webbit';
+    }
+
     constructor() {
       var _this;
 

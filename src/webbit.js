@@ -13,11 +13,15 @@ function isSourceObject(value) {
   return (
     value instanceof Object
     && value !== null
-    && value.constructor.name === 'Source'
+    && value.constructor.__WEBBIT_CLASSNAME__ === 'Source'
   );
 }
 
 export default class Webbit extends LitElement {
+
+  static get __WEBBIT_CLASSNAME__() {
+    return 'Webbit';
+  }
 
   constructor() {
     super();

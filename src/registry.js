@@ -7,13 +7,7 @@ function isInstanceOfWebbit(constructor) {
     return false;
   }
 
-  const prototype = Object.getPrototypeOf(constructor);
-
-  if (prototype.name === 'Webbit') {
-    return true;
-  }
-
-  return isInstanceOfWebbit(prototype);
+  return constructor.__WEBBIT_CLASSNAME__ === 'Webbit';
 }
 
 const registry = {
