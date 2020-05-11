@@ -3481,7 +3481,7 @@
         }
       });
       store.defaultSourceProviderSet(defaultSourceProvider => {
-        if (!this.sourceProvider) {
+        if (!this._sourceProvider) {
           this.sourceProvider = defaultSourceProvider;
         }
 

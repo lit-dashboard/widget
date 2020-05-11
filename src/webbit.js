@@ -131,7 +131,7 @@ export default class Webbit extends LitElement {
     });
 
     defaultSourceProviderSet(defaultSourceProvider => {
-      if (!this.sourceProvider) {
+      if (!this._sourceProvider) {
         this.sourceProvider = defaultSourceProvider;
       }
       this._subscribeToSource();
