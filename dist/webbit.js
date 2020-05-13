@@ -131,7 +131,7 @@
           prop.reflect = true;
         }
 
-        if (typeof props.attribute === 'undefined') {
+        if (typeof prop.attribute === 'undefined') {
           prop.attribute = camelToKebab(propName);
         }
       }
