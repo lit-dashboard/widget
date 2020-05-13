@@ -89,6 +89,17 @@
     return target;
   }
 
+  /**
+   * Turns a camelCase string to kebab-case
+   * 
+   * https://gist.github.com/nblackburn/875e6ff75bc8ce171c758bf75f304707#gistcomment-2993938
+   *
+   * @param {string} string 
+   */
+  var camelToKebab = string => {
+    return string.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/([A-Z])([A-Z])(?=[a-z])/g, '$1-$2').toLowerCase();
+  };
+
   var registered = {};
   var webbits = {};
   var createdListeners = [];
@@ -118,6 +129,10 @@
 
         if (typeof prop.reflect === 'undefined') {
           prop.reflect = true;
+        }
+
+        if (typeof props.attribute === 'undefined') {
+          prop.attribute = camelToKebab(propName);
         }
       }
 
@@ -3467,6 +3482,7 @@
       });
       this.sourceProvider = null;
       this.sourceKey = null;
+      this._source = null;
       this._unsubscribeSource = null;
 
       this._addToRegistry();
@@ -3565,6 +3581,8 @@
     }
 
     _setPropsFromSource(source) {
+      this._source = source;
+
       for (var name in this.constructor.properties) {
         var property = this.constructor.properties[name];
 
@@ -3604,6 +3622,10 @@
 
     hasSource() {
       return this.sourceKey !== null && typeof this.sourceKey !== 'undefined';
+    }
+
+    getSource() {
+      return this.hasSource() ? this._source : undefined;
     }
 
     resized() {}

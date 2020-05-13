@@ -116,6 +116,7 @@ export default class Webbit extends LitElement {
 
     this.sourceProvider = null;
     this.sourceKey = null;
+    this._source = null;
     this._unsubscribeSource = null;
     this._addToRegistry();
 
@@ -210,6 +211,8 @@ export default class Webbit extends LitElement {
 
   _setPropsFromSource(source) {
 
+    this._source = source;
+
     for (let name in this.constructor.properties) {
       const property = this.constructor.properties[name];
       if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
@@ -243,6 +246,10 @@ export default class Webbit extends LitElement {
   
   hasSource() {
     return this.sourceKey !== null && typeof this.sourceKey !== 'undefined';
+  }
+
+  getSource() {
+    return this.hasSource() ? this._source : undefined;
   }
 
   resized() {}

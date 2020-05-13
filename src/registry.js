@@ -1,3 +1,5 @@
+import { camelToKebab } from './util';
+
 const registered = {};
 const webbits = {};
 const createdListeners = [];
@@ -26,6 +28,9 @@ const registry = {
       const prop = webbitProperties[propName];
       if (typeof prop.reflect === 'undefined') {
         prop.reflect = true;
+      }
+      if (typeof props.attribute === 'undefined') {
+        prop.attribute = camelToKebab(propName);
       }
     }
 
