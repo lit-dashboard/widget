@@ -18,7 +18,8 @@ export default [
       resolve({
         only: [
           'lit-element', 
-          'lit-html'
+          'lit-html',
+          'resize-observer-polyfill'
         ]
       })
     ]
@@ -38,7 +39,8 @@ export default [
       resolve({
         only: [
           'lit-element', 
-          'lit-html'        
+          'lit-html',
+          'resize-observer-polyfill'     
         ]
       }),
       uglify()

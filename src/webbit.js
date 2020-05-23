@@ -1,5 +1,6 @@
 import { LitElement } from 'lit-element';
 import isPlainObject from './isplainobject';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import { 
   hasSourceProvider,
