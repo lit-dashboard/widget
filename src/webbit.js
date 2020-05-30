@@ -159,7 +159,8 @@ export default class Webbit extends LitElement {
 
   async _addToRegistry() {
     await this.updateComplete;
-    const webbitId = this.getAttribute('webbit-id');
+    const desiredWebbitId = this.getAttribute('webbit-id');
+    const webbitId = window.webbitRegistry._generateWebbitId(this, desiredWebbitId);
     window.webbitRegistry._created(webbitId, this);
   }
 

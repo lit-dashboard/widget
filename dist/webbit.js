@@ -172,7 +172,37 @@
     get: name => {
       return registered[name];
     },
+    getRegisteredNames: () => {
+      return Object.keys(registered);
+    },
+    _generateWebbitId: (webbit, desiredId) => {
+      var baseName = desiredId ? desiredId : webbit.nodeName.toLowerCase();
+
+      if (typeof webbits[baseName] === 'undefined') {
+        return baseName;
+      }
+
+      var webbitCount = Object.keys(webbits).length;
+
+      for (var i = 0; i < webbitCount; i++) {
+        var id = "".concat(baseName, " #").concat(i + 2);
+
+        if (typeof webbits[id] === 'undefined') {
+          return id;
+        }
+      }
+
+      return null;
+    },
     _created: (webbitId, webbit) => {
+      if (typeof webbitId !== 'string' || webbitId.length === 0) {
+        throw new Error("Webbit ID '".concat(webbitId, "' is not a string of length 1 or more characters"));
+      }
+
+      if (webbitId in webbits) {
+        throw new Error("Webbit with ID '".concat(webbitId, "' has already been created."));
+      }
+
       webbits[webbitId] = webbit;
       createdListeners.forEach(callback => {
         callback(webbitId, webbit);
@@ -180,6 +210,12 @@
     },
     getWebbit: webbitId => {
       return webbits[webbitId];
+    },
+    hasWebbit: webbitId => {
+      return webbitId in webbits;
+    },
+    getWebbitIds: () => {
+      return Object.keys(webbits);
     },
     whenCreated: listener => {
       if (typeof listener === 'function') {
@@ -4638,7 +4674,9 @@
       return _asyncToGenerator(function* () {
         yield _this2.updateComplete;
 
-        var webbitId = _this2.getAttribute('webbit-id');
+        var desiredWebbitId = _this2.getAttribute('webbit-id');
+
+        var webbitId = window.webbitRegistry._generateWebbitId(_this2, desiredWebbitId);
 
         window.webbitRegistry._created(webbitId, _this2);
       })();

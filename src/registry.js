@@ -71,7 +71,36 @@ const registry = {
   get: (name) => {
     return registered[name];
   },
+  getRegisteredNames: () => {
+    return Object.keys(registered);
+  },
+  _generateWebbitId: (webbit, desiredId) => {
+
+    const baseName = desiredId ? desiredId : webbit.nodeName.toLowerCase();
+
+    if (typeof webbits[baseName] === 'undefined') {
+      return baseName;
+    }
+    const webbitCount = Object.keys(webbits).length;
+    for (let i = 0; i < webbitCount; i++) {
+      const id = `${baseName} #${i+2}`;
+      if (typeof webbits[id] === 'undefined') {
+        return id;
+      }
+    }
+
+    return null;
+  },
   _created: (webbitId, webbit) => {
+
+    if (typeof webbitId !== 'string' || webbitId.length === 0) {
+      throw new Error(`Webbit ID '${webbitId}' is not a string of length 1 or more characters`);
+    }
+
+    if (webbitId in webbits) {
+      throw new Error(`Webbit with ID '${webbitId}' has already been created.`);
+    }
+
     webbits[webbitId] = webbit;
     createdListeners.forEach(callback => {
       callback(webbitId, webbit);
@@ -79,6 +108,12 @@ const registry = {
   },
   getWebbit: (webbitId) => {
     return webbits[webbitId];
+  },
+  hasWebbit: (webbitId) => {
+    return webbitId in webbits;
+  },
+  getWebbitIds: () => {
+    return Object.keys(webbits);
   },
   whenCreated: (listener) => {
     if (typeof listener === 'function') {
