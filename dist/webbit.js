@@ -151,7 +151,8 @@
             },
             webbitId: {
               type: String,
-              attribute: 'webbit-id'
+              attribute: 'webbit-id',
+              reflect: true
             }
           });
         }
@@ -193,6 +194,22 @@
       }
 
       return null;
+    },
+    _changedWebbitId: (oldWebbitId, newWebbitId, webbit) => {
+      if (typeof webbits[oldWebbitId] === 'undefined') {
+        throw new Error("Webbit with ID '".concat(oldWebbitId, "' doesn't exist."));
+      }
+
+      if (typeof newWebbitId !== 'string' || newWebbitId.length === 0) {
+        throw new Error("Webbit ID '".concat(newWebbitId, "' is not a string of length 1 or more characters"));
+      }
+
+      if (newWebbitId in webbits) {
+        throw new Error("Webbit with ID '".concat(newWebbitId, "' has already been created."));
+      }
+
+      webbits[newWebbitId] = webbit;
+      delete webbits[oldWebbitId];
     },
     _created: (webbitId, webbit) => {
       if (typeof webbitId !== 'string' || webbitId.length === 0) {
@@ -4627,13 +4644,42 @@
         }
 
       });
+      Object.defineProperty(this, 'webbitId', {
+        get() {
+          return this._webbitId;
+        },
+
+        set(value) {
+          var oldValue = this._webbitId;
+
+          if (value === oldValue) {
+            return;
+          }
+
+          var webbitId = window.webbitRegistry._generateWebbitId(this, value);
+
+          if (!window.webbitRegistry.hasWebbit(oldValue)) {
+            window.webbitRegistry._created(webbitId, this);
+          } else {
+            window.webbitRegistry._changedWebbitId(oldValue, webbitId, this);
+          }
+
+          this._webbitId = webbitId;
+          this.requestUpdate('webbitId', oldValue);
+
+          if (this.getAttribute('webbit-id') !== webbitId) {
+            this.setAttribute('webbit-id', webbitId);
+          }
+
+          this._dispatchWebbitIdChange();
+        }
+
+      });
       this.sourceProvider = null;
       this.sourceKey = null;
       this._source = null;
       this._unsubscribeSource = null;
-
-      this._addToRegistry();
-
+      this.webbitId = null;
       var resizeObserver = new index(() => {
         this.resized();
       });
@@ -4666,20 +4712,6 @@
           }
         }, true);
       }
-    }
-
-    _addToRegistry() {
-      var _this2 = this;
-
-      return _asyncToGenerator(function* () {
-        yield _this2.updateComplete;
-
-        var desiredWebbitId = _this2.getAttribute('webbit-id');
-
-        var webbitId = window.webbitRegistry._generateWebbitId(_this2, desiredWebbitId);
-
-        window.webbitRegistry._created(webbitId, _this2);
-      })();
     }
 
     _dispatchSourceKeyChange() {
@@ -4717,11 +4749,10 @@
       this.dispatchEvent(event);
     }
 
-    _dispatchSourceAdded() {
-      var webbitId = this.getAttribute('webbit-id');
+    _dispatchWebbitIdChange() {
       var event = new CustomEvent('source-add', {
         detail: {
-          webbitId
+          webbitId: this.webbitId
         },
         bubbles: true,
         composed: true

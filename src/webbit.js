@@ -115,11 +115,41 @@ export default class Webbit extends LitElement {
       }
     });
 
+    Object.defineProperty(this, 'webbitId', {
+      get() {
+        return this._webbitId;
+      },
+      set(value) {
+        const oldValue = this._webbitId;
+
+        if (value === oldValue) {
+          return;
+        }
+
+        const webbitId = window.webbitRegistry._generateWebbitId(this, value);
+
+        if (!window.webbitRegistry.hasWebbit(oldValue)) {
+          window.webbitRegistry._created(webbitId, this);
+        } else {
+          window.webbitRegistry._changedWebbitId(oldValue, webbitId, this);
+        }
+
+        this._webbitId = webbitId;
+        this.requestUpdate('webbitId', oldValue);
+
+        if (this.getAttribute('webbit-id') !== webbitId) {
+          this.setAttribute('webbit-id', webbitId);
+        }
+
+        this._dispatchWebbitIdChange();
+      }
+    });
+
     this.sourceProvider = null;
     this.sourceKey = null;
     this._source = null;
     this._unsubscribeSource = null;
-    this._addToRegistry();
+    this.webbitId = null;
 
     const resizeObserver = new ResizeObserver(() => {
       this.resized();
@@ -157,13 +187,6 @@ export default class Webbit extends LitElement {
     }
   }
 
-  async _addToRegistry() {
-    await this.updateComplete;
-    const desiredWebbitId = this.getAttribute('webbit-id');
-    const webbitId = window.webbitRegistry._generateWebbitId(this, desiredWebbitId);
-    window.webbitRegistry._created(webbitId, this);
-  }
-
   _dispatchSourceKeyChange() {
     const event = new CustomEvent('source-key-change', {
       detail: {
@@ -199,11 +222,10 @@ export default class Webbit extends LitElement {
     this.dispatchEvent(event);
   }
 
-  _dispatchSourceAdded() {
-    const webbitId = this.getAttribute('webbit-id');
+  _dispatchWebbitIdChange() {
     const event = new CustomEvent('source-add', {
       detail: {
-        webbitId
+        webbitId: this.webbitId
       },
       bubbles: true,
       composed: true

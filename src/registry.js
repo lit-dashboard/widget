@@ -50,7 +50,8 @@ const registry = {
           },
           webbitId: {
             type: String,
-            attribute: 'webbit-id'
+            attribute: 'webbit-id',
+            reflect: true
           }
         }
       }
@@ -90,6 +91,23 @@ const registry = {
     }
 
     return null;
+  },
+  _changedWebbitId: (oldWebbitId, newWebbitId, webbit) => {
+    
+    if (typeof webbits[oldWebbitId] === 'undefined') {
+      throw new Error(`Webbit with ID '${oldWebbitId}' doesn't exist.`)
+    }
+
+    if (typeof newWebbitId !== 'string' || newWebbitId.length === 0) {
+      throw new Error(`Webbit ID '${newWebbitId}' is not a string of length 1 or more characters`);
+    }
+
+    if (newWebbitId in webbits) {
+      throw new Error(`Webbit with ID '${newWebbitId}' has already been created.`);
+    }
+
+    webbits[newWebbitId] = webbit;
+    delete webbits[oldWebbitId];
   },
   _created: (webbitId, webbit) => {
 
