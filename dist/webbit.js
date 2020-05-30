@@ -103,6 +103,7 @@
   var registered = {};
   var webbits = {};
   var createdListeners = [];
+  var anyDefinedListeners = [];
 
   function isInstanceOfWebbit(constructor) {
     if (!(constructor instanceof Object)) {
@@ -160,6 +161,9 @@
       });
       registered[name] = constructor;
       customElements.define(name, constructor, options);
+      anyDefinedListeners.forEach(callback => {
+        callback(name, constructor);
+      });
     },
     whenDefined: name => {
       return new Promise(resolve => {
@@ -170,11 +174,30 @@
         });
       });
     },
+    whenAnyDefined: listener => {
+      if (typeof listener === 'function') {
+        anyDefinedListeners.push(listener);
+      }
+    },
     get: name => {
       return registered[name];
     },
     getRegisteredNames: () => {
       return Object.keys(registered);
+    },
+    getMetadata: name => {
+      var component = registered[name];
+
+      if (!component) {
+        return null;
+      }
+
+      return _objectSpread2({
+        displayName: name,
+        category: 'Uncategorized',
+        description: 'Just another web component.',
+        documentationLink: null
+      }, component.metadata);
     },
     _generateWebbitId: (webbit, desiredId) => {
       var baseName = desiredId ? desiredId : webbit.nodeName.toLowerCase();

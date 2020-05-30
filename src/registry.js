@@ -3,6 +3,7 @@ import { camelToKebab } from './util';
 const registered = {};
 const webbits = {};
 const createdListeners = [];
+const anyDefinedListeners = [];
 
 function isInstanceOfWebbit(constructor) {
   if (!(constructor instanceof Object)) {
@@ -59,6 +60,9 @@ const registry = {
 
     registered[name] = constructor;
     customElements.define(name, constructor, options);
+    anyDefinedListeners.forEach(callback => {
+      callback(name, constructor);
+    });
   },
   whenDefined: (name) => {
     return new Promise((resolve) => {
@@ -69,11 +73,30 @@ const registry = {
       });
     });
   },
+  whenAnyDefined: (listener) => {
+    if (typeof listener === 'function') {
+      anyDefinedListeners.push(listener);
+    }
+  },
   get: (name) => {
     return registered[name];
   },
   getRegisteredNames: () => {
     return Object.keys(registered);
+  },
+  getMetadata: (name) => {
+    const component = registered[name];
+    if (!component) {
+      return null;
+    }
+
+    return {
+      displayName: name,
+      category: 'Uncategorized',
+      description: 'Just another web component.',
+      documentationLink: null,
+      ...component.metadata
+    };
   },
   _generateWebbitId: (webbit, desiredId) => {
 
