@@ -95,6 +95,7 @@ const registry = {
       category: 'Uncategorized',
       description: 'Just another web component.',
       documentationLink: null,
+      slots: ['default'],
       ...component.metadata
     };
   },

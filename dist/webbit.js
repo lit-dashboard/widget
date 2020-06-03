@@ -196,7 +196,8 @@
         displayName: name,
         category: 'Uncategorized',
         description: 'Just another web component.',
-        documentationLink: null
+        documentationLink: null,
+        slots: ['default']
       }, component.metadata);
     },
     _generateWebbitId: (webbit, desiredId) => {
