@@ -33,6 +33,8 @@ const registry = {
       if (typeof prop.attribute === 'undefined') {
         prop.attribute = camelToKebab(propName);
       }
+
+      prop.canConnectToSources = prop.reflect && prop.attribute;
     }
 
     Object.defineProperty(constructor, 'properties', {
