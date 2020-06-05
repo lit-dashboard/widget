@@ -34,7 +34,7 @@ const registry = {
         prop.attribute = camelToKebab(propName);
       }
 
-      prop.canConnectToSources = prop.reflect && prop.attribute;
+      prop.canConnectToSources = !!(prop.reflect && prop.attribute);
     }
 
     Object.defineProperty(constructor, 'properties', {
