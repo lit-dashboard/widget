@@ -137,6 +137,11 @@
         }
 
         prop.canConnectToSources = !!(prop.reflect && prop.attribute);
+
+        if (typeof prop.category === 'undefined') {
+          var metadata = constructor.metadata || {};
+          prop.category = metadata.displayName || name;
+        }
       }
 
       Object.defineProperty(constructor, 'properties', {
