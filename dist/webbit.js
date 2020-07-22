@@ -4739,7 +4739,10 @@
       if (this.sourceKey && sourceProvider) {
         this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
           if (typeof source !== 'undefined') {
-            this._setPropsFromSource(source);
+            this._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
+
+
+            this.requestUpdate();
           }
         }, true);
       }
