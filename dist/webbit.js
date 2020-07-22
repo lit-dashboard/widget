@@ -4650,15 +4650,19 @@
         },
 
         set(value) {
-          var oldValue = this._sourceProvider;
-          this._sourceProvider = value;
-          this.requestUpdate('sourceProvider', oldValue);
+          var _this2 = this;
 
-          this._dispatchSourceProviderChange();
+          return _asyncToGenerator(function* () {
+            var oldValue = _this2._sourceProvider;
+            _this2._sourceProvider = value;
+            yield _this2.requestUpdate('sourceProvider', oldValue);
 
-          if (store.hasSourceProvider(value)) {
-            this._subscribeToSource();
-          }
+            _this2._dispatchSourceProviderChange();
+
+            if (store.hasSourceProvider(value)) {
+              _this2._subscribeToSource();
+            }
+          })();
         }
 
       });
@@ -4668,13 +4672,17 @@
         },
 
         set(value) {
-          var oldValue = this._sourceKey;
-          this._sourceKey = value;
-          this.requestUpdate('sourceKey', oldValue);
+          var _this3 = this;
 
-          this._dispatchSourceKeyChange();
+          return _asyncToGenerator(function* () {
+            var oldValue = _this3._sourceKey;
+            _this3._sourceKey = value;
+            yield _this3.requestUpdate('sourceKey', oldValue);
 
-          this._subscribeToSource();
+            _this3._dispatchSourceKeyChange();
+
+            _this3._subscribeToSource();
+          })();
         }
 
       });
@@ -4733,13 +4741,18 @@
     }
 
     _subscribeToSource() {
+      console.log('_subscribeToSource');
+
       if (this._unsubscribeSource) {
+        console.log('unsubscribe');
+
         this._unsubscribeSource();
       }
 
       var sourceProvider = store.getSourceProvider(this.sourceProvider);
 
       if (this.sourceKey && sourceProvider) {
+        console.log('subscribe', this.sourceKey);
         this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
           console.log('set props from source:', source);
 

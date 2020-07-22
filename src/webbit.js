@@ -95,10 +95,10 @@ export default class Webbit extends LitElement {
       get() {
         return this._sourceProvider || getDefaultSourceProvider();
       },      
-      set(value) {
+      async set(value) {
         const oldValue = this._sourceProvider;
         this._sourceProvider = value;
-        this.requestUpdate('sourceProvider', oldValue);
+        await this.requestUpdate('sourceProvider', oldValue);
         this._dispatchSourceProviderChange();
 
         if (hasSourceProvider(value)) { 
@@ -111,10 +111,10 @@ export default class Webbit extends LitElement {
       get() {
         return this._sourceKey;
       },
-      set(value) {
+      async set(value) {
         const oldValue = this._sourceKey;
         this._sourceKey = value;
-        this.requestUpdate('sourceKey', oldValue);
+        await this.requestUpdate('sourceKey', oldValue);
         this._dispatchSourceKeyChange();
         this._subscribeToSource();
       }
@@ -177,13 +177,17 @@ export default class Webbit extends LitElement {
 
   _subscribeToSource() {
 
+    console.log('_subscribeToSource');
+
     if (this._unsubscribeSource) {
+      console.log('unsubscribe');
       this._unsubscribeSource();
     }
 
     const sourceProvider = getSourceProvider(this.sourceProvider);
 
     if (this.sourceKey && sourceProvider) {
+      console.log('subscribe', this.sourceKey);
       this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
         console.log('set props from source:', source);
         this._setPropsFromSource(source);
