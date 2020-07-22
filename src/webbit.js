@@ -27,6 +27,8 @@ export default class Webbit extends LitElement {
   constructor() {
     super();
 
+    this.defaultProps = {};
+
     for (let name in this.constructor.properties) {
       const property = this.constructor.properties[name];
       if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
@@ -51,7 +53,9 @@ export default class Webbit extends LitElement {
           const setter = this.constructor.properties[name].set;
           const sourceProvider = getSourceProvider(this.sourceProvider);
 
-          if (isPlainObject(value) && value.__fromSource__) {
+          console.log("value", name, value);
+
+          if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
             const oldValue = this[`_${name}`];
             this[`_${name}`] = typeof setter === 'function' 
               ? setter.bind(this)(value.__value__)
@@ -180,11 +184,10 @@ export default class Webbit extends LitElement {
 
     if (this.sourceKey && sourceProvider) {
       this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
-        if (typeof source !== 'undefined') {
-          this._setPropsFromSource(source);
-          // Request update in case there are no props but we need an update anyway
-          this.requestUpdate();
-        }
+        console.log('set props from source:', source);
+        this._setPropsFromSource(source);
+        // Request update in case there are no props but we need an update anyway
+        this.requestUpdate();
       }, true);
     }
   }
@@ -251,14 +254,18 @@ export default class Webbit extends LitElement {
         continue;
       }
 
-      const propSource = source[name];
+      const propSource = source ? source[name] : undefined;
+
+      console.log('prop source:', propSource);
 
       if (typeof propSource === 'undefined') {
-        if (primary && !isSourceObject(source)) {
+        if (primary && !isSourceObject(source) && typeof source !== 'undefined') {
           this[name] = {
             __fromSource__: true,
             __value__: source
           }
+        } else {
+          this.setPropToDefault(name);
         }
       } else {
         this[name] = {
@@ -269,6 +276,16 @@ export default class Webbit extends LitElement {
     };
   }
 
+  setDefaultValue(property, value) {
+    this.defaultProps[property] = value;
+  }
+
+  setPropToDefault(property) {
+    this[property] = {
+      __fromDefault__: true,
+      __value__: this.defaultProps[property]
+    };
+  }
   
   hasSource() {
     return this.sourceKey !== null && typeof this.sourceKey !== 'undefined';

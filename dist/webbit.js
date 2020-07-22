@@ -4565,6 +4565,7 @@
 
       super();
       _this = this;
+      this.defaultProps = {};
 
       var _loop = function _loop(name) {
         var property = _this.constructor.properties[name];
@@ -4598,8 +4599,9 @@
           set(value) {
             var setter = this.constructor.properties[name].set;
             var sourceProvider = store.getSourceProvider(this.sourceProvider);
+            console.log("value", name, value);
 
-            if (isPlainObject(value) && value.__fromSource__) {
+            if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
               var _oldValue = this["_".concat(name)];
               this["_".concat(name)] = typeof setter === 'function' ? setter.bind(this)(value.__value__) : value.__value__;
               this.requestUpdate(name, _oldValue);
@@ -4738,12 +4740,12 @@
 
       if (this.sourceKey && sourceProvider) {
         this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
-          if (typeof source !== 'undefined') {
-            this._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
+          console.log('set props from source:', source);
+
+          this._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
 
 
-            this.requestUpdate();
-          }
+          this.requestUpdate();
         }, true);
       }
     }
@@ -4816,14 +4818,17 @@
           continue;
         }
 
-        var propSource = source[name];
+        var propSource = source ? source[name] : undefined;
+        console.log('prop source:', propSource);
 
         if (typeof propSource === 'undefined') {
-          if (primary && !isSourceObject(source)) {
+          if (primary && !isSourceObject(source) && typeof source !== 'undefined') {
             this[name] = {
               __fromSource__: true,
               __value__: source
             };
+          } else {
+            this.setPropToDefault(name);
           }
         } else {
           this[name] = {
@@ -4832,6 +4837,17 @@
           };
         }
       }
+    }
+
+    setDefaultValue(property, value) {
+      this.defaultProps[property] = value;
+    }
+
+    setPropToDefault(property) {
+      this[property] = {
+        __fromDefault__: true,
+        __value__: this.defaultProps[property]
+      };
     }
 
     hasSource() {
