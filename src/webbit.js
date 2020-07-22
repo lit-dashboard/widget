@@ -53,8 +53,6 @@ export default class Webbit extends LitElement {
           const setter = this.constructor.properties[name].set;
           const sourceProvider = getSourceProvider(this.sourceProvider);
 
-          console.log("value", name, value);
-
           if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
             const oldValue = this[`_${name}`];
             this[`_${name}`] = typeof setter === 'function' 
@@ -177,23 +175,21 @@ export default class Webbit extends LitElement {
 
   _subscribeToSource() {
 
-    console.log('_subscribeToSource');
-
     if (this._unsubscribeSource) {
-      console.log('unsubscribe');
       this._unsubscribeSource();
     }
 
     const sourceProvider = getSourceProvider(this.sourceProvider);
 
     if (this.sourceKey && sourceProvider) {
-      console.log('subscribe', this.sourceKey);
       this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
-        console.log('set props from source:', source);
         this._setPropsFromSource(source);
         // Request update in case there are no props but we need an update anyway
         this.requestUpdate();
-      }, true);
+      });
+      this._setPropsFromSource(sourceProvider.getSource(this.sourceKey));
+      // Request update in case there are no props but we need an update anyway
+      this.requestUpdate();
     }
   }
 
@@ -260,8 +256,6 @@ export default class Webbit extends LitElement {
       }
 
       const propSource = source ? source[name] : undefined;
-
-      console.log('prop source:', propSource);
 
       if (typeof propSource === 'undefined') {
         if (primary && !isSourceObject(source) && typeof source !== 'undefined') {
