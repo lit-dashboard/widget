@@ -84,6 +84,7 @@ export default class Webbit extends LitElement {
           this[`_${name}`] = typeof setter === 'function' 
             ? setter.bind(this)(value)
             : value;
+          this.setDefaultValue(name, this[`_${name}`]);
           this.requestUpdate(name, oldValue);
           this._dispatchPropertyChange(name, oldValue, value);
         }
