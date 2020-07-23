@@ -4849,7 +4849,11 @@
     }
 
     firstUpdated() {
-      for (var name in this.defaultProps) {
+      for (var name in this.constructor.properties) {
+        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
+          continue;
+        }
+
         this.setDefaultValue(name, this["_".concat(name)]);
       }
     }
