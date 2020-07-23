@@ -275,7 +275,10 @@ export default class Webbit extends LitElement {
   }
 
   firstUpdated() {
-    for (let name in this.defaultProps) {
+    for (let name in this.constructor.properties) {
+      if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
+        continue;
+      }
       this.setDefaultValue(name, this[`_${name}`]);
     }
   }
