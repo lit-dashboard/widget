@@ -4628,7 +4628,6 @@
 
             var oldValue = this["_".concat(name)];
             this["_".concat(name)] = typeof setter === 'function' ? setter.bind(this)(value) : value;
-            this.setDefaultValue(name, this["_".concat(name)]);
             this.requestUpdate(name, oldValue);
 
             this._dispatchPropertyChange(name, oldValue, value);
@@ -4846,6 +4845,12 @@
             __value__: propSource
           };
         }
+      }
+    }
+
+    firstUpdated() {
+      for (var name in this.defaultProps) {
+        this.setDefaultValue(name, this["_".concat(name)]);
       }
     }
 
