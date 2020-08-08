@@ -4835,7 +4835,8 @@
             this[name] = {
               __fromSource__: true,
               __value__: source
-            };
+            }; // If we're no longer using the source to set the prop
+            // change the prop to the default value
           } else {
             this.setPropToDefault(name);
           }
