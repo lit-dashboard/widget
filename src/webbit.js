@@ -303,8 +303,8 @@ export default class Webbit extends LitElement {
 
     const source = this.getSource();
 
-    if (!isSourceObject(source) && this.constructor.properties[name].primary) {
-      return true;
+    if (!isSourceObject(source)) {
+      return this.constructor.properties[name].primary;
     }
 
     return name in source;
