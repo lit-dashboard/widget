@@ -4870,6 +4870,20 @@
       };
     }
 
+    isPropertyConnectedToSource(name) {
+      if (!this.hasSource()) {
+        return false;
+      }
+
+      var source = this.getSource();
+
+      if (name in source) {
+        return true;
+      }
+
+      return this.constructor.properties[name].primary;
+    }
+
     hasSource() {
       return this.sourceKey !== null && typeof this.sourceKey !== 'undefined';
     }
