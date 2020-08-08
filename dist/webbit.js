@@ -4878,7 +4878,8 @@
       var source = this.getSource();
 
       if (!isSourceObject(source)) {
-        return this.constructor.properties[name].primary;
+        var property = this.constructor.properties[name];
+        return property && !!property.primary;
       }
 
       return name in source;
