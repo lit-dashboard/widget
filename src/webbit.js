@@ -295,6 +295,19 @@ export default class Webbit extends LitElement {
       __value__: this.defaultProps[property]
     };
   }
+
+  isPropertyConnectedToSource(name) {
+    if (!this.hasSource()) {
+      return false;
+    }
+
+    const source = this.getSource();
+    if (name in source) {
+      return true;
+    }
+
+    return this.constructor.properties[name].primary;
+  }
   
   hasSource() {
     return this.sourceKey !== null && typeof this.sourceKey !== 'undefined';
