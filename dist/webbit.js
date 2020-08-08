@@ -4877,11 +4877,11 @@
 
       var source = this.getSource();
 
-      if (name in source) {
+      if (!isSourceObject(source) && this.constructor.properties[name].primary) {
         return true;
       }
 
-      return this.constructor.properties[name].primary;
+      return name in source;
     }
 
     hasSource() {
