@@ -4609,11 +4609,6 @@
           },
 
           set(value) {
-            if (typeof value === 'undefined') {
-              // console.log('woah');
-              console.trace();
-            }
-
             var setter = this.constructor.properties[name].set;
             var sourceProvider = store.getSourceProvider(this.sourceProvider);
 
@@ -4883,16 +4878,10 @@
     }
 
     setDefaultValue(property, value) {
-      // console.log('setDefaultValue:', property, value);
       this.defaultProps[property] = value;
     }
 
     setPropToDefault(property) {
-      if (property === 'axes') {
-        console.log('setPropToDefault:', property, this.defaultProps[property]);
-        console.trace();
-      }
-
       this[property] = {
         __fromDefault__: true,
         __value__: this.defaultProps[property]
