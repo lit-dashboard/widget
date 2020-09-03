@@ -28,6 +28,10 @@ export default class Webbit extends LitElement {
     super();
 
     this.defaultProps = {};
+    this.hasUpdatedAtleastOnce = new Promise(async resolve => {
+      await this.updateComplete;
+      resolve();
+    });
 
     for (let name in this.constructor.properties) {
       const property = this.constructor.properties[name];
@@ -172,7 +176,9 @@ export default class Webbit extends LitElement {
     });
   }
 
-  _subscribeToSource() {
+  async _subscribeToSource() {
+
+    await this.hasUpdatedAtleastOnce;
 
     if (this._unsubscribeSource) {
       this._unsubscribeSource();

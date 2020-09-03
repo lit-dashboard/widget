@@ -4566,6 +4566,18 @@
       super();
       _this = this;
       this.defaultProps = {};
+      this.hasUpdatedAtleastOnce = new Promise(
+      /*#__PURE__*/
+      function () {
+        var _ref = _asyncToGenerator(function* (resolve) {
+          yield _this.updateComplete;
+          resolve();
+        });
+
+        return function (_x) {
+          return _ref.apply(this, arguments);
+        };
+      }());
 
       var _loop = function _loop(name) {
         var property = _this.constructor.properties[name];
@@ -4597,6 +4609,11 @@
           },
 
           set(value) {
+            if (typeof value === 'undefined') {
+              // console.log('woah');
+              console.trace();
+            }
+
             var setter = this.constructor.properties[name].set;
             var sourceProvider = store.getSourceProvider(this.sourceProvider);
 
@@ -4739,25 +4756,31 @@
     }
 
     _subscribeToSource() {
-      if (this._unsubscribeSource) {
-        this._unsubscribeSource();
-      }
+      var _this4 = this;
 
-      var sourceProvider = store.getSourceProvider(this.sourceProvider);
+      return _asyncToGenerator(function* () {
+        yield _this4.hasUpdatedAtleastOnce;
 
-      if (this.sourceKey && sourceProvider) {
-        this._unsubscribeSource = sourceProvider.subscribe(this.sourceKey, source => {
-          this._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
+        if (_this4._unsubscribeSource) {
+          _this4._unsubscribeSource();
+        }
+
+        var sourceProvider = store.getSourceProvider(_this4.sourceProvider);
+
+        if (_this4.sourceKey && sourceProvider) {
+          _this4._unsubscribeSource = sourceProvider.subscribe(_this4.sourceKey, source => {
+            _this4._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
 
 
-          this.requestUpdate();
-        });
+            _this4.requestUpdate();
+          });
 
-        this._setPropsFromSource(sourceProvider.getSource(this.sourceKey)); // Request update in case there are no props but we need an update anyway
+          _this4._setPropsFromSource(sourceProvider.getSource(_this4.sourceKey)); // Request update in case there are no props but we need an update anyway
 
 
-        this.requestUpdate();
-      }
+          _this4.requestUpdate();
+        }
+      })();
     }
 
     _dispatchSourceKeyChange() {
@@ -4860,10 +4883,16 @@
     }
 
     setDefaultValue(property, value) {
+      // console.log('setDefaultValue:', property, value);
       this.defaultProps[property] = value;
     }
 
     setPropToDefault(property) {
+      if (property === 'axes') {
+        console.log('setPropToDefault:', property, this.defaultProps[property]);
+        console.trace();
+      }
+
       this[property] = {
         __fromDefault__: true,
         __value__: this.defaultProps[property]
