@@ -326,4 +326,6 @@ export default class Webbit extends LitElement {
   }
 
   resized() {}
+
+  placeLayoutElement(element, context) {}
 }

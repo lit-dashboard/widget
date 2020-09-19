@@ -4913,6 +4913,8 @@
 
     resized() {}
 
+    placeLayoutElement(element, context) {}
+
   }
 
   var Webbit$1 = Webbit;
