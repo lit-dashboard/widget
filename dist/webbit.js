@@ -4582,12 +4582,13 @@
     placeLayoutElement(element, context) {
       var {
         x,
-        y
+        y,
+        parentNode
       } = context;
       element.style.position = 'absolute';
       element.style.left = "".concat(x, "px");
       element.style.top = "".concat(y, "px");
-      this.append(element);
+      parentNode.append(element);
     }
 
   };

@@ -30,10 +30,10 @@ export const FlowLayout = {
 
 export const AbsoluteLayout = {
   placeLayoutElement(element, context) {
-    const { x, y } = context;
+    const { x, y, parentNode } = context;
     element.style.position = 'absolute';
     element.style.left = `${x}px`;
     element.style.top = `${y}px`;
-    this.append(element);
+    parentNode.append(element);
   }
 };
