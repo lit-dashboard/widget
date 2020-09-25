@@ -1,6 +1,7 @@
 import { LitElement } from 'lit-element';
 import isPlainObject from './isplainobject';
 import ResizeObserver from 'resize-observer-polyfill';
+import { FlowLayout } from './layouts';
 
 import { 
   hasSourceProvider,
@@ -327,5 +328,7 @@ export default class Webbit extends LitElement {
 
   resized() {}
 
-  placeLayoutElement(element, context) {}
+  placeLayoutElement(element, context) {
+    FlowLayout.placeLayoutElement(element, context);
+  }
 }

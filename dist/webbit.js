@@ -4551,6 +4551,34 @@
     return ResizeObserver;
   }();
 
+  var FlowLayout = {
+    placeLayoutElement(element, context) {
+      var {
+        parentNode,
+        closestTo: {
+          node,
+          isParent,
+          placement
+        }
+      } = context;
+
+      if (isParent) {
+        if (placement === 'start') {
+          parentNode.prepend(element);
+        } else {
+          parentNode.append(element);
+        }
+      } else {
+        if (placement === 'left' || placement === 'top') {
+          parentNode.insertBefore(element, node);
+        } else {
+          parentNode.insertBefore(element, node.nextSibling);
+        }
+      }
+    }
+
+  };
+
   function isSourceObject(value) {
     return value instanceof Object && value !== null && value.constructor.__WEBBIT_CLASSNAME__ === 'Source';
   }
@@ -4913,13 +4941,16 @@
 
     resized() {}
 
-    placeLayoutElement(element, context) {}
+    placeLayoutElement(element, context) {
+      FlowLayout.placeLayoutElement(element, context);
+    }
 
   }
 
   var Webbit$1 = Webbit;
 
   exports.CSSResult = CSSResult;
+  exports.FlowLayout = FlowLayout;
   exports.LitElement = LitElement;
   exports.SVGTemplateResult = SVGTemplateResult;
   exports.TemplateResult = TemplateResult;
