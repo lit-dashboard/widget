@@ -4578,6 +4578,19 @@
     }
 
   };
+  var AbsoluteLayout = {
+    placeLayoutElement(element, context) {
+      var {
+        x,
+        y
+      } = context;
+      element.style.position = 'absolute';
+      element.style.left = "".concat(x, "px");
+      element.style.top = "".concat(y, "px");
+      this.append(element);
+    }
+
+  };
 
   function isSourceObject(value) {
     return value instanceof Object && value !== null && value.constructor.__WEBBIT_CLASSNAME__ === 'Source';
@@ -4949,6 +4962,7 @@
 
   var Webbit$1 = Webbit;
 
+  exports.AbsoluteLayout = AbsoluteLayout;
   exports.CSSResult = CSSResult;
   exports.FlowLayout = FlowLayout;
   exports.LitElement = LitElement;
