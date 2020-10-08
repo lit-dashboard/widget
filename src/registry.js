@@ -40,6 +40,10 @@ const registry = {
         const metadata = constructor.metadata || {};
         prop.category = metadata.displayName || name;
       }
+
+      if (typeof prop.inputType === 'undefined') {
+        prop.inputType = prop.type.name;
+      }
     }
 
     Object.defineProperty(constructor, 'properties', {
