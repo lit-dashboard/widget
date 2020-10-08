@@ -283,23 +283,33 @@ export default class Webbit extends LitElement {
     };
   }
 
-  firstUpdated() {
-    for (let name in this.constructor.properties) {
-      if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
-        continue;
-      }
-      this.setDefaultValue(name, this[`_${name}`]);
+  setDefaultValue(property, value) {
+    const prop = this.constructor.properties[property];
+    if (prop) {
+      this.setAttribute(`default-${prop.attribute}`, JSON.stringify(value));
     }
   }
 
-  setDefaultValue(property, value) {
-    this.defaultProps[property] = value;
+  getDefaultValue(property) {
+    const prop = this.constructor.properties[property];
+    if (!prop) {
+      return undefined;
+    }
+    const attribute = `default-${prop.attribute}`;
+    if (!this.hasAttribute(attribute)) {
+      return undefined;
+    }
+    try {
+      return JSON.parse(this.getAttribute(attribute));
+    } catch(e) {
+      return undefined;
+    }
   }
 
   setPropToDefault(property) {
     this[property] = {
       __fromDefault__: true,
-      __value__: this.defaultProps[property]
+      __value__: this.getDefaultValue(property)
     };
   }
 
