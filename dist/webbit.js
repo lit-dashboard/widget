@@ -4913,38 +4913,24 @@
       }
     }
 
-    setDefaultValue(property, value) {
-      var prop = this.constructor.properties[property];
+    firstUpdated() {
+      for (var name in this.constructor.properties) {
+        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
+          continue;
+        }
 
-      if (prop) {
-        this.setAttribute("default-".concat(prop.attribute), JSON.stringify(value));
+        this.setDefaultValue(name, this["_".concat(name)]);
       }
     }
 
-    getDefaultValue(property) {
-      var prop = this.constructor.properties[property];
-
-      if (!prop) {
-        return undefined;
-      }
-
-      var attribute = "default-".concat(prop.attribute);
-
-      if (!this.hasAttribute(attribute)) {
-        return undefined;
-      }
-
-      try {
-        return JSON.parse(this.getAttribute(attribute));
-      } catch (e) {
-        return undefined;
-      }
+    setDefaultValue(property, value) {
+      this.defaultProps[property] = value;
     }
 
     setPropToDefault(property) {
       this[property] = {
         __fromDefault__: true,
-        __value__: this.getDefaultValue(property)
+        __value__: this.defaultProps[property]
       };
     }
 
