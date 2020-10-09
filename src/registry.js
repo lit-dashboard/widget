@@ -4,6 +4,7 @@ const registered = {};
 const webbits = {};
 const createdListeners = [];
 const anyDefinedListeners = [];
+let isCloning = false;
 
 function isInstanceOfWebbit(constructor) {
   if (!(constructor instanceof Object)) {
@@ -172,6 +173,12 @@ const registry = {
     if (typeof listener === 'function') {
       createdListeners.push(listener);
     }
+  },
+  setCloning: (cloning) => {
+    isCloning = cloning;
+  },
+  isCloning: () => {
+    return isCloning;
   }
 };
 

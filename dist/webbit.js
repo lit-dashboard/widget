@@ -104,6 +104,7 @@
   var webbits = {};
   var createdListeners = [];
   var anyDefinedListeners = [];
+  var _isCloning = false;
 
   function isInstanceOfWebbit(constructor) {
     if (!(constructor instanceof Object)) {
@@ -273,6 +274,12 @@
       if (typeof listener === 'function') {
         createdListeners.push(listener);
       }
+    },
+    setCloning: cloning => {
+      _isCloning = cloning;
+    },
+    isCloning: () => {
+      return _isCloning;
     }
   };
   window.webbitRegistry = window.webbitRegistry || registry;
@@ -4658,12 +4665,26 @@
             var setter = this.constructor.properties[name].set;
             var sourceProvider = store.getSourceProvider(this.sourceProvider);
 
-            if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
+            if (this.isClone) {
+              if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
+                return;
+              }
+
               var _oldValue = this["_".concat(name)];
-              this["_".concat(name)] = typeof setter === 'function' ? setter.bind(this)(value.__value__) : value.__value__;
+              this["_".concat(name)] = typeof setter === 'function' ? setter.bind(this)(value) : value;
               this.requestUpdate(name, _oldValue);
 
-              this._dispatchPropertyChange(name, _oldValue, value.__value__);
+              this._dispatchPropertyChange(name, _oldValue, value);
+
+              return;
+            }
+
+            if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
+              var _oldValue2 = this["_".concat(name)];
+              this["_".concat(name)] = typeof setter === 'function' ? setter.bind(this)(value.__value__) : value.__value__;
+              this.requestUpdate(name, _oldValue2);
+
+              this._dispatchPropertyChange(name, _oldValue2, value.__value__);
 
               return;
             } else if (typeof this.sourceKey === 'string' && sourceProvider) {
@@ -4748,7 +4769,15 @@
         },
 
         set(value) {
-          var oldValue = this._webbitId;
+          var oldValue = this._webbitId; // If a node is currently being cloned, we want to
+          // make sure the cloned node and all its children
+          // maintain the same Webbit IDs.
+
+          if (window.webbitRegistry.isCloning()) {
+            this._webbitId = value;
+            this.requestUpdate('webbitId', oldValue);
+            return;
+          }
 
           if (value === oldValue) {
             return;
@@ -4778,6 +4807,7 @@
       this._source = null;
       this._unsubscribeSource = null;
       this.webbitId = null;
+      this.isClone = false;
       var resizeObserver = new index(() => {
         this.resized();
       });

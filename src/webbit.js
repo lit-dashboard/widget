@@ -58,6 +58,19 @@ export default class Webbit extends LitElement {
           const setter = this.constructor.properties[name].set;
           const sourceProvider = getSourceProvider(this.sourceProvider);
 
+          if (this.isClone) {
+            if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
+              return;
+            }
+            const oldValue = this[`_${name}`];
+            this[`_${name}`] = typeof setter === 'function' 
+              ? setter.bind(this)(value)
+              : value;
+            this.requestUpdate(name, oldValue);
+            this._dispatchPropertyChange(name, oldValue, value);
+            return;
+          }
+
           if (isPlainObject(value) && (value.__fromSource__ || value.__fromDefault__)) {
             const oldValue = this[`_${name}`];
             this[`_${name}`] = typeof setter === 'function' 
@@ -129,6 +142,15 @@ export default class Webbit extends LitElement {
       set(value) {
         const oldValue = this._webbitId;
 
+        // If a node is currently being cloned, we want to
+        // make sure the cloned node and all its children
+        // maintain the same Webbit IDs.
+        if (window.webbitRegistry.isCloning()) {
+          this._webbitId = value;
+          this.requestUpdate('webbitId', oldValue);
+          return;
+        }
+
         if (value === oldValue) {
           return;
         }
@@ -157,6 +179,7 @@ export default class Webbit extends LitElement {
     this._source = null;
     this._unsubscribeSource = null;
     this.webbitId = null;
+    this.isClone = false;
 
     const resizeObserver = new ResizeObserver(() => {
       this.resized();
