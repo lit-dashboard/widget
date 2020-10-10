@@ -108,6 +108,7 @@ const registry = {
       description: 'Just another web component.',
       documentationLink: null,
       slots: ['default'],
+      resizable: { left: true, right: true, bottom: true, top: true },
       ...component.metadata
     };
   },

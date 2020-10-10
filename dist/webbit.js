@@ -209,7 +209,13 @@
         category: 'Uncategorized',
         description: 'Just another web component.',
         documentationLink: null,
-        slots: ['default']
+        slots: ['default'],
+        resizable: {
+          left: true,
+          right: true,
+          bottom: true,
+          top: true
+        }
       }, component.metadata);
     },
     _generateWebbitId: (webbit, desiredId) => {
