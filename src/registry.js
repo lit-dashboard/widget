@@ -111,6 +111,7 @@ const registry = {
       resizable: { left: true, right: true, bottom: true, top: true },
       minSize: { width: 20, height: 20 },
       movable: true,
+      layout: 'absolute',
       ...component.metadata
     };
   },
