@@ -219,7 +219,8 @@
         minSize: {
           width: 20,
           height: 20
-        }
+        },
+        movable: true
       }, component.metadata);
     },
     _generateWebbitId: (webbit, desiredId) => {
