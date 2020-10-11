@@ -221,7 +221,8 @@
           height: 20
         },
         movable: true,
-        layout: 'absolute'
+        layout: 'absolute',
+        dashboardHtml: false
       }, component.metadata);
     },
     _generateWebbitId: (webbit, desiredId) => {

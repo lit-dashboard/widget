@@ -112,6 +112,7 @@ const registry = {
       minSize: { width: 20, height: 20 },
       movable: true,
       layout: 'absolute',
+      dashboardHtml: false,
       ...component.metadata
     };
   },
