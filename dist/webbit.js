@@ -162,6 +162,11 @@
               attribute: 'source-key',
               reflect: true
             },
+            fromProperties: {
+              type: Array,
+              attribute: 'from-properties',
+              reflect: true
+            },
             webbitId: {
               type: String,
               attribute: 'webbit-id',
@@ -4648,7 +4653,7 @@
       var _loop = function _loop(name) {
         var property = _this.constructor.properties[name];
 
-        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
+        if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
           return "continue";
         }
 
@@ -4817,6 +4822,7 @@
       });
       this.sourceProvider = null;
       this.sourceKey = null;
+      this.fromProperties = [];
       this._source = null;
       this._unsubscribeSource = null;
       this.webbitId = null;
@@ -4919,7 +4925,7 @@
       for (var name in this.constructor.properties) {
         var property = this.constructor.properties[name];
 
-        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
+        if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
           continue;
         }
 
@@ -4956,9 +4962,46 @@
       }
     }
 
+    setSourcesFromProperties() {
+      var sourceProvider = store.getSourceProvider(this.sourceProvider);
+
+      if (!this.hasSource() || !sourceProvider) {
+        return;
+      }
+
+      var source = this.getSource();
+
+      if (isSourceObject(source)) {
+        var allProps = Object.keys(this.constructor.properties);
+        var sourceProps = allProps.filter(prop => !['sourceProvider', 'sourceKey', 'fromProperties', 'webbitId'].includes(prop));
+        this.fromProperties.forEach(fromProperty => {
+          if (!sourceProps.includes(fromProperty)) {
+            return;
+          }
+
+          var key = "".concat(this.sourceKey, "/").concat(fromProperty);
+
+          if (typeof sourceProvider.getRawSource(key) === 'undefined') {
+            sourceProvider.userUpdate(key, this.defaultProps[fromProperty]);
+          }
+        });
+      } else {
+        if (typeof sourceProvider.getRawSource(this.sourceKey) === 'undefined') {
+          var [propName] = Object.entries(this.constructor.properties).find((_ref2) => {
+            var [name, property] = _ref2;
+            return property.primary;
+          });
+
+          if (propName && this.fromProperties.includes(propName)) {
+            sourceProvider.userUpdate(this.sourceKey, this.defaultProps[propName]);
+          }
+        }
+      }
+    }
+
     firstUpdated() {
       for (var name in this.constructor.properties) {
-        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
+        if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
           continue;
         }
 
