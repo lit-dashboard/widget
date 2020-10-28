@@ -331,9 +331,7 @@ export default class Webbit extends LitElement {
       return;
     }
 
-    const source = this.getSource();
-
-    if (isSourceObject(source)) {
+    if (isSourceObject(this.getSource()) || typeof sourceProvider.getRawSource(this.sourceKey) === 'undefined') {
       const allProps = Object.keys(this.constructor.properties);
       const sourceProps = allProps.filter(prop => !['sourceProvider', 'sourceKey', 'fromProperties', 'webbitId'].includes(prop));
       this.fromProperties.forEach(fromProperty => {
@@ -346,13 +344,6 @@ export default class Webbit extends LitElement {
           sourceProvider.userUpdate(key, this.defaultProps[fromProperty]);
         }
       });
-    } else {
-      if (typeof sourceProvider.getRawSource(this.sourceKey) === 'undefined') {
-        const [propName] = Object.entries(this.constructor.properties).find(([name, property]) => property.primary);
-        if (propName && this.fromProperties.includes(propName)) {
-          sourceProvider.userUpdate(this.sourceKey, this.defaultProps[propName]);
-        }
-      } 
     }
   }
 

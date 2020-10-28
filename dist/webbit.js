@@ -4995,9 +4995,7 @@
         return;
       }
 
-      var source = this.getSource();
-
-      if (isSourceObject(source)) {
+      if (isSourceObject(this.getSource()) || typeof sourceProvider.getRawSource(this.sourceKey) === 'undefined') {
         var allProps = Object.keys(this.constructor.properties);
         var sourceProps = allProps.filter(prop => !['sourceProvider', 'sourceKey', 'fromProperties', 'webbitId'].includes(prop));
         this.fromProperties.forEach(fromProperty => {
@@ -5011,17 +5009,6 @@
             sourceProvider.userUpdate(key, this.defaultProps[fromProperty]);
           }
         });
-      } else {
-        if (typeof sourceProvider.getRawSource(this.sourceKey) === 'undefined') {
-          var [propName] = Object.entries(this.constructor.properties).find((_ref2) => {
-            var [name, property] = _ref2;
-            return property.primary;
-          });
-
-          if (propName && this.fromProperties.includes(propName)) {
-            sourceProvider.userUpdate(this.sourceKey, this.defaultProps[propName]);
-          }
-        }
       }
     }
 
