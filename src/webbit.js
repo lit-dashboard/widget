@@ -118,7 +118,20 @@ export default class Webbit extends LitElement {
 
         if (hasSourceProvider(value)) { 
           this._subscribeToSource();
+          this.setSourcesFromProperties();
         }
+      }
+    });
+
+    Object.defineProperty(this, 'fromProperties', {
+      get() {
+        return this._fromProperties;
+      },      
+      async set(value) {
+        const oldValue = this._fromProperties;
+        this._fromProperties = value;
+        await this.requestUpdate('fromProperties', oldValue);
+        this.setSourcesFromProperties();
       }
     });
 
@@ -132,6 +145,7 @@ export default class Webbit extends LitElement {
         await this.requestUpdate('sourceKey', oldValue);
         this._dispatchSourceKeyChange();
         this._subscribeToSource();
+        this.setSourcesFromProperties();
       }
     });
 
@@ -190,6 +204,7 @@ export default class Webbit extends LitElement {
     sourceProviderAdded(providerName => {
       if (providerName === this.sourceProvider) {
         this._subscribeToSource();
+        this.setSourcesFromProperties();
       }
     });
 
@@ -198,6 +213,7 @@ export default class Webbit extends LitElement {
         this.sourceProvider = defaultSourceProvider;
       }
       this._subscribeToSource();
+      this.setSourcesFromProperties();
     });
   }
 

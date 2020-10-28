@@ -4756,7 +4756,27 @@
 
             if (store.hasSourceProvider(value)) {
               _this2._subscribeToSource();
+
+              _this2.setSourcesFromProperties();
             }
+          })();
+        }
+
+      });
+      Object.defineProperty(this, 'fromProperties', {
+        get() {
+          return this._fromProperties;
+        },
+
+        set(value) {
+          var _this3 = this;
+
+          return _asyncToGenerator(function* () {
+            var oldValue = _this3._fromProperties;
+            _this3._fromProperties = value;
+            yield _this3.requestUpdate('fromProperties', oldValue);
+
+            _this3.setSourcesFromProperties();
           })();
         }
 
@@ -4767,16 +4787,18 @@
         },
 
         set(value) {
-          var _this3 = this;
+          var _this4 = this;
 
           return _asyncToGenerator(function* () {
-            var oldValue = _this3._sourceKey;
-            _this3._sourceKey = value;
-            yield _this3.requestUpdate('sourceKey', oldValue);
+            var oldValue = _this4._sourceKey;
+            _this4._sourceKey = value;
+            yield _this4.requestUpdate('sourceKey', oldValue);
 
-            _this3._dispatchSourceKeyChange();
+            _this4._dispatchSourceKeyChange();
 
-            _this3._subscribeToSource();
+            _this4._subscribeToSource();
+
+            _this4.setSourcesFromProperties();
           })();
         }
 
@@ -4834,6 +4856,8 @@
       store.sourceProviderAdded(providerName => {
         if (providerName === this.sourceProvider) {
           this._subscribeToSource();
+
+          this.setSourcesFromProperties();
         }
       });
       store.defaultSourceProviderSet(defaultSourceProvider => {
@@ -4842,33 +4866,35 @@
         }
 
         this._subscribeToSource();
+
+        this.setSourcesFromProperties();
       });
     }
 
     _subscribeToSource() {
-      var _this4 = this;
+      var _this5 = this;
 
       return _asyncToGenerator(function* () {
-        yield _this4.hasUpdatedAtleastOnce;
+        yield _this5.hasUpdatedAtleastOnce;
 
-        if (_this4._unsubscribeSource) {
-          _this4._unsubscribeSource();
+        if (_this5._unsubscribeSource) {
+          _this5._unsubscribeSource();
         }
 
-        var sourceProvider = store.getSourceProvider(_this4.sourceProvider);
+        var sourceProvider = store.getSourceProvider(_this5.sourceProvider);
 
-        if (_this4.sourceKey && sourceProvider) {
-          _this4._unsubscribeSource = sourceProvider.subscribe(_this4.sourceKey, source => {
-            _this4._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
+        if (_this5.sourceKey && sourceProvider) {
+          _this5._unsubscribeSource = sourceProvider.subscribe(_this5.sourceKey, source => {
+            _this5._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
 
 
-            _this4.requestUpdate();
+            _this5.requestUpdate();
           });
 
-          _this4._setPropsFromSource(sourceProvider.getSource(_this4.sourceKey)); // Request update in case there are no props but we need an update anyway
+          _this5._setPropsFromSource(sourceProvider.getSource(_this5.sourceKey)); // Request update in case there are no props but we need an update anyway
 
 
-          _this4.requestUpdate();
+          _this5.requestUpdate();
         }
       })();
     }
