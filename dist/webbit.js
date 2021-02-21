@@ -173,11 +173,6 @@
               attribute: 'source-key',
               reflect: true
             },
-            fromProperties: {
-              type: Array,
-              attribute: 'from-properties',
-              reflect: true
-            },
             webbitId: {
               type: String,
               attribute: 'webbit-id',
@@ -4664,7 +4659,7 @@
       var _loop = function _loop(name) {
         var property = _this.constructor.properties[name];
 
-        if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
+        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
           return "continue";
         }
 
@@ -4767,27 +4762,7 @@
 
             if (store.hasSourceProvider(value)) {
               _this2._subscribeToSource();
-
-              _this2.setSourcesFromProperties();
             }
-          })();
-        }
-
-      });
-      Object.defineProperty(this, 'fromProperties', {
-        get() {
-          return this._fromProperties;
-        },
-
-        set(value) {
-          var _this3 = this;
-
-          return _asyncToGenerator(function* () {
-            var oldValue = _this3._fromProperties;
-            _this3._fromProperties = value;
-            yield _this3.requestUpdate('fromProperties', oldValue);
-
-            _this3.setSourcesFromProperties();
           })();
         }
 
@@ -4798,18 +4773,16 @@
         },
 
         set(value) {
-          var _this4 = this;
+          var _this3 = this;
 
           return _asyncToGenerator(function* () {
-            var oldValue = _this4._sourceKey;
-            _this4._sourceKey = value;
-            yield _this4.requestUpdate('sourceKey', oldValue);
+            var oldValue = _this3._sourceKey;
+            _this3._sourceKey = value;
+            yield _this3.requestUpdate('sourceKey', oldValue);
 
-            _this4._dispatchSourceKeyChange();
+            _this3._dispatchSourceKeyChange();
 
-            _this4._subscribeToSource();
-
-            _this4.setSourcesFromProperties();
+            _this3._subscribeToSource();
           })();
         }
 
@@ -4855,7 +4828,6 @@
       });
       this.sourceProvider = null;
       this.sourceKey = null;
-      this.fromProperties = [];
       this._source = null;
       this._unsubscribeSource = null;
       this.webbitId = null;
@@ -4867,8 +4839,6 @@
       store.sourceProviderAdded(providerName => {
         if (providerName === this.sourceProvider) {
           this._subscribeToSource();
-
-          this.setSourcesFromProperties();
         }
       });
       store.defaultSourceProviderSet(defaultSourceProvider => {
@@ -4877,35 +4847,33 @@
         }
 
         this._subscribeToSource();
-
-        this.setSourcesFromProperties();
       });
     }
 
     _subscribeToSource() {
-      var _this5 = this;
+      var _this4 = this;
 
       return _asyncToGenerator(function* () {
-        yield _this5.hasUpdatedAtleastOnce;
+        yield _this4.hasUpdatedAtleastOnce;
 
-        if (_this5._unsubscribeSource) {
-          _this5._unsubscribeSource();
+        if (_this4._unsubscribeSource) {
+          _this4._unsubscribeSource();
         }
 
-        var sourceProvider = store.getSourceProvider(_this5.sourceProvider);
+        var sourceProvider = store.getSourceProvider(_this4.sourceProvider);
 
-        if (_this5.sourceKey && sourceProvider) {
-          _this5._unsubscribeSource = sourceProvider.subscribe(_this5.sourceKey, source => {
-            _this5._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
+        if (_this4.sourceKey && sourceProvider) {
+          _this4._unsubscribeSource = sourceProvider.subscribe(_this4.sourceKey, source => {
+            _this4._setPropsFromSource(source); // Request update in case there are no props but we need an update anyway
 
 
-            _this5.requestUpdate();
+            _this4.requestUpdate();
           });
 
-          _this5._setPropsFromSource(sourceProvider.getSource(_this5.sourceKey)); // Request update in case there are no props but we need an update anyway
+          _this4._setPropsFromSource(sourceProvider.getSource(_this4.sourceKey)); // Request update in case there are no props but we need an update anyway
 
 
-          _this5.requestUpdate();
+          _this4.requestUpdate();
         }
       })();
     }
@@ -4962,7 +4930,7 @@
       for (var name in this.constructor.properties) {
         var property = this.constructor.properties[name];
 
-        if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
+        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
           continue;
         }
 
@@ -4999,33 +4967,9 @@
       }
     }
 
-    setSourcesFromProperties() {
-      var sourceProvider = store.getSourceProvider(this.sourceProvider);
-
-      if (!this.hasSource() || !sourceProvider) {
-        return;
-      }
-
-      if (isSourceObject(this.getSource()) || typeof sourceProvider.getRawSource(this.sourceKey) === 'undefined') {
-        var allProps = Object.keys(this.constructor.properties);
-        var sourceProps = allProps.filter(prop => !['sourceProvider', 'sourceKey', 'fromProperties', 'webbitId'].includes(prop));
-        this.fromProperties.forEach(fromProperty => {
-          if (!sourceProps.includes(fromProperty)) {
-            return;
-          }
-
-          var key = "".concat(this.sourceKey, "/").concat(fromProperty);
-
-          if (typeof sourceProvider.getRawSource(key) === 'undefined') {
-            sourceProvider.userUpdate(key, this.defaultProps[fromProperty]);
-          }
-        });
-      }
-    }
-
     firstUpdated() {
       for (var name in this.constructor.properties) {
-        if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
+        if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
           continue;
         }
 

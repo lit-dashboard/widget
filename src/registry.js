@@ -71,11 +71,6 @@ const registry = {
             attribute: 'source-key',
             reflect: true
           },
-          fromProperties: {
-            type: Array,
-            attribute: 'from-properties',
-            reflect: true,
-          },
           webbitId: {
             type: String,
             attribute: 'webbit-id',

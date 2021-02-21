@@ -36,7 +36,7 @@ export default class Webbit extends LitElement {
 
     for (let name in this.constructor.properties) {
       const property = this.constructor.properties[name];
-      if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
+      if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
         continue;
       }
 
@@ -118,20 +118,7 @@ export default class Webbit extends LitElement {
 
         if (hasSourceProvider(value)) { 
           this._subscribeToSource();
-          this.setSourcesFromProperties();
         }
-      }
-    });
-
-    Object.defineProperty(this, 'fromProperties', {
-      get() {
-        return this._fromProperties;
-      },      
-      async set(value) {
-        const oldValue = this._fromProperties;
-        this._fromProperties = value;
-        await this.requestUpdate('fromProperties', oldValue);
-        this.setSourcesFromProperties();
       }
     });
 
@@ -145,7 +132,6 @@ export default class Webbit extends LitElement {
         await this.requestUpdate('sourceKey', oldValue);
         this._dispatchSourceKeyChange();
         this._subscribeToSource();
-        this.setSourcesFromProperties();
       }
     });
 
@@ -190,7 +176,6 @@ export default class Webbit extends LitElement {
 
     this.sourceProvider = null;
     this.sourceKey = null;
-    this.fromProperties = [];
     this._source = null;
     this._unsubscribeSource = null;
     this.webbitId = null;
@@ -204,7 +189,6 @@ export default class Webbit extends LitElement {
     sourceProviderAdded(providerName => {
       if (providerName === this.sourceProvider) {
         this._subscribeToSource();
-        this.setSourcesFromProperties();
       }
     });
 
@@ -213,7 +197,6 @@ export default class Webbit extends LitElement {
         this.sourceProvider = defaultSourceProvider;
       }
       this._subscribeToSource();
-      this.setSourcesFromProperties();
     });
   }
 
@@ -291,7 +274,7 @@ export default class Webbit extends LitElement {
 
     for (let name in this.constructor.properties) {
       const property = this.constructor.properties[name];
-      if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
+      if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
         continue;
       }
 
@@ -323,33 +306,9 @@ export default class Webbit extends LitElement {
     };
   }
 
-  setSourcesFromProperties() {
-
-    const sourceProvider = getSourceProvider(this.sourceProvider);
-
-    if (!this.hasSource() || !sourceProvider) {
-      return;
-    }
-
-    if (isSourceObject(this.getSource()) || typeof sourceProvider.getRawSource(this.sourceKey) === 'undefined') {
-      const allProps = Object.keys(this.constructor.properties);
-      const sourceProps = allProps.filter(prop => !['sourceProvider', 'sourceKey', 'fromProperties', 'webbitId'].includes(prop));
-      this.fromProperties.forEach(fromProperty => {
-        if (!sourceProps.includes(fromProperty)) {
-          return;
-        }
-
-        const key = `${this.sourceKey}/${fromProperty}`;
-        if (typeof sourceProvider.getRawSource(key) === 'undefined') {
-          sourceProvider.userUpdate(key, this.defaultProps[fromProperty]);
-        }
-      });
-    }
-  }
-
   firstUpdated() {
     for (let name in this.constructor.properties) {
-      if (['sourceProvider', 'sourceKey', 'webbitId', 'fromProperties'].includes(name)) {
+      if (['sourceProvider', 'sourceKey', 'webbitId'].includes(name)) {
         continue;
       }
       this.setDefaultValue(name, this[`_${name}`]);
