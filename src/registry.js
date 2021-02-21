@@ -78,7 +78,8 @@ const registry = {
           },
           webbitId: {
             type: String,
-            reflect: false,
+            attribute: 'webbit-id',
+            reflect: true,
           }
         }
       }

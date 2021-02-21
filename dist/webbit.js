@@ -180,7 +180,8 @@
             },
             webbitId: {
               type: String,
-              reflect: false
+              attribute: 'webbit-id',
+              reflect: true
             }
           });
         }
@@ -4843,6 +4844,10 @@
 
           this._webbitId = webbitId;
           this.requestUpdate('webbitId', oldValue);
+
+          if (this.getAttribute('webbit-id') !== webbitId) {
+            this.setAttribute('webbit-id', webbitId);
+          }
 
           this._dispatchWebbitIdChange();
         }
