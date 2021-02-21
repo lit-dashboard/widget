@@ -179,11 +179,6 @@ export default class Webbit extends LitElement {
 
         this._webbitId = webbitId;
         this.requestUpdate('webbitId', oldValue);
-
-        if (this.getAttribute('webbit-id') !== webbitId) {
-          this.setAttribute('webbit-id', webbitId);
-        }
-
         this._dispatchWebbitIdChange();
       }
     });

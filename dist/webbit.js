@@ -169,7 +169,11 @@
             },
             webbitId: {
               type: String,
-              attribute: 'webbit-id',
+              reflect: false
+            },
+            name: {
+              type: String,
+              attribute: 'name',
               reflect: true
             }
           });
@@ -4833,10 +4837,6 @@
 
           this._webbitId = webbitId;
           this.requestUpdate('webbitId', oldValue);
-
-          if (this.getAttribute('webbit-id') !== webbitId) {
-            this.setAttribute('webbit-id', webbitId);
-          }
 
           this._dispatchWebbitIdChange();
         }
