@@ -147,11 +147,22 @@
         if (typeof prop.inputType === 'undefined') {
           prop.inputType = prop.type.name;
         }
+
+        if (typeof prop.showInEditor === 'undefined') {
+          prop.showInEditor = false;
+        }
       }
 
       Object.defineProperty(constructor, 'properties', {
         get() {
-          return _objectSpread2({}, webbitProperties, {
+          return _objectSpread2({
+            name: {
+              type: String,
+              attribute: 'name',
+              reflect: true,
+              showInEditor: true
+            }
+          }, webbitProperties, {
             sourceProvider: {
               type: String,
               attribute: 'source-provider',
@@ -170,11 +181,6 @@
             webbitId: {
               type: String,
               reflect: false
-            },
-            name: {
-              type: String,
-              attribute: 'name',
-              reflect: true
             }
           });
         }

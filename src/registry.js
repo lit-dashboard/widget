@@ -45,11 +45,21 @@ const registry = {
       if (typeof prop.inputType === 'undefined') {
         prop.inputType = prop.type.name;
       }
+
+      if (typeof prop.showInEditor === 'undefined') {
+        prop.showInEditor = false;
+      }
     }
 
     Object.defineProperty(constructor, 'properties', {
       get() {
         return {
+          name: {
+            type: String,
+            attribute: 'name',
+            reflect: true,
+            showInEditor: true,
+          },
           ...webbitProperties,
           sourceProvider: {
             type: String,
@@ -69,11 +79,6 @@ const registry = {
           webbitId: {
             type: String,
             reflect: false,
-          },
-          name: {
-            type: String,
-            attribute: 'name',
-            reflect: true
           }
         }
       }
@@ -134,7 +139,7 @@ const registry = {
     }
     const webbitCount = Object.keys(webbits).length;
     for (let i = 0; i < webbitCount; i++) {
-      const id = `${baseName} #${i+2}`;
+      const id = `${baseName} #${i + 2}`;
       if (typeof webbits[id] === 'undefined') {
         return id;
       }
@@ -143,7 +148,7 @@ const registry = {
     return null;
   },
   _changedWebbitId: (oldWebbitId, newWebbitId, webbit) => {
-    
+
     if (typeof webbits[oldWebbitId] === 'undefined') {
       throw new Error(`Webbit with ID '${oldWebbitId}' doesn't exist.`)
     }
@@ -196,6 +201,6 @@ const registry = {
   }
 };
 
-window.webbitRegistry = 
+window.webbitRegistry =
   window.webbitRegistry
   || registry;
