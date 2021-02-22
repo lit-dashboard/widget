@@ -140,8 +140,8 @@
         prop.canConnectToSources = !!(prop.reflect && prop.attribute);
 
         if (typeof prop.category === 'undefined') {
-          var metadata = constructor.metadata || {};
-          prop.category = metadata.displayName || name;
+          var dashboardConfig = constructor.dashboardConfig || {};
+          prop.category = dashboardConfig.displayName || name;
         }
 
         if (typeof prop.inputType === 'undefined') {
@@ -208,7 +208,7 @@
     getRegisteredNames: () => {
       return Object.keys(registered);
     },
-    getMetadata: name => {
+    getDashboardConfig: name => {
       var component = registered[name];
 
       if (!component) {
@@ -232,9 +232,11 @@
           height: 20
         },
         movable: true,
+        previewable: true,
         layout: 'absolute',
-        dashboardHtml: false
-      }, component.metadata);
+        dashboardHtml: false,
+        editorTabs: ['addElements', 'properties', 'sources']
+      }, component.dashboardConfig);
     },
     _generateWebbitId: (webbit, desiredId) => {
       var baseName = desiredId ? desiredId : webbit.nodeName.toLowerCase();

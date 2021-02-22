@@ -38,8 +38,8 @@ const registry = {
       prop.canConnectToSources = !!(prop.reflect && prop.attribute);
 
       if (typeof prop.category === 'undefined') {
-        const metadata = constructor.metadata || {};
-        prop.category = metadata.displayName || name;
+        const dashboardConfig = constructor.dashboardConfig || {};
+        prop.category = dashboardConfig.displayName || name;
       }
 
       if (typeof prop.inputType === 'undefined') {
@@ -106,7 +106,7 @@ const registry = {
   getRegisteredNames: () => {
     return Object.keys(registered);
   },
-  getMetadata: (name) => {
+  getDashboardConfig: (name) => {
     const component = registered[name];
     if (!component) {
       return null;
@@ -121,9 +121,11 @@ const registry = {
       resizable: { left: true, right: true, bottom: true, top: true },
       minSize: { width: 20, height: 20 },
       movable: true,
+      previewable: true,
       layout: 'absolute',
       dashboardHtml: false,
-      ...component.metadata
+      editorTabs: ['addElements', 'properties', 'sources'],
+      ...component.dashboardConfig
     };
   },
   _generateWebbitId: (webbit, desiredId) => {
