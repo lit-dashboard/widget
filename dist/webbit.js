@@ -188,6 +188,11 @@
         callback(name, constructor);
       });
     },
+    addExisting: (name, dashboardConfig) => {
+      registered[name] = {
+        dashboardConfig
+      };
+    },
     whenDefined: name => {
       return new Promise(resolve => {
         customElements.whenDefined(name).then(() => {
@@ -235,7 +240,8 @@
         previewable: true,
         layout: 'absolute',
         dashboardHtml: false,
-        editorTabs: ['addElements', 'properties', 'sources']
+        editorTabs: ['addElements', 'properties', 'sources'],
+        properties: component.properties || []
       }, component.dashboardConfig);
     },
     _generateWebbitId: (webbit, desiredId) => {

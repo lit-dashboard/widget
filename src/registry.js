@@ -86,6 +86,9 @@ const registry = {
       callback(name, constructor);
     });
   },
+  addExisting: (name, dashboardConfig) => {
+    registered[name] = { dashboardConfig };
+  },
   whenDefined: (name) => {
     return new Promise((resolve) => {
       customElements.whenDefined(name).then(() => {
@@ -125,7 +128,8 @@ const registry = {
       layout: 'absolute',
       dashboardHtml: false,
       editorTabs: ['addElements', 'properties', 'sources'],
-      ...component.dashboardConfig
+      properties: component.properties || [],
+      ...component.dashboardConfig,
     };
   },
   _generateWebbitId: (webbit, desiredId) => {
