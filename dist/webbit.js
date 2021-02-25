@@ -192,6 +192,9 @@
       registered[name] = {
         dashboardConfig
       };
+      anyDefinedListeners.forEach(callback => {
+        callback(name, registered[name]);
+      });
     },
     whenDefined: name => {
       return new Promise(resolve => {
@@ -202,6 +205,7 @@
         });
       });
     },
+    isInstanceOfWebbit: isInstanceOfWebbit,
     whenAnyDefined: listener => {
       if (typeof listener === 'function') {
         anyDefinedListeners.push(listener);

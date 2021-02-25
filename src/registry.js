@@ -88,6 +88,9 @@ const registry = {
   },
   addExisting: (name, dashboardConfig) => {
     registered[name] = { dashboardConfig };
+    anyDefinedListeners.forEach(callback => {
+      callback(name, registered[name]);
+    });
   },
   whenDefined: (name) => {
     return new Promise((resolve) => {
@@ -98,6 +101,7 @@ const registry = {
       });
     });
   },
+  isInstanceOfWebbit: isInstanceOfWebbit,
   whenAnyDefined: (listener) => {
     if (typeof listener === 'function') {
       anyDefinedListeners.push(listener);
