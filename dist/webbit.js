@@ -189,6 +189,37 @@
       });
     },
     addExisting: (name, dashboardConfig) => {
+      var properties = dashboardConfig.properties || {};
+
+      for (var propName in properties) {
+        var prop = properties[propName];
+
+        if (typeof prop.attribute === 'undefined') {
+          prop.attribute = camelToKebab(propName);
+        }
+
+        if (typeof prop.category === 'undefined') {
+          prop.category = dashboardConfig.displayName || name;
+        }
+
+        if (typeof prop.inputType === 'undefined') {
+          prop.inputType = prop.type.name;
+        }
+
+        if (typeof prop.showInEditor === 'undefined') {
+          prop.showInEditor = false;
+        }
+      }
+
+      if (typeof properties.name === 'undefined') {
+        properties.name = {
+          type: String,
+          attribute: 'name',
+          showInEditor: true
+        };
+      }
+
+      dashboardConfig.properties = properties;
       registered[name] = {
         dashboardConfig
       };

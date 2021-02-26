@@ -87,6 +87,39 @@ const registry = {
     });
   },
   addExisting: (name, dashboardConfig) => {
+
+    const properties = dashboardConfig.properties || {};
+
+    for (const propName in properties) {
+      const prop = properties[propName];
+
+      if (typeof prop.attribute === 'undefined') {
+        prop.attribute = camelToKebab(propName);
+      }
+
+      if (typeof prop.category === 'undefined') {
+        prop.category = dashboardConfig.displayName || name;
+      }
+
+      if (typeof prop.inputType === 'undefined') {
+        prop.inputType = prop.type.name;
+      }
+
+      if (typeof prop.showInEditor === 'undefined') {
+        prop.showInEditor = false;
+      }
+    }
+
+    if (typeof properties.name === 'undefined') {
+      properties.name = {
+        type: String,
+        attribute: 'name',
+        showInEditor: true,
+      };
+    }
+
+    dashboardConfig.properties = properties;
+
     registered[name] = { dashboardConfig };
     anyDefinedListeners.forEach(callback => {
       callback(name, registered[name]);
