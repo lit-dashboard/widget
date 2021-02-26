@@ -108,6 +108,8 @@ const registry = {
       if (typeof prop.showInEditor === 'undefined') {
         prop.showInEditor = false;
       }
+
+      prop.canConnectToSources = true;
     }
 
     if (typeof properties.name === 'undefined') {
