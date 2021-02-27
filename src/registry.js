@@ -51,6 +51,7 @@ const registry = {
         return {
           name: {
             type: String,
+            inputType: 'String',
             attribute: 'name',
             reflect: true,
             showInEditor: true,
@@ -107,6 +108,7 @@ const registry = {
     if (typeof properties.name === 'undefined') {
       properties.name = {
         type: String,
+        inputType: 'String',
         defaultValue: '',
         attribute: 'name',
         showInEditor: true,

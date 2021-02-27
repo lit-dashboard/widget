@@ -153,6 +153,7 @@
           return _objectSpread2({
             name: {
               type: String,
+              inputType: 'String',
               attribute: 'name',
               reflect: true,
               showInEditor: true,
@@ -208,6 +209,7 @@
       if (typeof properties.name === 'undefined') {
         properties.name = {
           type: String,
+          inputType: 'String',
           defaultValue: '',
           attribute: 'name',
           showInEditor: true,
