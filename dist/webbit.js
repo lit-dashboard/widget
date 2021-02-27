@@ -206,18 +206,16 @@
         prop.canConnectToSources = true;
       }
 
-      if (typeof properties.name === 'undefined') {
-        properties.name = {
+      dashboardConfig.properties = _objectSpread2({
+        name: {
           type: String,
           inputType: 'String',
           defaultValue: '',
           attribute: 'name',
           showInEditor: true,
           canConnectToSources: true
-        };
-      }
-
-      dashboardConfig.properties = properties;
+        }
+      }, properties);
       registered[name] = {
         dashboardConfig
       };

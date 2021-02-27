@@ -105,18 +105,17 @@ const registry = {
       prop.canConnectToSources = true;
     }
 
-    if (typeof properties.name === 'undefined') {
-      properties.name = {
+    dashboardConfig.properties = {
+      name: {
         type: String,
         inputType: 'String',
         defaultValue: '',
         attribute: 'name',
         showInEditor: true,
         canConnectToSources: true,
-      };
-    }
-
-    dashboardConfig.properties = properties;
+      },
+      ...properties
+    };
 
     registered[name] = { dashboardConfig };
     anyDefinedListeners.forEach(callback => {
