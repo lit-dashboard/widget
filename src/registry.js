@@ -37,11 +37,6 @@ const registry = {
 
       prop.canConnectToSources = !!(prop.reflect && prop.attribute);
 
-      if (typeof prop.category === 'undefined') {
-        const dashboardConfig = constructor.dashboardConfig || {};
-        prop.category = dashboardConfig.displayName || name;
-      }
-
       if (typeof prop.inputType === 'undefined') {
         prop.inputType = prop.type.name;
       }
@@ -59,6 +54,7 @@ const registry = {
             attribute: 'name',
             reflect: true,
             showInEditor: true,
+            canConnectToSources: true,
           },
           ...webbitProperties,
           sourceProvider: {
@@ -97,10 +93,6 @@ const registry = {
         prop.attribute = camelToKebab(propName);
       }
 
-      if (typeof prop.category === 'undefined') {
-        prop.category = dashboardConfig.displayName || name;
-      }
-
       if (typeof prop.inputType === 'undefined') {
         prop.inputType = prop.type.name;
       }
@@ -118,6 +110,7 @@ const registry = {
         defaultValue: '',
         attribute: 'name',
         showInEditor: true,
+        canConnectToSources: true,
       };
     }
 

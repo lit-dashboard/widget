@@ -139,11 +139,6 @@
 
         prop.canConnectToSources = !!(prop.reflect && prop.attribute);
 
-        if (typeof prop.category === 'undefined') {
-          var dashboardConfig = constructor.dashboardConfig || {};
-          prop.category = dashboardConfig.displayName || name;
-        }
-
         if (typeof prop.inputType === 'undefined') {
           prop.inputType = prop.type.name;
         }
@@ -160,7 +155,8 @@
               type: String,
               attribute: 'name',
               reflect: true,
-              showInEditor: true
+              showInEditor: true,
+              canConnectToSources: true
             }
           }, webbitProperties, {
             sourceProvider: {
@@ -198,10 +194,6 @@
           prop.attribute = camelToKebab(propName);
         }
 
-        if (typeof prop.category === 'undefined') {
-          prop.category = dashboardConfig.displayName || name;
-        }
-
         if (typeof prop.inputType === 'undefined') {
           prop.inputType = prop.type.name;
         }
@@ -218,7 +210,8 @@
           type: String,
           defaultValue: '',
           attribute: 'name',
-          showInEditor: true
+          showInEditor: true,
+          canConnectToSources: true
         };
       }
 
