@@ -115,6 +115,7 @@ const registry = {
     if (typeof properties.name === 'undefined') {
       properties.name = {
         type: String,
+        defaultValue: '',
         attribute: 'name',
         showInEditor: true,
       };
@@ -154,6 +155,11 @@ const registry = {
       return null;
     }
 
+    const propConfig = { ...component.properties };
+    delete propConfig.webbitId;
+    delete propConfig.sourceKey;
+    delete propConfig.sourceProvider;
+
     return {
       displayName: name,
       category: 'Uncategorized',
@@ -167,7 +173,7 @@ const registry = {
       layout: 'absolute',
       dashboardHtml: false,
       editorTabs: ['addElements', 'properties', 'sources'],
-      properties: component.properties || [],
+      properties: propConfig || {},
       ...component.dashboardConfig,
     };
   },

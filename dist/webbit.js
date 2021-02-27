@@ -216,6 +216,7 @@
       if (typeof properties.name === 'undefined') {
         properties.name = {
           type: String,
+          defaultValue: '',
           attribute: 'name',
           showInEditor: true
         };
@@ -257,6 +258,11 @@
         return null;
       }
 
+      var propConfig = _objectSpread2({}, component.properties);
+
+      delete propConfig.webbitId;
+      delete propConfig.sourceKey;
+      delete propConfig.sourceProvider;
       return _objectSpread2({
         displayName: name,
         category: 'Uncategorized',
@@ -278,7 +284,7 @@
         layout: 'absolute',
         dashboardHtml: false,
         editorTabs: ['addElements', 'properties', 'sources'],
-        properties: component.properties || []
+        properties: propConfig || {}
       }, component.dashboardConfig);
     },
     _generateWebbitId: (webbit, desiredId) => {
