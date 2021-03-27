@@ -126,6 +126,7 @@ const registry = {
         defaultValue: '',
         attribute: 'name',
         showInEditor: true,
+        editorOnly: true,
         canConnectToSources: true,
       },
       ...properties
