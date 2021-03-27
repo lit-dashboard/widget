@@ -102,6 +102,20 @@ const registry = {
         prop.showInEditor = false;
       }
 
+      if (typeof prop.defaultValue === 'undefined') {
+        if (prop.type === String) {
+          prop.defaultValue = '';
+        } else if (prop.type === Boolean) {
+          prop.defaultValue = false;
+        } else if (prop.type === Number) {
+          prop.defaultValue = 0;
+        } else if (prop.type === Array) {
+          prop.defaultValue = [];
+        } else if (prop.type === Object) {
+          prop.defaultValue = {};
+        }
+      }
+
       prop.canConnectToSources = true;
     }
 
