@@ -59,3 +59,40 @@ export const matchesType = (type, value) => {
   }
   return false;
 };
+
+export const convertValue = (value, type) => {
+  switch (type) {
+    case 'String':
+      return value?.toString() || '';
+    case 'Number':
+      return parseFloat(value);
+    case 'Boolean':
+      return !!value;
+    case 'Array':
+      return value instanceof Array ? value : [];
+    case 'Object':
+      return isPlainObject(value) ? value : {};
+    default:
+      return '';
+  }
+};
+
+export const setAttributeFromValue = (element, attribute, value) => {
+  if (typeof value === 'string') {
+    element.setAttribute(attribute, value);
+  } else if (typeof value === 'number') {
+    if (isNaN(value)) {
+      element.removeAttribute(attribute);
+    } else {
+      element.setAttribute(attribute, value);
+    }
+  } else if (typeof value === 'boolean') {
+    if (value) {
+      element.setAttribute(attribute, '');
+    } else {
+      element.removeAttribute(attribute);
+    }
+  } else if (value instanceof Array || value instanceof Object) {
+    element.setAttribute(attribute, JSON.stringify(value));
+  }
+}
