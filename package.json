@@ -19,7 +19,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@webbitjs/store": "^1.2.0"
+    "@webbitjs/store": "^2.0.2"
   },
   "devDependencies": {
     "vite": "^2.3.8"
