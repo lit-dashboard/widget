@@ -1,13 +1,5 @@
 import { normalizeCamelCase, normalizeKebabCase, normalizeType } from './pattern-testers';
-import isPlainObject from '../isplainobject';
-
-const defaultValues = {
-  'String': '',
-  'Number': 0,
-  'Boolean': false,
-  'Array': [],
-  'Object': {}
-};
+import { getDefaultValue, matchesType } from '../util';
 
 const normalizeElementName = name => normalizeKebabCase(name, 'element name');
 
@@ -26,24 +18,32 @@ const normalizeDescription = description => {
 
 const normalizePropertyType = type => normalizeType(type, `property's type`);
 
-const matchesType = (type, value) => {
-  switch (type) {
-    case 'String': return typeof value === 'string';
-    case 'Number': return typeof value === 'number';
-    case 'Boolean': return typeof value === 'boolean';
-    case 'Array': return value instanceof Array;
-    case 'Object': return isPlainObject(value);
-  }
-  return false;
-};
-
 const normalizeDefaultType = (type, defaultValue) => {
-  const value = typeof defaultValue === 'undefined' ? defaultValues[type] : defaultValue;
+  const value = typeof defaultValue === 'undefined' ? getDefaultValue(type) : defaultValue;
   if (!matchesType(type, value)) {
     throw new Error(`The property's default value does not match its type.`);
   }
   return value;
 };
+
+const normalizeStringOrFalse = (value, errorMessage) => {
+  if (value === false) {
+    return value;
+  }
+  if (typeof value !== 'string') {
+    throw new Error(errorMessage);
+  }
+  return value;
+};
+
+const normalizeChangeEvent = changeEvent => 
+  normalizeStringOrFalse(changeEvent, `changeEvent must be false or a string`);
+
+const normalizeDefaultSourceKey = sourceKey => 
+  normalizeStringOrFalse(sourceKey, `defaultSourceKey must be false or a string`);
+
+const normalizeDefaultSourceProvider = sourceProvider => 
+  normalizeStringOrFalse(sourceProvider, `defaultSourceProvider must be false or a string`);
 
 const normalizeProperty = ({
   name,
@@ -67,7 +67,7 @@ const normalizeProperty = ({
     attribute: normalizeAttribute(attribute),
     reflect: !!reflect,
     primary: !!primary,
-    changeEvent,
+    changeEvent: normalizeChangeEvent(changeEvent),
   };
 };
 
@@ -75,6 +75,8 @@ const normalizeProperty = ({
 export const normalizeConfig = ({
   name,
   description = '',
+  defaultSourceKey = false,
+  defaultSourceProvider = false,
   properties = [],
   events = [],
   slots = [],
@@ -83,6 +85,8 @@ export const normalizeConfig = ({
 } = {}) => ({
   name: normalizeElementName(name),
   description: normalizeDescription(description),
+  defaultSourceKey: normalizeDefaultSourceKey(defaultSourceKey),
+  defaultSourceProvider: normalizeDefaultSourceProvider(defaultSourceProvider),
   properties: properties.map(normalizeProperty),
   events,
   slots,

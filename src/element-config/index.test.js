@@ -3,6 +3,8 @@ import { normalizeConfig } from './index';
 const getConfig = ({
   name = 'some-element-name',
   description = '',
+  defaultSourceKey = false,
+  defaultSourceProvider = false,
   properties = [],
   events = [],
   slots = [],
@@ -11,6 +13,8 @@ const getConfig = ({
 } = {}) => ({
   name,
   description,
+  defaultSourceKey,
+  defaultSourceProvider,
   properties,
   events,
   slots,

@@ -17,6 +17,14 @@ class Webbit {
   connectChildren(element) {
 
   }
+
+  getElementConfig(name) {
+    return this.elementConfigs.get(name);
+  }
+
+  hasElementConfig(name) {
+    return this.elementConfigs.has(name);
+  }
 }
 
 export default Webbit;
