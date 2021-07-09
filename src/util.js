@@ -65,13 +65,33 @@ export const convertValue = (value, type) => {
     case 'String':
       return value?.toString() || '';
     case 'Number':
-      return parseFloat(value);
+      const numberValue = parseFloat(value);
+      return isNaN(numberValue) ? 0 : numberValue;
     case 'Boolean':
       return !!value;
     case 'Array':
-      return value instanceof Array ? value : [];
+      if (value instanceof Array) {
+        return value;
+      } else if (typeof value === 'string') {
+        try {
+          const arrayValue = JSON.parse(value);
+          return arrayValue instanceof Array ? arrayValue : [];
+        } catch(e) {
+          return [];
+        }
+      } else {
+        return [];
+      }
     case 'Object':
-      return isPlainObject(value) ? value : {};
+      if (isPlainObject(value)) {
+        return value;
+      } else {
+        try {
+          return JSON.parse(value);
+        } catch(e) {
+          return {};
+        }
+      }
     default:
       return '';
   }
@@ -96,3 +116,8 @@ export const setAttributeFromValue = (element, attribute, value) => {
     element.setAttribute(attribute, JSON.stringify(value));
   }
 }
+
+export const getValueFromAttribute = (element, attribute, type) => {
+  const attributeValue = element.getAttribute(attribute);
+  return convertValue(attributeValue, type);
+};
