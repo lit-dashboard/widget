@@ -1,5 +1,5 @@
 import { normalizeConfig } from './element-config';
-import { isSourceObject } from './util';
+import { isSourceObject, isEqual } from './util';
 import PropertyHandler from './property-handler';
 
 class Webbit {
@@ -160,7 +160,16 @@ class Webbit {
   }
 
   _onPropertyUpdate({ name, primary }, value) {
-    console.log('property update:', name, value, primary);
+    const source = this.source;
+
+    if (!isSourceObject(source)) {
+      if (primary && !isEqual(source, value)) {
+        const provider = this.store.getSourceProvider(this.sourceProvider);
+        provider.userUpdate(`${this.sourceKey}/${name}`, value);
+      }
+    } else if (!isEqual(source[name], value)) {
+      source[name] = value;
+    }
   }
 }
 
