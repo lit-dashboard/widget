@@ -12,10 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
     name: 'div',
     properties: [
       {
-        name: 'connected'
+        name: 'connected',
+        type: 'Boolean',
+        attribute: 'connected',
+        primary: true,
       },
       {
-        name: 'buttonValues'
+        name: 'buttonValues',
+        type: 'Array',
+        attribute: 'button-values'
       }
     ]
   });

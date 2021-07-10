@@ -24,22 +24,34 @@ class Webbit {
     }
   }
 
+  get source() {
+    return this.store.getSource(this.sourceProvider, this.sourceKey);
+  }
+
+  get hasSource() {
+    const rawSource = this.store.getRawSource(this.sourceProvider, this.sourceKey);
+    return typeof rawSource !== 'undefined';
+  }
+
   constructor(element, store, config) {
     this.element = element;
     this.store = store;
     this.config = normalizeConfig(config || {
       name: element.tagName.toLowerCase()
     });
-    this.propertyHandlers = new Map(this.config.properties.map(property => (
-      [property.name, new PropertyHandler(this.element, property)]
-    )));
-    const primaryPropertyConfig = this.config.properties.find(({ primary }) => primary);
-    this.primaryPropertyHandler = primaryPropertyConfig
-      ? this.propertyHandlers.get(primaryPropertyConfig.name)
+    this.propertyHandlers = new Map(this.config.properties.map(property => {
+      const handler = new PropertyHandler(this.element, property);
+      handler.subscribe(value => {
+        this._onPropertyUpdate(property, value);
+      });
+      return [property.name, handler];
+    }));
+    this.primaryPropertyConfig = this.config.properties.find(({ primary }) => primary);
+    this.primaryPropertyHandler = this.primaryPropertyConfig
+      ? this.propertyHandlers.get(this.primaryPropertyConfig.name)
       : null;
     this._connected = false;
     this._sourceChangeObserver = this._getSourceChangeObserver();
-    this._propertyChangeObserver = this._getPropertyChangeObserver();
     this.defaultPropertyValues = {};
     this._unsubscribe = () => { };
 
@@ -70,17 +82,6 @@ class Webbit {
     };
   }
 
-  _getPropertyChangeObserver() {
-    return {
-      connect: () => {
-        this.propertyHandlers.forEach(handler => handler.connect());
-      },
-      disconnect: () => {
-        this.propertyHandlers.forEach(handler => handler.disconnect());
-      },
-    };
-  }
-
   connect() {
     this._connected = true;
     this._sourceChangeObserver.connect();
@@ -98,7 +99,8 @@ class Webbit {
     if (!this._connected) {
       this._unsubscribe();
       this._unsubscribe = () => { };
-      this._propertyChangeObserver.disconnect();
+      this.propertyHandlers.forEach(handler => handler.disconnect());
+      return;
     }
 
     if (!this.sourceKey) {
@@ -112,21 +114,24 @@ class Webbit {
     if (!this.sourceKey || !this.sourceProvider) {
       this._unsubscribe();
       this._unsubscribe = () => { };
-      this._propertyChangeObserver.disconnect();
+      this.propertyHandlers.forEach(handler => handler.disconnect());
     } else {
+      this._unsubscribe();
+      this.propertyHandlers.forEach(handler => {
+        handler.disconnect();
+      });
       this._unsubscribe = this.store.subscribe(this.sourceProvider, this.sourceKey, (source, parentKey, key) => {
         this._subscriber(source, parentKey, key);
       });
-      this._propertyChangeObserver.connect();
     }
   }
 
   _subscriber(source, parentKey, key) {
-    
+
     if (typeof source === 'undefined') {
       // source has been removed, so set attributes to defaults
       this.propertyHandlers.forEach(handler => {
-        handler.setToDefault();
+        handler.disconnect();
       });
     } else if (isSourceObject(source)) {
       // if parentKey and key are equal, map all props to attributes
@@ -140,12 +145,22 @@ class Webbit {
         const prop = key.replace(parentKey + '/', '');
 
         if (this.propertyHandlers.has(prop)) {
-          this.propertyHandlers.get(prop).update(source[prop]);
+          const handler = this.propertyHandlers.get(prop);
+          const value = source[prop];
+          if (typeof value === 'undefined') {
+            handler.disconnect();
+          } else {
+            handler.update(value);
+          }
         }
       }
     } else if (this.primaryPropertyHandler) {
       this.primaryPropertyHandler.update(source);
     }
+  }
+
+  _onPropertyUpdate({ name, primary }, value) {
+    console.log('property update:', name, value, primary);
   }
 }
 

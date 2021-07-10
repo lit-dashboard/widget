@@ -97,27 +97,63 @@ export const convertValue = (value, type) => {
   }
 };
 
+const setAttribute = (element, attribute, value) => {
+  if (element.getAttribute(attribute) != value) {
+    element.setAttribute(attribute, value);
+  }
+};
+
+const removeAttribute = (element, attribute) => {
+  if (element.hasAttribute(attribute)) {
+    element.removeAttribute(attribute);
+  }
+}
+
 export const setAttributeFromValue = (element, attribute, value) => {
   if (typeof value === 'string') {
-    element.setAttribute(attribute, value);
+    setAttribute(element, attribute, value);
   } else if (typeof value === 'number') {
     if (isNaN(value)) {
-      element.removeAttribute(attribute);
+      removeAttribute(element, attribute);
     } else {
-      element.setAttribute(attribute, value);
+      setAttribute(element, attribute, value);
     }
   } else if (typeof value === 'boolean') {
     if (value) {
-      element.setAttribute(attribute, '');
+      setAttribute(element, attribute, '');
     } else {
-      element.removeAttribute(attribute);
+      removeAttribute(element, attribute);
     }
   } else if (value instanceof Array || value instanceof Object) {
-    element.setAttribute(attribute, JSON.stringify(value));
+    setAttribute(element, attribute, JSON.stringify(value));
   }
 }
 
 export const getValueFromAttribute = (element, attribute, type) => {
   const attributeValue = element.getAttribute(attribute);
+  if (type === 'Boolean') {
+    return attributeValue !== null;
+  }
   return convertValue(attributeValue, type);
+};
+
+export const isEqual = (a, b) => {
+  if (a === b) {
+    return true;
+  }
+  if (typeof a !== typeof b) {
+    return false;
+  }
+  if (a instanceof Array && b instanceof Array) {
+    if (a.length !== b.length) {
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
 };
