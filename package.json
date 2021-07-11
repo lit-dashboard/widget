@@ -5,13 +5,10 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/webbit.umd.js",
-  "module": "./dist/webbit.es.js",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
   "exports": {
-    ".": {
-      "import": "./dist/webbit.es.js",
-      "require": "./dist/webbit.umd.js"
-    }
+    ".": "./src/index.js"
   },
   "scripts": {
     "test": "jest",

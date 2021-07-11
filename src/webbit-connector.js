@@ -1,8 +1,4 @@
 import { normalizeConfig } from './element-config';
-import Store from '@webbitjs/store/src';
-
-// let store = new Store();
-// store
 
 class WebbitConnector {
 
