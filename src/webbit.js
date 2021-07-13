@@ -165,7 +165,7 @@ class Webbit {
     if (!isSourceObject(source)) {
       if (primary && !isEqual(source, value)) {
         const provider = this.store.getSourceProvider(this.sourceProvider);
-        provider.userUpdate(`${this.sourceKey}/${name}`, value);
+        provider.userUpdate(this.sourceKey, value);
       }
     } else if (!isEqual(source[name], value)) {
       source[name] = value;
