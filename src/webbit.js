@@ -122,7 +122,7 @@ class Webbit {
       });
       this._unsubscribe = this.store.subscribe(this.sourceProvider, this.sourceKey, (source, parentKey, key) => {
         this._subscriber(source, parentKey, key);
-      });
+      }, true);
     }
   }
 
