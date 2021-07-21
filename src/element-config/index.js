@@ -1,8 +1,6 @@
 import { normalizeCamelCase, normalizeKebabCase, normalizeType } from './pattern-testers';
 import { getDefaultValue, matchesType } from '../util';
 
-const normalizeElementName = name => normalizeKebabCase(name, 'element name');
-
 const normalizeAttribute = attribute => {
   if (attribute === false) {
     return attribute;
@@ -36,17 +34,16 @@ const normalizeStringOrFalse = (value, errorMessage) => {
   return value;
 };
 
-const normalizeChangeEvent = changeEvent => 
+const normalizeChangeEvent = changeEvent =>
   normalizeStringOrFalse(changeEvent, `changeEvent must be false or a string`);
 
-const normalizeDefaultSourceKey = sourceKey => 
+const normalizeDefaultSourceKey = sourceKey =>
   normalizeStringOrFalse(sourceKey, `defaultSourceKey must be false or a string`);
 
-const normalizeDefaultSourceProvider = sourceProvider => 
+const normalizeDefaultSourceProvider = sourceProvider =>
   normalizeStringOrFalse(sourceProvider, `defaultSourceProvider must be false or a string`);
 
-const normalizeProperty = ({
-  name,
+const normalizeProperty = (name, {
   description = '',
   type = 'String',
   defaultValue,
@@ -55,39 +52,41 @@ const normalizeProperty = ({
   primary = false,
   changeEvent = false,
 } = {}) => {
-
   const normalizedType = normalizePropertyType(type);
-  const normalizedDefaultType = normalizeDefaultType(normalizedType, defaultValue); 
+  const normalizedDefaultType = normalizeDefaultType(normalizedType, defaultValue);
 
-  return {
-    name: normalizePropertyName(name),
-    description: normalizeDescription(description),
-    type: normalizedType,
-    defaultValue: normalizedDefaultType,
-    attribute: normalizeAttribute(attribute),
-    reflect: !!reflect,
-    primary: !!primary,
-    changeEvent: normalizeChangeEvent(changeEvent),
-  };
+  return [
+    normalizePropertyName(name),
+    {
+      description: normalizeDescription(description),
+      type: normalizedType,
+      defaultValue: normalizedDefaultType,
+      attribute: normalizeAttribute(attribute),
+      reflect: !!reflect,
+      primary: !!primary,
+      changeEvent: normalizeChangeEvent(changeEvent),
+    }
+  ];
 };
 
 
 export const normalizeConfig = ({
-  name,
   description = '',
   defaultSourceKey = false,
   defaultSourceProvider = false,
-  properties = [],
+  properties = {},
   events = [],
   slots = [],
   cssProperties = [],
   cssParts = [],
 } = {}) => ({
-  name: normalizeElementName(name),
   description: normalizeDescription(description),
   defaultSourceKey: normalizeDefaultSourceKey(defaultSourceKey),
   defaultSourceProvider: normalizeDefaultSourceProvider(defaultSourceProvider),
-  properties: properties.map(normalizeProperty),
+  properties: Object.fromEntries(
+    Object.entries(properties)
+      .map(([name, property]) => normalizeProperty(name, property))
+  ),
   events,
   slots,
   cssProperties,

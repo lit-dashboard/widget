@@ -39,14 +39,18 @@ class Webbit {
     this.config = normalizeConfig(config || {
       name: element.tagName.toLowerCase()
     });
-    this.propertyHandlers = new Map(this.config.properties.map(property => {
-      const handler = new PropertyHandler(this.element, property);
-      handler.subscribe(value => {
-        this._onPropertyUpdate(property, value);
-      });
-      return [property.name, handler];
-    }));
-    this.primaryPropertyConfig = this.config.properties.find(({ primary }) => primary);
+    const properties = Object.entries(this.config.properties)
+      .map(([name, property]) => ({ ...property, name }))
+    this.propertyHandlers = new Map(
+      properties.map(property => {
+        const handler = new PropertyHandler(this.element, property);
+        handler.subscribe(value => {
+          this._onPropertyUpdate(property, value);
+        });
+        return [property.name, handler];
+      }
+    ));
+    this.primaryPropertyConfig = properties.find(({ primary }) => primary);
     this.primaryPropertyHandler = this.primaryPropertyConfig
       ? this.propertyHandlers.get(this.primaryPropertyConfig.name)
       : null;

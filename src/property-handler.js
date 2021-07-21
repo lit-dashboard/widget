@@ -1,4 +1,9 @@
-import { getValueFromAttribute, setAttributeFromValue, isEqual } from './util';
+import { isEqual, getValueType } from './util';
+import {
+  attr2PropValue,
+  prop2AttrValue,
+  prop2PropValue
+} from './value-converters/convert-to-type';
 
 class PropertyHandler {
 
@@ -6,21 +11,40 @@ class PropertyHandler {
     const { reflect, attribute, name, type } = this._property;
 
     if (attribute && reflect) {
-      return getValueFromAttribute(this._element, attribute, type);
+      return attr2PropValue(this._element.getAttribute(attribute), type);
     } else if (name in this._element) {
       return this._element[name];
     } else {
-      return getValueFromAttribute(this._element, attribute, type);
+      return attr2PropValue(this._element.getAttribute(attribute), type);
     }
   }
 
   set value(value) {
-    const { attribute, name } = this._property;
+
+    const { attribute, name, type } = this._property;
+    const newValueType = getValueType(value);
+    const currentValue = this.value;
+
+    if (isEqual(prop2PropValue(currentValue, newValueType), value)) {
+      return;
+    }
 
     if (attribute) {
-      setAttributeFromValue(this._element, attribute, value);
-    } else if (!isEqual(this._element[name], value)) {
-      this._element[name] = value;
+      const newAttrValue = prop2AttrValue(value, type);
+      const newAttrBackToValue = attr2PropValue(newAttrValue, newValueType);
+      if (isEqual(value, newAttrBackToValue)) {
+        if (newAttrValue === null) {
+          this._element.removeAttribute(attribute);
+        } else {
+          this._element.setAttribute(attribute, newAttrValue);
+        }
+      }
+    } else {
+      const newPropValue = prop2PropValue(value, type);
+      const newPropBackToValue = prop2PropValue(newPropValue, newValueType);
+      if (isEqual(value, newPropBackToValue)) {
+        this._element[name] = newPropValue;
+      }
     }
   }
 
@@ -52,7 +76,7 @@ class PropertyHandler {
       const observer = new MutationObserver(() => {
         this._notifySubscribers();
       });
-  
+
       return {
         connect: () => {
           observer.observe(this._element, {
@@ -65,15 +89,15 @@ class PropertyHandler {
         },
       };
     } else {
-      return { connect() {}, disconnect() {} };
+      return { connect() { }, disconnect() { } };
     }
   }
 
   connect() {
     if (!this._connected) {
       const currentValue = this.value;
-      this._defaultValue = typeof currentValue !== 'undefined' 
-        ? currentValue 
+      this._defaultValue = typeof currentValue !== 'undefined'
+        ? currentValue
         : this._property.defaultValue;
       this._propertyObserver.connect();
       this._connected = true;

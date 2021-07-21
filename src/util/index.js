@@ -1,5 +1,3 @@
-import isPlainObject from "./isplainobject";
-
 
 /**
  * Turns a camelCase string to kebab-case
@@ -32,7 +30,7 @@ export const getValueType = value => {
     return 'Boolean';
   } else if (value instanceof Array) {
     return 'Array';
-  } else if (isPlainObject(value)) {
+  } else if (value instanceof Object) {
     return 'Object';
   }
   return null;
@@ -55,7 +53,7 @@ export const matchesType = (type, value) => {
     case 'Number': return typeof value === 'number';
     case 'Boolean': return typeof value === 'boolean';
     case 'Array': return value instanceof Array;
-    case 'Object': return isPlainObject(value);
+    case 'Object': return value instanceof Object;
   }
   return false;
 };
@@ -83,7 +81,7 @@ export const convertValue = (value, type) => {
         return [];
       }
     case 'Object':
-      if (isPlainObject(value)) {
+      if (value instanceof Object) {
         return value;
       } else {
         try {
@@ -157,3 +155,11 @@ export const isEqual = (a, b) => {
   }
   return false;
 };
+
+export const setAttributeValue = (element, attributeName, value) => {
+  if (value === null) {
+    element.removeAttribute(attributeName);
+  } else {
+    element.setAttribute(attributeName, value);
+  }
+}

@@ -1,17 +1,15 @@
 import { normalizeConfig } from './index';
 
 const getConfig = ({
-  name = 'some-element-name',
   description = '',
   defaultSourceKey = false,
   defaultSourceProvider = false,
-  properties = [],
+  properties = {},
   events = [],
   slots = [],
   cssProperties = [],
   cssParts = [],
 } = {}) => ({
-  name,
   description,
   defaultSourceKey,
   defaultSourceProvider,
@@ -34,13 +32,13 @@ describe('Element config', () => {
     ).toEqual(getConfig());
   });
 
-  it(`throws an error if the element name isn't in kebab case`, () => {
+  xit(`throws an error if the element name isn't in kebab case`, () => {
     expect(() => {
       normalizeConfig({ name: 'invalidName' })
     }).toThrow();
   });
 
-  it(`throws an error if the element name isn't provided`, () => {
+  xit(`throws an error if the element name isn't provided`, () => {
     expect(() => {
       normalizeConfig({})
     }).toThrow();
