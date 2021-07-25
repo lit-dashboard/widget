@@ -32,6 +32,7 @@ class PropertyHandler {
     if (attribute) {
       const newAttrValue = prop2AttrValue(value, type);
       const newAttrBackToValue = attr2PropValue(newAttrValue, newValueType);
+
       if (isEqual(value, newAttrBackToValue)) {
         if (newAttrValue === null) {
           this._element.removeAttribute(attribute);

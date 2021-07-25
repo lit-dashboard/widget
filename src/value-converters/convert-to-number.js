@@ -6,7 +6,7 @@ export default class ConvertToNumber {
   }
 
   static prop2AttrValue(value) {
-    return value === null ? null : parseFloat(value);
+    return value === null ? null : parseFloat(value).toString();
   }
 
   static attr2PropValue(value, attrType) {
