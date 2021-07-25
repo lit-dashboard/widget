@@ -1,6 +1,7 @@
 import { normalizeConfig } from './element-config';
-import { isSourceObject, isEqual } from './util';
+import { isSourceObject, isEqual, getValueType } from './util';
 import PropertyHandler from './property-handler';
+import { prop2PropValue } from './value-converters/convert-to-type';
 
 class Webbit {
 
@@ -49,7 +50,7 @@ class Webbit {
         });
         return [property.name, handler];
       }
-    ));
+      ));
     this.primaryPropertyConfig = properties.find(({ primary }) => primary);
     this.primaryPropertyHandler = this.primaryPropertyConfig
       ? this.propertyHandlers.get(this.primaryPropertyConfig.name)
@@ -165,14 +166,44 @@ class Webbit {
 
   _onPropertyUpdate({ name, primary }, value) {
     const source = this.source;
+    const provider = this.store.getSourceProvider(this.sourceProvider);
+
+    const propType = getValueType(value);
 
     if (!isSourceObject(source)) {
-      if (primary && !isEqual(source, value)) {
-        const provider = this.store.getSourceProvider(this.sourceProvider);
-        provider.userUpdate(this.sourceKey, value);
+      if (primary) {
+        if (value === null) {
+          if (source !== null) {
+            provider.userUpdate(this.sourceKey, value);
+          }
+        } else {
+          const newSourceValueType = getValueType(source) || propType;
+          const newSourceValue = prop2PropValue(value, newSourceValueType);
+          const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
+          if (
+            isEqual(value, newSourceBackToPropValue)
+            && !isEqual(source, newSourceValue)
+          ) {
+            provider.userUpdate(this.sourceKey, newSourceValue);
+          }
+        }
       }
-    } else if (!isEqual(source[name], value)) {
-      source[name] = value;
+    } {
+      if (value === null) {
+        if (source[name] !== null) {
+          source[name] = value;
+        }
+      } else {
+        const newSourceValueType = getValueType(source[name]) || propType;
+        const newSourceValue = prop2PropValue(value, newSourceValueType);
+        const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
+        if (
+          isEqual(value, newSourceBackToPropValue)
+          && !isEqual(source[name], newSourceValue)
+        ) {
+          source[name] = newSourceValue;
+        }
+      }
     }
   }
 }
