@@ -47,7 +47,7 @@ const normalizeProperty = (name, {
   description = '',
   type = 'String',
   defaultValue,
-  attribute = false,
+  attribute = name.toLowerCase(),
   reflect = false,
   primary = false,
   changeEvent = false,
