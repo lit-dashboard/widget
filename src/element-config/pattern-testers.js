@@ -16,7 +16,7 @@ export const normalizeKebabCase = (name, errorType) => {
 };
 
 export const normalizeType = (type, errorType) => {
-  if (typeof name !== 'string' || !typePattern.test(type)) {
+  if (!typePattern.test(type)) {
     throw new Error(typeError(errorType));
   }
   return type;

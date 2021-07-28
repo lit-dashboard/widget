@@ -14,7 +14,12 @@ const normalizeDescription = description => {
   return typeof description === 'string' ? description : '';
 };
 
-const normalizePropertyType = type => normalizeType(type, `property's type`);
+const normalizePropertyType = type => {
+  return normalizeType(
+    typeof type === 'function' ? type.name : type,
+    `property's type`
+  );
+}
 
 const normalizeDefaultType = (type, defaultValue) => {
   const value = typeof defaultValue === 'undefined' ? getDefaultValue(type) : defaultValue;
