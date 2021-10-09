@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "source": {
+      "includePattern": ".+\\.js(doc|x)?$",
+      "include": ["src"],                    
+      "exclude": ["node_modules", "src/camel-case.js"]          
+  },
+  "recurseDepth": 10,                      
+  "opts": {
+      "destination": "./docs/",            
+      "recurse": true,
+      "tutorials": "./tutorials/"                    
+  }
+}

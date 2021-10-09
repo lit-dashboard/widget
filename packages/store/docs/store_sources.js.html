@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: store/sources.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: store/sources.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { normalizeKey } from '../util';
+import { getSourceProvider } from './index';
+
+/**
+ @module @webbitjs/store
+*/
+class Source {}
+
+const rawSources = {};
+const sources = {};
+const sourceObjectRefs = {};
+
+const subscribers = {};
+let nextSubscriberId = 0;
+
+const createRawSource = () => {
+  return {
+    __normalizedKey__: undefined,
+    __fromProvider__: false,
+    __key__: undefined,
+    __value__: undefined,
+    __sources__: {}
+  };
+};
+
+const createSource = () => {
+  return {
+    getterValues: {},
+    setters: {},
+    sources: {}
+  };
+};
+
+const getSourceObject = (providerName, key) => {
+  if (typeof sourceObjectRefs[providerName] === 'undefined') {
+    sourceObjectRefs[providerName] = {};
+  }
+
+  if (typeof sourceObjectRefs[providerName][key] === 'undefined') {
+    sourceObjectRefs[providerName][key] = new Source();
+  }
+
+  return sourceObjectRefs[providerName][key];
+};
+
+const setSourceObjectProps = (providerName, key, rawSource) => {
+  const value = getSourceObject(providerName, key);
+
+  Object.getOwnPropertyNames(value).forEach(prop => {
+    if (prop in rawSource.__sources__) {
+      return;
+    }
+    delete value[prop];
+  });
+
+  for (let key in rawSource.__sources__) {
+
+    if (key in value) {
+      continue;
+    }
+
+    const rawSubSource = rawSource.__sources__[key];
+    Object.defineProperty(value, key, {
+      configurable: true,
+      set(value) {
+        const providerSources = sources[providerName];
+        
+        if (typeof providerSources === 'undefined') {
+          return;
+        }
+
+        const setter = providerSources.setters[rawSubSource.__key__];
+
+        if (typeof setter === 'undefined') {
+          return;
+        }
+
+        setter(value);
+      },
+      get() {
+        if (typeof sources[providerName] === 'undefined') {
+          return undefined;
+        }
+        return sources[providerName].getterValues[rawSubSource.__key__];
+      }
+    });
+  }
+};
+
+const notifySubscribers = () => {
+  for (let id in subscribers) {
+    const subscriber = subscribers[id];
+    subscriber();
+  }
+};
+
+const isSourceType = (value) => {
+  return value instanceof Object &amp;&amp; value.constructor.name === 'Source';
+};
+
+const cleanSource = (providerName, rawSources, normalizedKeyParts) => {
+  if (normalizedKeyParts.length === 0) {
+    return false;
+  }
+
+  const keyPart = normalizedKeyParts[0];
+
+  const rawSource = rawSources[keyPart];
+
+  if (typeof rawSource === 'undefined') {
+    return false;
+  }
+
+  if (normalizedKeyParts.length > 1) {
+    cleanSource(providerName, rawSource.__sources__, normalizedKeyParts.slice(1));
+  }
+
+  if (
+    Object.keys(rawSource.__sources__).length === 0 &amp;&amp;
+    !rawSource.__fromProvider__
+  ) {
+    delete rawSources[keyPart];
+  }
+
+  if (typeof rawSources[keyPart] === 'undefined') {
+    delete sources[providerName].sources[rawSource.__key__];
+    delete sources[providerName].getterValues[rawSource.__key__];
+    delete sources[providerName].setters[rawSource.__key__];
+    return true;
+  }
+
+  const providerSources = sources[providerName];
+
+  setSourceObjectProps(providerName, rawSource.__key__, rawSource);
+  
+  if (Object.keys(rawSource.__sources__).length === 0) {
+    providerSources.getterValues[rawSource.__key__] = rawSource.__value__;
+  }
+
+  return true;
+};
+
+export const getRawSources = (providerName) => {
+  return rawSources[providerName];
+};
+
+export const getRawSource = (providerName, key) => {
+  let sourcesRoot = getRawSources(providerName);
+
+  if (typeof sourcesRoot === 'undefined') {
+    return null;
+  }
+
+  if (typeof key !== 'string') {
+    return sourcesRoot;
+  }
+
+  const keyParts = normalizeKey(key).split('/');
+
+  let sources = sourcesRoot.__sources__;
+
+  for (let index in keyParts) {
+    const keyPart = keyParts[index];
+
+    if (keyParts.length - 1 === parseInt(index)) {
+      return (keyPart in sources) ? sources[keyPart] : null;
+    }
+
+    if (keyPart in sources) {
+      sources = sources[keyPart].__sources__;
+    } else {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+export const getSources = (providerName) => {
+  if (providerName in sources) {
+    return sources[providerName].sources;
+  }
+  return undefined;
+};
+
+export const getSource = (providerName, key) => {
+  const sources = getSources(providerName);
+  if (sources) {
+    return sources[key];
+  }
+  return undefined;
+};
+
+export const subscribe = (subscriber) => {
+  if (typeof subscriber !== 'function') {
+    throw new Error('Callback is not a function');
+  }
+
+  const id = nextSubscriberId;
+  nextSubscriberId++;
+  subscribers[id] = subscriber;
+
+  const unsubscribe = () => {
+    delete subscribers[id];
+  };
+  return unsubscribe;
+};
+
+export const initSources = (providerName) => {
+
+  if (providerName in rawSources) {
+    return;
+  }
+
+  rawSources[providerName] = createRawSource();
+  sources[providerName] = createSource();
+
+  notifySubscribers();
+};
+
+export const clearSources = (providerName) => {
+
+  const hasSources = providerName in rawSources;
+
+  if (!hasSources) {
+    return;
+  }
+
+  for (let key in sources[providerName].getterValues) {
+    const getterValue = sources[providerName].getterValues[key];
+    if (isSourceType(getterValue)) {
+      Object.getOwnPropertyNames(getterValue).forEach(prop => {
+        delete getterValue[prop];
+      });
+    }
+  }
+
+  rawSources[providerName] = createRawSource();
+  sources[providerName] = createSource();
+
+  notifySubscribers();
+};
+
+export const removeSources = (providerName) => {
+
+  const hasSources = providerName in rawSources;
+
+  if (!hasSources) {
+    return;
+  }
+
+  for (let key in sources[providerName].getterValues) {
+    const getterValue = sources[providerName].getterValues[key];
+    if (isSourceType(getterValue)) {
+      Object.getOwnPropertyNames(getterValue).forEach(prop => {
+        delete getterValue[prop];
+      });
+    }
+  }
+
+  delete rawSources[providerName];
+  delete sources[providerName];
+  notifySubscribers();
+};
+
+export const sourcesRemoved = (providerName, sourceRemovals) => {
+  if (typeof rawSources[providerName] === 'undefined') {
+    return;
+  }
+
+  const sourcesRoot = rawSources[providerName];
+
+  for (let key of sourceRemovals) {
+    const normalizedKey = normalizeKey(key);
+    const normalizedKeyParts = normalizedKey.split('/');
+
+    let rawSources = sourcesRoot.__sources__;
+
+    for (let index in normalizedKeyParts) {
+
+      const keyPart = normalizedKeyParts[index];
+      const inSources = keyPart in rawSources;
+
+      if (!inSources) {
+        break;
+      }
+
+      if (normalizedKeyParts.length - 1 === parseInt(index)) {
+        rawSources[keyPart].__fromProvider__ = false;
+        rawSources[keyPart].__value__ = undefined;
+      }
+
+      rawSources = rawSources[keyPart].__sources__;
+    }
+
+    cleanSource(providerName, sourcesRoot.__sources__, normalizedKeyParts);
+  }
+};
+
+export const sourcesChanged = (providerName, sourceChanges) => {
+
+  if (typeof rawSources[providerName] === 'undefined') {
+    rawSources[providerName] = createRawSource();
+    sources[providerName] = createSource();
+  }
+
+  const sourcesRoot = rawSources[providerName];
+
+  for (let key in sourceChanges) {
+
+    const value = sourceChanges[key];
+
+    const keyParts = key.split('/');
+    const normalizedKey = normalizeKey(key);
+    const normalizedKeyParts = normalizedKey.split('/');
+
+    let rawSources = sourcesRoot.__sources__;
+    let prevRawSource = {};
+
+    normalizedKeyParts.forEach((keyPart, index) => {
+      const inSources = keyPart in rawSources;
+      const sourceKey = keyParts.slice(0, index + 1).join('/');
+      const providerSources = sources[providerName];
+
+      if (!inSources) {
+        rawSources[keyPart] = {
+          __fromProvider__: false,
+          __normalizedKey__: normalizedKeyParts.slice(0, index + 1).join('/'),
+          __key__: sourceKey,
+          __value__: undefined,
+          __sources__: {}
+        }
+
+        providerSources.getterValues[sourceKey] = getSourceObject(providerName, sourceKey);
+        providerSources.setters[sourceKey] = () => {};
+        Object.defineProperty(providerSources.sources, sourceKey, {
+          configurable: true,
+          set(value) {     
+            const providerSources = sources[providerName];
+
+            if (typeof providerSources === 'undefined') {
+              return;
+            }
+
+            const setter = providerSources.setters[sourceKey];
+
+            if (typeof setter === 'undefined') {
+              return;
+            }
+
+            setter(value);
+          },
+          get() {
+            if (typeof sources[providerName] === 'undefined') {
+              return undefined;
+            }
+            return sources[providerName].getterValues[sourceKey];
+          }
+        });
+      }
+
+      if (normalizedKeyParts.length - 1 === index) {
+
+        rawSources[keyPart].__fromProvider__ = true;
+        rawSources[keyPart].__value__ = value;
+
+        if (Object.keys(rawSources[keyPart].__sources__).length === 0) {
+          providerSources.getterValues[sourceKey] = value;
+        }
+
+        const sourceProvider = getSourceProvider(providerName);
+        providerSources.setters[sourceKey] = (value) => {
+          sourceProvider.updateFromDashboard(sourceKey, value);
+        };
+
+      }
+
+      if (index !== 0) {
+
+        if (!isSourceType(providerSources.getterValues[prevRawSource.__key__])) {
+          providerSources.getterValues[prevRawSource.__key__] = getSourceObject(providerName, prevRawSource.__key__);
+        }
+
+        setSourceObjectProps(providerName, prevRawSource.__key__, prevRawSource);
+      }
+
+      prevRawSource = rawSources[keyPart];
+      rawSources = rawSources[keyPart].__sources__;
+    });
+  }
+  notifySubscribers();
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@webbitjs_store.html">@webbitjs/store</a></li></ul><h3>Classes</h3><ul><li><a href="SourceProvider.html">SourceProvider</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tutorial1.html">Tutorial One</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Feb 17 2020 10:17:00 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

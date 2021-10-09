@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sources.js getRawSources returns empty sources if the sources were cleared 1`] = `
+Object {
+  "__fromProvider__": false,
+  "__key__": undefined,
+  "__normalizedKey__": undefined,
+  "__sources__": Object {},
+  "__value__": undefined,
+}
+`;
+
+exports[`sources.js getRawSources returns raw sources for the passed in provider if sources for it exist 1`] = `
+Object {
+  "__fromProvider__": false,
+  "__key__": undefined,
+  "__normalizedKey__": undefined,
+  "__sources__": Object {
+    "": Object {
+      "__fromProvider__": false,
+      "__key__": " ??",
+      "__normalizedKey__": "",
+      "__sources__": Object {
+        "": Object {
+          "__fromProvider__": false,
+          "__key__": "/",
+          "__normalizedKey__": "/",
+          "__sources__": Object {
+            "": Object {
+              "__fromProvider__": true,
+              "__key__": "//",
+              "__normalizedKey__": "//",
+              "__sources__": Object {},
+              "__value__": Array [
+                1,
+                2,
+              ],
+            },
+          },
+          "__value__": undefined,
+        },
+        "a": Object {
+          "__fromProvider__": true,
+          "__key__": " ??/ .A",
+          "__normalizedKey__": "/a",
+          "__sources__": Object {
+            "b": Object {
+              "__fromProvider__": false,
+              "__key__": "/a/ b ",
+              "__normalizedKey__": "/a/b",
+              "__sources__": Object {
+                "c": Object {
+                  "__fromProvider__": true,
+                  "__key__": "/a/ b /c",
+                  "__normalizedKey__": "/a/b/c",
+                  "__sources__": Object {},
+                  "__value__": false,
+                },
+              },
+              "__value__": undefined,
+            },
+            "c": Object {
+              "__fromProvider__": true,
+              "__key__": "/a/c",
+              "__normalizedKey__": "/a/c",
+              "__sources__": Object {},
+              "__value__": Object {
+                "d": "e",
+              },
+            },
+          },
+          "__value__": 2,
+        },
+      },
+      "__value__": undefined,
+    },
+    "foo": Object {
+      "__fromProvider__": false,
+      "__key__": "foo",
+      "__normalizedKey__": "foo",
+      "__sources__": Object {
+        "bar": Object {
+          "__fromProvider__": true,
+          "__key__": "foo/bar",
+          "__normalizedKey__": "foo/bar",
+          "__sources__": Object {},
+          "__value__": Object {
+            "bar": "foo",
+          },
+        },
+      },
+      "__value__": undefined,
+    },
+  },
+  "__value__": undefined,
+}
+`;
+
+exports[`sources.js getRawSources returns raw sources for the passed in provider if sources for it exist 2`] = `
+Object {
+  "__fromProvider__": false,
+  "__key__": undefined,
+  "__normalizedKey__": undefined,
+  "__sources__": Object {
+    "": Object {
+      "__fromProvider__": false,
+      "__key__": " ??",
+      "__normalizedKey__": "",
+      "__sources__": Object {
+        "": Object {
+          "__fromProvider__": false,
+          "__key__": "/",
+          "__normalizedKey__": "/",
+          "__sources__": Object {
+            "": Object {
+              "__fromProvider__": true,
+              "__key__": "//",
+              "__normalizedKey__": "//",
+              "__sources__": Object {},
+              "__value__": Array [
+                1,
+                2,
+              ],
+            },
+          },
+          "__value__": undefined,
+        },
+        "a": Object {
+          "__fromProvider__": true,
+          "__key__": " ??/ .A",
+          "__normalizedKey__": "/a",
+          "__sources__": Object {
+            "b": Object {
+              "__fromProvider__": false,
+              "__key__": "/a/ b ",
+              "__normalizedKey__": "/a/b",
+              "__sources__": Object {
+                "c": Object {
+                  "__fromProvider__": true,
+                  "__key__": "/a/ b /c",
+                  "__normalizedKey__": "/a/b/c",
+                  "__sources__": Object {},
+                  "__value__": true,
+                },
+                "d": Object {
+                  "__fromProvider__": true,
+                  "__key__": "/a/b/d",
+                  "__normalizedKey__": "/a/b/d",
+                  "__sources__": Object {},
+                  "__value__": false,
+                },
+              },
+              "__value__": undefined,
+            },
+            "c": Object {
+              "__fromProvider__": true,
+              "__key__": "/a/c",
+              "__normalizedKey__": "/a/c",
+              "__sources__": Object {},
+              "__value__": Object {
+                "d": "e",
+              },
+            },
+          },
+          "__value__": 5,
+        },
+      },
+      "__value__": undefined,
+    },
+    "foo": Object {
+      "__fromProvider__": false,
+      "__key__": "foo",
+      "__normalizedKey__": "foo",
+      "__sources__": Object {
+        "bar": Object {
+          "__fromProvider__": true,
+          "__key__": "foo/bar",
+          "__normalizedKey__": "foo/bar",
+          "__sources__": Object {},
+          "__value__": Object {
+            "bar": "foo",
+          },
+        },
+      },
+      "__value__": undefined,
+    },
+  },
+  "__value__": undefined,
+}
+`;

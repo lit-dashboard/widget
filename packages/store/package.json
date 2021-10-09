@@ -1,0 +1,29 @@
+{
+  "name": "@webbitjs/store",
+  "version": "2.0.5",
+  "description": "",
+  "files": ["src"],
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "npm test -- --coverage --watchAll=false",
+    "generate-docs": "jsdoc -c jsdoc.conf.json"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.6.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webbitjs/webbit.git"
+  },
+  "author": "Amory Galili",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webbitjs/webbit/issues"
+  },
+  "homepage": "https://github.com/webbitjs/webbit#readme"
+}
