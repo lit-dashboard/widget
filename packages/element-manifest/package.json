@@ -1,0 +1,27 @@
+{
+  "name": "@webbitjs/element-manifest",
+  "version": "1.0.0",
+  "description": "",
+  "files": ["src"],
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "joi": "^17.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webbitjs/webbit.git"
+  },
+  "author": "Amory Galili",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webbitjs/webbit/issues"
+  },
+  "homepage": "https://github.com/webbitjs/webbit#readme"
+}
