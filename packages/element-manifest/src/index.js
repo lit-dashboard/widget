@@ -1,2 +1,0 @@
-
-export { elementSchema } from './schemas';

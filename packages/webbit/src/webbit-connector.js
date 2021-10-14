@@ -1,13 +1,15 @@
 import { normalizeConfig } from './element-config';
+import Webbit from './webbit';
 
 class WebbitConnector {
 
-  constructor(store, elementConfigs = []) {
+  constructor(store, elementConfigs = {}) {
     this.store = store;
     this.elementConfigs = new Map();
-    elementConfigs.forEach(config => {
-      this.elementConfigs.set(config.name, normalizeConfig(config));
+    Object.entries(elementConfigs).forEach((name, config) => {
+      this.elementConfigs.set(name, normalizeConfig(config));
     });
+
     this.elements = new Map();
 
     this.store.defaultSourceProviderSet(sourceProvider => {
@@ -20,7 +22,12 @@ class WebbitConnector {
   }
 
   connect(element) {
-
+    const elementConfig = this.getElementConfig(element.tagName.toLowerCase());
+    if (this.hasElement(element) || !elementConfig) {
+      return;
+    }
+    const webbit = new Webbit(element, this.store, elementConfig);
+    this.elements.set(element, webbit);
   }
 
   connectChildren(element) {
@@ -36,52 +43,52 @@ class WebbitConnector {
   }
 
   setDefaultPropertyValue(element, property, value) {
-    const elementObject = this.getElement(element);
+    const webbit = this.getElementWebbit(element);
 
-    if (elementObject) {
-      elementObject.defaultPropertyValues[property] = value;
+    if (webbit) {
+      webbit.defaultPropertyValues[property] = value;
     }
   }
 
   setSourceProvider(element, sourceProvider) {
-    const elementObject = this.getElement(element);
+    const webbit = this.getElementWebbit(element);
 
-    if (elementObject) {
-      element.setAttribute('source-provider', sourceProvider);
+    if (webbit) {
+      webbit.sourceProvider = sourceProvider;
     }
   }
 
   setSourceKey(element, sourceKey) {
-    const elementObject = this.getElement(element);
+    const webbit = this.getElementWebbit(element);
 
-    if (elementObject) {
-      element.setAttribute('source-key', sourceKey);
+    if (webbit) {
+      webbit.sourceKey = sourceKey;
     }
   }
 
   getDefaultPropertyValue(element, property) {
-    const elementObject = this.getElement(element);
-    return elementObject
-      ? elementObject.defaultPropertyValues[property]
+    const webbit = this.getElementWebbit(element);
+    return webbit
+      ? webbit.defaultPropertyValues[property]
       : null;
   }
 
   getDefaultPropertyValues(element) {
-    const elementObject = this.getElement(element);
-    return elementObject ? elementObject.defaultPropertyValues : {};
+    const webbit = this.getElementWebbit(element);
+    return webbit ? webbit.defaultPropertyValues : {};
   }
 
   getSourceProvider(element) {
-    const elementObject = this.getElement(element);
-    return elementObject ? elementObject.sourceProvider : this.store.getDefaultSourceProvider();
+    const webbit = this.getElementWebbit(element);
+    return webbit ? webbit.sourceProvider : this.store.getDefaultSourceProvider();
   }
 
   getSourceKey(element) {
-    const elementObject = this.getElement(element);
-    return elementObject ? elementObject.sourceKey : null;
+    const webbit = this.getElementWebbit(element);
+    return webbit ? webbit.sourceKey : null;
   }
 
-  getElement(element) {
+  getElementWebbit(element) {
     return this.elements.get(element);
   }
 
