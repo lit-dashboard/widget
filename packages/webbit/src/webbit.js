@@ -170,6 +170,8 @@ class Webbit {
 
     const propType = getValueType(value);
 
+    console.log('source:', source)
+
     if (!isSourceObject(source)) {
       if (primary) {
         if (value === null) {
@@ -188,21 +190,19 @@ class Webbit {
           }
         }
       }
-    } {
-      if (value === null) {
-        if (source[name] !== null) {
-          source[name] = value;
-        }
-      } else {
-        const newSourceValueType = getValueType(source[name]) || propType;
-        const newSourceValue = prop2PropValue(value, newSourceValueType);
-        const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
-        if (
-          isEqual(value, newSourceBackToPropValue)
-          && !isEqual(source[name], newSourceValue)
-        ) {
-          source[name] = newSourceValue;
-        }
+    } else if (value === null) {
+      if (source[name] !== null) {
+        source[name] = value;
+      }
+    } else {
+      const newSourceValueType = getValueType(source[name]) || propType;
+      const newSourceValue = prop2PropValue(value, newSourceValueType);
+      const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
+      if (
+        isEqual(value, newSourceBackToPropValue)
+        && !isEqual(source[name], newSourceValue)
+      ) {
+        source[name] = newSourceValue;
       }
     }
   }

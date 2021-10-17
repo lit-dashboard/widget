@@ -6,7 +6,7 @@ class WebbitConnector {
   constructor(store, elementConfigs = {}) {
     this.store = store;
     this.elementConfigs = new Map();
-    Object.entries(elementConfigs).forEach((name, config) => {
+    Object.entries(elementConfigs).forEach(([name, config]) => {
       this.elementConfigs.set(name, normalizeConfig(config));
     });
 
@@ -30,8 +30,76 @@ class WebbitConnector {
     this.elements.set(element, webbit);
   }
 
-  connectChildren(element) {
+  disconnect(element) {
+    const elementWebbit = this.getElementWebbit(element);
+    if (elementWebbit) {
+      elementWebbit.disconnect();
+      this.elements.delete(element);
+    }
+  }
 
+  connectChildren(element) {
+    element.querySelectorAll('[source-key]').forEach(childNode => {
+      this.connect(childNode);
+    });
+
+    this.elementConfigs.forEach(({ defaultSourceKey }, name) => {
+      if (defaultSourceKey) {
+        element.querySelectorAll(name).forEach(childNode => {
+          this.connect(childNode);
+        });
+      }
+    });
+
+    const observer = new MutationObserver(mutations => {
+      for (let mutation of mutations) {
+        if (mutation.type === 'childList' || mutation.type === 'subtree') {
+          const addedNodes = mutation.addedNodes || [];
+          const removedNodes = mutation.removedNodes || [];
+          addedNodes.forEach(node => {
+            if ('querySelectorAll' in node) {
+              const elementName = node.nodeName.toLowerCase();
+              const config = this.getElementConfig(elementName);
+              const defaultSourceKey = config?.defaultSourceKey;
+              if (node.hasAttribute('source-key') || defaultSourceKey) {
+                this.connect(node);
+              }
+
+              node.querySelectorAll('[source-key]').forEach(childNode => {
+                this.connect(childNode);
+              });
+
+              this.elementConfigs.forEach(({ defaultSourceKey }, name) => {
+                if (defaultSourceKey) {
+                  node.querySelectorAll(name).forEach(childNode => {
+                    this.connect(childNode);
+                  });
+                }
+              });
+            }
+          });
+          removedNodes.forEach(node => {
+            if ('querySelectorAll' in node) {
+              if (node.hasAttribute('source-key')) {
+                this.disconnect(node);
+              }
+              node.querySelectorAll('[source-key]').forEach(childNode => {
+                this.disconnect(childNode);
+              });
+            }
+          });
+        } else if (mutation.type === 'attributes') {
+          this.connect(mutation.target);
+        }
+      }
+    });
+
+    observer.observe(element, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['source-key', 'source-provider']
+    });
   }
 
   getElementConfig(name) {

@@ -1,15 +1,20 @@
 import Store from '@webbitjs/store';
-import Webbit from '@webbitjs/webbit';
-import { NetworkTablesProvider } from '@frc-web-components/source-providers';
+import { WebbitConnector } from '@webbitjs/webbit';
+import SampleProvider from './sample-provider';
 import { elementConfigs } from '@frc-web-components/components';
 
 const store = new Store();
-store.addSourceProviderType(NetworkTablesProvider);
-store.addSourceProvider('NetworkTables', 'NetworkTables');
+store.addSourceProviderType(SampleProvider);
+store.addSourceProvider('SampleProvider', 'SampleProvider');
+const connector = new WebbitConnector(store, elementConfigs);
+window.store = store;
+window.provider = store.getSourceProvider('SampleProvider');
+window.provider.updateSource('/numberBar', 3);
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const booleanBox = document.querySelector('frc-boolean-box');
   const numberBar = document.querySelector('frc-accelerometer');
-  new Webbit(booleanBox, store, elementConfigs['frc-boolean-box']);
-  new Webbit(numberBar, store, elementConfigs['frc-number-bar']);
+  connector.connect(booleanBox);
+  connector.connect(numberBar);
 }, false);
