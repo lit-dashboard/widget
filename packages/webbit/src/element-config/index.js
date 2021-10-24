@@ -56,7 +56,7 @@ const normalizeProperty = (name, {
   attribute = name.toLowerCase(),
   reflect = false,
   primary = false,
-  changeEvent = 'change',
+  changeEvent = false,
 } = {}) => {
   const normalizedType = normalizePropertyType(type);
   const normalizedDefaultType = normalizeDefaultType(normalizedType, defaultValue);
