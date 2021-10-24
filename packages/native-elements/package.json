@@ -12,6 +12,10 @@
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false"
   },
+  "devDependencies": {
+    "@webbitjs/webbit": "^2.0.7",
+    "@webbitjs/store": "^2.0.5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/webbitjs/webbit.git"

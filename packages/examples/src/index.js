@@ -1,6 +1,5 @@
-import Store from '@webbitjs/store';
+import Store, { SampleProvider } from '@webbitjs/store';
 import { WebbitConnector } from '@webbitjs/webbit';
-import SampleProvider from './sample-provider';
 import { elementConfigs } from '@frc-web-components/components';
 import nativeElementConfig from '@webbitjs/native-elements';
 
