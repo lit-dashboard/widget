@@ -1,6 +1,15 @@
 import { WebbitConnector } from "@webbitjs/webbit";
 import Store, { SampleProvider } from "@webbitjs/store";
 import nativeElementConfig from './index';
+import {
+  getByLabelText,
+  getByText,
+  getByTestId,
+  queryByTestId,
+  // Tip: all queries are also exposed on an object
+  // called "queries" which you could import here as well
+  waitFor,
+} from '@testing-library/dom';
 
 describe("native elements", () => {
   beforeEach(() => {
@@ -9,7 +18,7 @@ describe("native elements", () => {
     store.addSourceProvider("SampleProvider", "SampleProvider");
     store.setDefaultSourceProvider("SampleProvider");
     const connector = new WebbitConnector(store, nativeElementConfig);
-    connector.connectChildren(global.window.document.body);
+    connector.connectChildren(document.body);
   });
 
   it("does stuff", () => {
