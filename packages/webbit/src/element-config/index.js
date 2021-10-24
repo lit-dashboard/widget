@@ -29,8 +29,8 @@ const normalizeDefaultType = (type, defaultValue) => {
   return value;
 };
 
-const normalizeStringOrUndefined = (value, errorMessage) => {
-  if (value === undefined) {
+const normalizeStringOrFalse = (value, errorMessage) => {
+  if (value === false) {
     return value;
   }
   if (typeof value !== 'string') {
@@ -40,13 +40,13 @@ const normalizeStringOrUndefined = (value, errorMessage) => {
 };
 
 const normalizeChangeEvent = changeEvent =>
-  normalizeStringOrUndefined(changeEvent, `changeEvent must be false or a string`);
+  normalizeStringOrFalse(changeEvent, `changeEvent must be false or a string`);
 
 const normalizeDefaultSourceKey = sourceKey =>
-  normalizeStringOrUndefined(sourceKey, `defaultSourceKey must be false or a string`);
+  normalizeStringOrFalse(sourceKey, `defaultSourceKey must be false or a string`);
 
 const normalizeDefaultSourceProvider = sourceProvider =>
-  normalizeStringOrUndefined(sourceProvider, `defaultSourceProvider must be false or a string`);
+  normalizeStringOrFalse(sourceProvider, `defaultSourceProvider must be false or a string`);
 
 const normalizeProperty = (name, {
   property = normalizePropertyName(name),
@@ -79,8 +79,8 @@ const normalizeProperty = (name, {
 
 export const normalizeConfig = ({
   description = '',
-  defaultSourceKey = undefined,
-  defaultSourceProvider = undefined,
+  defaultSourceKey = false,
+  defaultSourceProvider = false,
   properties = {},
   events = [],
   slots = [],

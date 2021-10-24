@@ -29,7 +29,14 @@ class PropertyHandler {
       return;
     }
 
-    if (attribute) {
+    if (property) {
+      const newPropValue = prop2PropValue(value, type);
+      const newPropBackToValue = prop2PropValue(newPropValue, newValueType);
+      if (isEqual(value, newPropBackToValue)) {
+        this._element[property] = newPropValue;
+      }
+    }
+    else if (attribute) {
       const newAttrValue = prop2AttrValue(value, type);
       const newAttrBackToValue = attr2PropValue(newAttrValue, newValueType);
 
@@ -39,12 +46,6 @@ class PropertyHandler {
         } else {
           this._element.setAttribute(attribute, newAttrValue);
         }
-      }
-    } else {
-      const newPropValue = prop2PropValue(value, type);
-      const newPropBackToValue = prop2PropValue(newPropValue, newValueType);
-      if (isEqual(value, newPropBackToValue)) {
-        this._element[property] = newPropValue;
       }
     }
   }
