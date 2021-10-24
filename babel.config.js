@@ -1,15 +1,5 @@
-{
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "modules": false,
-        "targets": {
-          "esmodules": true
-        }
-      }
-    ]
-  ],
+module.exports = {
+  "presets": ["@babel/preset-env"],
   "plugins": [
     [
       "@babel/plugin-proposal-decorators",

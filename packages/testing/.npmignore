@@ -1,0 +1,8 @@
+node_modules
+tutorials
+docs
+jsdoc.conf.json
+*test.js
+*test.js.snap
+coverage
+*.lcov
