@@ -6,8 +6,8 @@ class WebbitConnector {
   constructor(store, elementConfigs = {}) {
     this.store = store;
     this.elementConfigs = new Map();
-    Object.entries(elementConfigs).forEach(([name, config]) => {
-      this.elementConfigs.set(name, normalizeConfig(config));
+    Object.entries(elementConfigs).forEach(([selector, config]) => {
+      this.elementConfigs.set(selector, normalizeConfig(config));
     });
 
     this.elements = new Map();
@@ -22,7 +22,7 @@ class WebbitConnector {
   }
 
   connect(element) {
-    const elementConfig = this.getElementConfig(element.tagName.toLowerCase());
+    const elementConfig = this.getMatchingElementConfig(element);
     if (this.hasElement(element) || !elementConfig) {
       return;
     }
@@ -43,9 +43,9 @@ class WebbitConnector {
       this.connect(childNode);
     });
 
-    this.elementConfigs.forEach(({ defaultSourceKey }, name) => {
+    this.elementConfigs.forEach(({ defaultSourceKey }, selector) => {
       if (defaultSourceKey) {
-        element.querySelectorAll(name).forEach(childNode => {
+        element.querySelectorAll(selector).forEach(childNode => {
           this.connect(childNode);
         });
       }
@@ -58,8 +58,7 @@ class WebbitConnector {
           const removedNodes = mutation.removedNodes || [];
           addedNodes.forEach(node => {
             if ('querySelectorAll' in node) {
-              const elementName = node.nodeName.toLowerCase();
-              const config = this.getElementConfig(elementName);
+              const config = this.getMatchingElementConfig(node);
               const defaultSourceKey = config?.defaultSourceKey;
               if (node.hasAttribute('source-key') || defaultSourceKey) {
                 this.connect(node);
@@ -69,9 +68,9 @@ class WebbitConnector {
                 this.connect(childNode);
               });
 
-              this.elementConfigs.forEach(({ defaultSourceKey }, name) => {
+              this.elementConfigs.forEach(({ defaultSourceKey }, selector) => {
                 if (defaultSourceKey) {
-                  node.querySelectorAll(name).forEach(childNode => {
+                  node.querySelectorAll(selector).forEach(childNode => {
                     this.connect(childNode);
                   });
                 }
@@ -102,12 +101,18 @@ class WebbitConnector {
     });
   }
 
-  getElementConfig(name) {
-    return this.elementConfigs.get(name);
+  getMatchingElementConfig(element) {
+    const entry = [...this.elementConfigs.entries()]
+      .find(([selector]) => element.matches(selector));
+    return entry?.[1] ?? null;
   }
 
-  hasElementConfig(name) {
-    return this.elementConfigs.has(name);
+  getElementConfig(selector) {
+    return this.elementConfigs.get(selector);
+  }
+
+  hasElementConfig(selector) {
+    return this.elementConfigs.has(selector);
   }
 
   setDefaultPropertyValue(element, property, value) {

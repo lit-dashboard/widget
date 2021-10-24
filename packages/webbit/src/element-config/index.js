@@ -29,8 +29,8 @@ const normalizeDefaultType = (type, defaultValue) => {
   return value;
 };
 
-const normalizeStringOrFalse = (value, errorMessage) => {
-  if (value === false) {
+const normalizeStringOrUndefined = (value, errorMessage) => {
+  if (value === undefined) {
     return value;
   }
   if (typeof value !== 'string') {
@@ -40,22 +40,23 @@ const normalizeStringOrFalse = (value, errorMessage) => {
 };
 
 const normalizeChangeEvent = changeEvent =>
-  normalizeStringOrFalse(changeEvent, `changeEvent must be false or a string`);
+  normalizeStringOrUndefined(changeEvent, `changeEvent must be false or a string`);
 
 const normalizeDefaultSourceKey = sourceKey =>
-  normalizeStringOrFalse(sourceKey, `defaultSourceKey must be false or a string`);
+  normalizeStringOrUndefined(sourceKey, `defaultSourceKey must be false or a string`);
 
 const normalizeDefaultSourceProvider = sourceProvider =>
-  normalizeStringOrFalse(sourceProvider, `defaultSourceProvider must be false or a string`);
+  normalizeStringOrUndefined(sourceProvider, `defaultSourceProvider must be false or a string`);
 
 const normalizeProperty = (name, {
+  property = normalizePropertyName(name),
   description = '',
   type = 'String',
   defaultValue,
   attribute = name.toLowerCase(),
   reflect = false,
   primary = false,
-  changeEvent = false,
+  changeEvent = 'change',
 } = {}) => {
   const normalizedType = normalizePropertyType(type);
   const normalizedDefaultType = normalizeDefaultType(normalizedType, defaultValue);
@@ -63,6 +64,7 @@ const normalizeProperty = (name, {
   return [
     normalizePropertyName(name),
     {
+      property,
       description: normalizeDescription(description),
       type: normalizedType,
       defaultValue: normalizedDefaultType,
@@ -77,8 +79,8 @@ const normalizeProperty = (name, {
 
 export const normalizeConfig = ({
   description = '',
-  defaultSourceKey = false,
-  defaultSourceProvider = false,
+  defaultSourceKey = undefined,
+  defaultSourceProvider = undefined,
   properties = {},
   events = [],
   slots = [],

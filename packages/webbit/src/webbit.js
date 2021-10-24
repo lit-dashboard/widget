@@ -49,8 +49,8 @@ class Webbit {
           this._onPropertyUpdate(property, value);
         });
         return [property.name, handler];
-      }
-      ));
+      })
+    );
     this.primaryPropertyConfig = properties.find(({ primary }) => primary);
     this.primaryPropertyHandler = this.primaryPropertyConfig
       ? this.propertyHandlers.get(this.primaryPropertyConfig.name)
@@ -169,8 +169,6 @@ class Webbit {
     const provider = this.store.getSourceProvider(this.sourceProvider);
 
     const propType = getValueType(value);
-
-    console.log('source:', source)
 
     if (!isSourceObject(source)) {
       if (primary) {

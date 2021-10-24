@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>test</title>
-    <script type="module" src="/src/index.js"></script>
-  </head>
-  <body>
-    <frc-boolean-box source-provider="SampleProvider" source-key="/box"></frc-boolean-box>
-    <frc-accelerometer
-      source-provider="SampleProvider"
-      source-key="/numberBar"
-    ></frc-accelerometer>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>test</title>
+  <script type="module" src="/src/index.js"></script>
+</head>
+
+<body>
+  <frc-boolean-box source-provider="SampleProvider" source-key="/box"></frc-boolean-box>
+  <frc-accelerometer source-key="/numberBar"></frc-accelerometer>
+  <form autocomplete="on">
+    <input type="checkbox" source-key="/checkbox" />
+    <input type="text" autocomplete="cc-number" name="cc-number" />
+    <input name="name" />
+    <button>Submit</button>
+  </form>
+</body>
+
 </html>

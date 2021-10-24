@@ -8,12 +8,12 @@ import {
 class PropertyHandler {
 
   get value() {
-    const { reflect, attribute, name, type } = this._property;
+    const { reflect, attribute, property, type } = this._property;
 
     if (attribute && reflect) {
       return attr2PropValue(this._element.getAttribute(attribute), type);
-    } else if (name in this._element) {
-      return this._element[name];
+    } else if (property in this._element) {
+      return this._element[property];
     } else {
       return attr2PropValue(this._element.getAttribute(attribute), type);
     }
@@ -21,7 +21,7 @@ class PropertyHandler {
 
   set value(value) {
 
-    const { attribute, name, type } = this._property;
+    const { attribute, property, type } = this._property;
     const newValueType = getValueType(value);
     const currentValue = this.value;
 
@@ -44,7 +44,7 @@ class PropertyHandler {
       const newPropValue = prop2PropValue(value, type);
       const newPropBackToValue = prop2PropValue(newPropValue, newValueType);
       if (isEqual(value, newPropBackToValue)) {
-        this._element[name] = newPropValue;
+        this._element[property] = newPropValue;
       }
     }
   }
