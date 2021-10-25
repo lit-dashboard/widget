@@ -10,10 +10,10 @@ class PropertyHandler {
   get value() {
     const { reflect, attribute, property, type } = this._property;
 
-    if (attribute && reflect) {
-      return attr2PropValue(this._element.getAttribute(attribute), type);
-    } else if (property in this._element) {
+    if (property in this._element) {
       return this._element[property];
+    } else if (attribute && reflect) {
+      return attr2PropValue(this._element.getAttribute(attribute), type);
     } else {
       return attr2PropValue(this._element.getAttribute(attribute), type);
     }
@@ -25,7 +25,11 @@ class PropertyHandler {
     const newValueType = getValueType(value);
     const currentValue = this.value;
 
-    if (isEqual(prop2PropValue(currentValue, newValueType), value)) {
+    if (value === null || typeof value === 'undefined') {
+      if (value === currentValue) {
+        return;
+      }
+    } else if (isEqual(prop2PropValue(currentValue, newValueType), value)) {
       return;
     }
 

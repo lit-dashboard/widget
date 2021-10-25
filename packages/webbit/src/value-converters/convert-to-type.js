@@ -13,13 +13,13 @@ const converters = {
 };
 
 export const prop2PropValue = (value, type) => {
-  return converters[type].prop2PropValue(value);
+  return converters[type]?.prop2PropValue(value) ?? null;
 };
 
 export const prop2AttrValue = (value, type) => {
-  return converters[type].prop2AttrValue(value);
+  return converters[type]?.prop2AttrValue(value) ?? null;
 };
 
 export const attr2PropValue = (value, type) => {
-  return converters[type].attr2PropValue(value);
+  return converters[type]?.attr2PropValue(value) ?? null;
 };

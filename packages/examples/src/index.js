@@ -11,6 +11,7 @@ const connector = new WebbitConnector(store, {
   ...elementConfigs,
   ...nativeElementConfig,
 });
+window.connector = connector;
 window.store = store;
 window.provider = store.getSourceProvider('SampleProvider');
 
