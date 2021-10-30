@@ -168,6 +168,10 @@ class WebbitConnector {
   hasElement(element) {
     return this.elements.has(element);
   }
+
+  getStore() {
+    return this.store;
+  }
 }
 
 export default WebbitConnector;

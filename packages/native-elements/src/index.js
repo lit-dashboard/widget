@@ -8,7 +8,7 @@ export default {
       disabled: { type: 'Boolean', reflect: true },
       required: { type: 'Boolean', reflect: true },
       title: { type: 'String', reflect: true }
-    }
+    },
   },
   'button': {
     properties: {
