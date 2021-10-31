@@ -1,5 +1,5 @@
 import elementConfigs from './index';
-import './matchers';
+import '@webbitjs/testing';
 
 describe("native elements", () => {
 
