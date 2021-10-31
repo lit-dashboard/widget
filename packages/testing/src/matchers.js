@@ -31,11 +31,13 @@ expect.extend({
     const {
       storeValuesFromPropertiesResult,
       propertyValuesFromStoreResult,
+      defaultPropertyValuesResult,
     } = await testElement(connector, { html, values });
 
     const pass = 
       storeValuesFromPropertiesResult.pass 
-      && propertyValuesFromStoreResult.pass;
+      && propertyValuesFromStoreResult.pass
+      && defaultPropertyValuesResult.pass;
 
     const message = () => {
       return [
@@ -49,6 +51,11 @@ expect.extend({
           'Tests setting element properties from store values',
           pass,
           propertyValuesFromStoreResult,
+        ),
+        getResultMessage(
+          'Tests element default property values',
+          pass,
+          defaultPropertyValuesResult,
         ),
       ].join('\n\n');
     };

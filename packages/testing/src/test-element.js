@@ -23,7 +23,9 @@ export default async (connector, testConfig) => {
     storeValuesFromPropertiesResult:
       await testSettingStoreValuesFromProperties(connector, testConfig),
     propertyValuesFromStoreResult:
-      await testSettingPropertyValuesFromStore(connector, testConfig)
+      await testSettingPropertyValuesFromStore(connector, testConfig),
+    defaultPropertyValuesResult:
+      await testSettingDefaultPropertyValues(connector, testConfig),
   };
 };
 
@@ -49,6 +51,20 @@ async function testSettingPropertyValuesFromStore(connector, { html, values }) {
 
   setStoreValues(endValues, properties, connector.store);
   return await checkPropertyValues(endValues, properties, element);
+}
+
+async function testSettingDefaultPropertyValues(connector, { html }) {
+  const { properties, element } = setupStoreAndElement(connector, html);
+  const defaultValues = getDefaultPropertyValues(properties);
+  return await checkPropertyValues(defaultValues, properties, element);
+}
+
+function getDefaultPropertyValues(properties) {
+  return Object.fromEntries(
+    Object.entries(properties).map(([propName, { defaultValue }]) => (
+      [propName, { value: defaultValue }]
+    ))
+  );
 }
 
 function checkStoreValues(values, connector) {
