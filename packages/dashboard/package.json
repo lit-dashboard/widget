@@ -1,20 +1,24 @@
 {
-  "name": "@webbitjs/native-elements",
+  "name": "@webbitjs/dashboard",
   "version": "1.0.0",
   "description": "",
-  "files": ["src"],
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "files": [
+    "src"
+  ],
+  "main": "./src/index",
+  "module": "./src/index",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index"
   },
   "scripts": {
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false"
   },
-  "devDependencies": {
+  "dependencies": {
+    "@vaadin/vaadin": "^21.0.3",
+    "@webbitjs/store": "^2.0.5",
     "@webbitjs/webbit": "^2.0.7",
-    "@webbitjs/store": "^2.0.5"
+    "lit": "^2.0.0-rc.2"
   },
   "repository": {
     "type": "git",
