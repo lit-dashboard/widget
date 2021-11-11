@@ -23,7 +23,7 @@ class WebbitConnector {
       });
     });
     this.#rootElement = rootElement;
-    this.#connectChildren(rootElement);
+    this.#connectChildren();
   }
 
   #connect(element: HTMLElement) {
