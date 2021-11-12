@@ -21,6 +21,7 @@
 		"node_modules",
 		".vscode-test", 
 		"packages/**/*.d.ts",
-		"./*.js"
+		"./*.js",
+		"./**/jest.config.js"
 	]
 }
