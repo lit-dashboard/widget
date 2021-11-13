@@ -2,7 +2,9 @@
   "name": "@webbitjs/native-elements",
   "version": "1.0.0",
   "description": "",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
   "exports": {
@@ -11,24 +13,23 @@
       "require": "./dist/index.umd.js"
     }
   },
-   "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false",
     "build": "vite build && npm run build:types",
     "build:types": "tsc src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint",
-    "prepare" : "npm run build",
-    "prepublishOnly" : "npm test && npm run lint",
-    "preversion" : "npm run lint",
-    "version" : "npm run format && git add -A src",
-    "postversion" : "git push && git push --tags"
-
+    "lint": "eslint src/**/*",
+    "lint:format": "eslint src/**/* --fix",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run lint && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
-    "@webbitjs/webbit": "^2.0.7",
-    "@webbitjs/store": "^2.0.5"
+    "@webbitjs/store": "^2.0.5",
+    "@webbitjs/webbit": "^2.0.7"
   },
   "repository": {
     "type": "git",

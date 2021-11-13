@@ -1,9 +1,8 @@
 import elementConfigs from './index';
 import '@webbitjs/testing';
 
-describe("native elements", () => {
-
-  it("tests a checkbox", async () => {
+describe('native elements', () => {
+  it('tests a checkbox', async () => {
     await expect({
       elementConfigs,
       html: '<input type="checkbox" />',
@@ -14,11 +13,11 @@ describe("native elements", () => {
         disabled: { start: false, end: true },
         required: { start: false, end: true },
         title: { start: '', end: 'title' },
-      }
+      },
     }).toBeValidWebbitConfig();
   });
 
-  it("tests a button", async () => {
+  it('tests a button', async () => {
     await expect({
       elementConfigs,
       html: '<button>Button</button>',
@@ -28,8 +27,7 @@ describe("native elements", () => {
         type: { start: 'submit', end: 'button' },
         disabled: { start: false, end: true },
         title: { start: '', end: 'title' },
-      }
+      },
     }).toBeValidWebbitConfig();
   });
-
 });
