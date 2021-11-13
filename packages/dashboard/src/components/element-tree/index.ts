@@ -1,9 +1,8 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators';
 import { WebbitConnector } from '@webbitjs/webbit';
-import { classMap } from 'lit/directives/class-map.js';
-import { styleMap } from 'lit/directives/style-map.js';
-
+import { classMap } from 'lit/directives/class-map';
+import { styleMap } from 'lit/directives/style-map';
 
 type TreeNode = {
   node: HTMLElement,
@@ -13,7 +12,7 @@ type TreeNode = {
 export function getNodeTree(treeWalker: TreeWalker): TreeNode {
   const node: TreeNode = {
     node: treeWalker.currentNode as HTMLElement,
-    children: []
+    children: [],
   };
   const firstChild = treeWalker.firstChild();
   if (!firstChild) {
@@ -27,18 +26,18 @@ export function getNodeTree(treeWalker: TreeWalker): TreeNode {
 }
 
 function renderTreeWalkerNode(
-  treeNode: TreeNode, 
-  render: (node: HTMLElement, renderedChildren: any[], level: number) => any,
+  treeNode: TreeNode,
+  render: (node: HTMLElement, renderedChildren: any[], renderedLevel: number) => any,
   level: number,
 ): any {
-  const renderedContent = treeNode.children.map(child => {
-    return renderTreeWalkerNode(child, render, level + 1);
-  });
+  const renderedContent = treeNode.children.map((child) => (
+    renderTreeWalkerNode(child, render, level + 1)
+  ));
   return render(treeNode.node, renderedContent, level);
 }
 
 function renderTreeWalker(
-  treeWalker: TreeWalker, 
+  treeWalker: TreeWalker,
   render: (node: HTMLElement, renderedChildren: any[], level: number) => any,
 ): any {
   const rootTreeNode = getNodeTree(treeWalker);
@@ -47,9 +46,9 @@ function renderTreeWalker(
 
 @customElement('webbit-element-tree')
 export class ElementTree extends LitElement {
-
   @property() webbitConnector?: WebbitConnector;
-  @property() private selectedElement?: HTMLElement;
+
+  @property() selectedElement?: HTMLElement;
 
   static styles = css`
     :host {
@@ -92,12 +91,6 @@ export class ElementTree extends LitElement {
     
   `;
 
-  constructor() {
-    super();
-  }
-
-
-
   render() {
     // if (!this.webbitConnector) {
     //   return;
@@ -109,33 +102,28 @@ export class ElementTree extends LitElement {
       null
     );
 
-    return renderTreeWalker(treeWalker, (element, renderedChildren, level) => {
-      return html`
-        <details 
-          style=${styleMap({
-            '--level': `${level}`,
-          })}
-          class=${classMap({ 
-            childless: renderedChildren.length === 0,
-            selected: this.selectedElement === element,
-          })}
-        >
-          <summary>
-            <div>
-              ${element.nodeName.toLowerCase()}
-              <button
-                @click=${() => {
-                  this.selectedElement = element;
-                }}
-              >
-                Select
-              </button>
-            </div>
-          </summary>
-          ${renderedChildren}
-        </details>
-      `;
-    });
+    return renderTreeWalker(treeWalker, (element, renderedChildren, level) => html`
+      <details 
+        style=${styleMap({ '--level': `${level}` })}
+        class=${classMap({
+          childless: renderedChildren.length === 0,
+          selected: this.selectedElement === element,
+        })}
+      >
+        <summary>
+          <div>
+            ${element.nodeName.toLowerCase()}
+            <button
+              @click=${() => {
+                this.selectedElement = element;
+              }}
+            >
+              Select
+            </button>
+          </div>
+        </summary>
+        ${renderedChildren}
+      </details>
+    `);
   }
 }
-

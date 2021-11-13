@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false",
-    "lint": "",
+    "lint": "eslint packages",
     "start": "npm start -w examples",
     "prepare": "husky install"
   },
