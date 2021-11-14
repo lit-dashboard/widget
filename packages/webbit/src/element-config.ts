@@ -1,13 +1,13 @@
 type StringOrFalse = string | false;
 type PropertyTypeNames = 'String' | 'Boolean' | 'Number' | 'Array' | 'Object';
-type PropertyTypes = string | boolean | number | Array<any> | object;
+type PropertyTypes = string | boolean | number | Array<any> | Record<string, unknown>;
 
 type TypeWithDefault =
   { type: 'String', defaultValue: string }
   | { type: 'Boolean', defaultValue: boolean }
   | { type: 'Number', defaultValue: number }
   | { type: 'Array', defaultValue: Array<any> }
-  | { type: 'Object', defaultValue: object }
+  | { type: 'Object', defaultValue: Record<string, unknown> }
 
 type Property = TypeWithDefault & {
   property: string,
@@ -22,15 +22,15 @@ type PropertyMap = {
   [propertyName: string]: Partial<Property>
 };
 
-type WebbitConfig = {
+export type WebbitConfig = {
   description: string,
   defaultSourceKey: StringOrFalse,
   defaultSourceProvider: StringOrFalse,
   properties: PropertyMap,
-  events: Array<any>,
-  slots: Array<any>,
-  cssProperties: Array<any>,
-  cssParts: Array<any>,
+  events: Array<Record<string, unknown>>,
+  slots: Array<Record<string, unknown>>,
+  cssProperties: Array<Record<string, unknown>>,
+  cssParts: Array<Record<string, unknown>>,
 };
 
 function getDefaultValue(type: PropertyTypeNames): PropertyTypes {
@@ -39,7 +39,9 @@ function getDefaultValue(type: PropertyTypeNames): PropertyTypes {
     case 'Boolean': return false;
     case 'Number': return 0;
     case 'Array': return [];
-    case 'Object': return {};
+    case 'Object':
+    default:
+      return {};
   }
 }
 
@@ -66,7 +68,6 @@ const normalizeProperty = (name: string, {
   };
 };
 
-
 export const normalizeConfig = ({
   description = '',
   defaultSourceKey = false,
@@ -82,7 +83,7 @@ export const normalizeConfig = ({
   defaultSourceProvider,
   properties: Object.fromEntries(
     Object.entries(properties)
-      .map(([name, property]) => [name, normalizeProperty(name, property)])
+      .map(([name, property]) => [name, normalizeProperty(name, property)]),
   ),
   events,
   slots,

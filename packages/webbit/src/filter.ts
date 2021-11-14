@@ -1,3 +1,4 @@
+import { WebbitConfig } from './element-config';
 
 type StringOrFalse = false | string;
 
@@ -6,25 +7,29 @@ type ElementConfig = {
   defaultSourceProvider: StringOrFalse,
 };
 
-function isStringOrFalse(value: any): value is StringOrFalse {
+function isStringOrFalse(value: unknown): value is StringOrFalse {
   return value === false || typeof value === 'string';
 }
 
-function isElementConfig(config: object): config is ElementConfig {
+function isElementConfig(config: Record<string, unknown>): config is ElementConfig {
   const { defaultSourceKey, defaultSourceProvider } = (config as ElementConfig);
   return isStringOrFalse(defaultSourceKey) && isStringOrFalse(defaultSourceProvider);
 }
 
 function getMatchingElementConfig(
-  elementConfigs: Map<string, object>,
-  element: HTMLElement
-): object | undefined {
+  elementConfigs: Map<string, WebbitConfig>,
+  element: HTMLElement,
+): WebbitConfig | undefined {
   const entry = [...elementConfigs.entries()]
     .find(([selector]) => element.matches(selector));
   return entry?.[1];
 }
 
-export function filterNode(node: Node, defaultSourceProvider: StringOrFalse, elementConfigs: Map<string, object>): number {
+export function filterNode(
+  node: Node,
+  defaultSourceProvider: StringOrFalse,
+  elementConfigs: Map<string, WebbitConfig>,
+): number {
   const element = node as HTMLElement;
 
   const elementConfig = getMatchingElementConfig(elementConfigs, element);
@@ -59,30 +64,30 @@ export function filterNode(node: Node, defaultSourceProvider: StringOrFalse, ele
 
 function createNodeFilter(
   defaultSourceProvider: StringOrFalse,
-  elementConfigs: Map<string, object>
+  elementConfigs: Map<string, WebbitConfig>,
 ): (node: Node) => number {
-  return function (node: Node): number {
-    return filterNode(node, defaultSourceProvider, elementConfigs);
-  };
+  return (node: Node): number => (
+    filterNode(node, defaultSourceProvider, elementConfigs)
+  );
 }
 
 export function getWebbitIterator(
   root: HTMLElement,
   defaultSourceProvider: StringOrFalse,
-  elementConfigs: Map<string, object>
-) {
+  elementConfigs: Map<string, WebbitConfig>,
+): NodeIterator {
   return document.createNodeIterator(
     root,
     NodeFilter.SHOW_ELEMENT,
-    createNodeFilter(defaultSourceProvider, elementConfigs)
+    createNodeFilter(defaultSourceProvider, elementConfigs),
   );
 }
 
 export function getWebbitTreeWalker(
   root: HTMLElement,
   defaultSourceProvider: StringOrFalse,
-  elementConfigs: Map<string, object>
-) {
+  elementConfigs: Map<string, WebbitConfig>,
+): TreeWalker {
   return document.createTreeWalker(
     root,
     NodeFilter.SHOW_ELEMENT,

@@ -1,16 +1,19 @@
-import { normalizeConfig } from './element-config';
-import Webbit from './webbit';
 import Store from '@webbitjs/store';
-import { getWebbitTreeWalker, getWebbitIterator, filterNode } from './filter';
+import { normalizeConfig, WebbitConfig } from './element-config';
+import Webbit from './webbit';
+import { getWebbitIterator, filterNode } from './filter';
 
 class WebbitConnector {
-
   readonly #store: Store;
-  readonly #elementConfigs = new Map<string, object>();
+  readonly #elementConfigs = new Map<string, WebbitConfig>();
   readonly #elements = new Map<HTMLElement, Webbit>();
   readonly #rootElement: HTMLElement;
 
-  constructor(rootElement: HTMLElement, store: Store, elementConfigs: object[] = []) {
+  constructor(
+    rootElement: HTMLElement,
+    store: Store,
+    elementConfigs: Partial<WebbitConfig>[] = [],
+  ) {
     this.#store = store;
     Object.entries(elementConfigs).forEach(([selector, config]) => {
       this.#elementConfigs.set(selector, normalizeConfig(config));
@@ -26,7 +29,7 @@ class WebbitConnector {
     this.#connectChildren();
   }
 
-  #connect(element: HTMLElement) {
+  #connect(element: HTMLElement): void {
     const elementConfig = this.getMatchingElementConfig(element);
     if (this.hasElement(element) || !elementConfig) {
       return;
@@ -35,7 +38,7 @@ class WebbitConnector {
     this.#elements.set(element, webbit);
   }
 
-  #disconnect(element: HTMLElement) {
+  #disconnect(element: HTMLElement): void {
     const elementWebbit = this.getElementWebbit(element);
     if (elementWebbit) {
       elementWebbit.disconnect();
@@ -43,14 +46,18 @@ class WebbitConnector {
     }
   }
 
-  #connectChildren() {
-    const iterator = this.#getWebbitIterator(this.#rootElement);
+  #connectIterator(element: HTMLElement): void {
+    const iterator = this.#getWebbitIterator(element);
     while (iterator.nextNode()) {
       this.#connect(iterator.referenceNode as HTMLElement);
     }
+  }
 
-    const observer = new MutationObserver(mutations => {
-      for (let mutation of mutations) {
+  #connectChildren(): void {
+    this.#connectIterator(this.#rootElement);
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
         if (mutation.type === 'childList') {
           const addedNodes = mutation.addedNodes || [];
           const removedNodes = mutation.removedNodes || [];
@@ -59,58 +66,65 @@ class WebbitConnector {
               if (this.#isWebbit(node)) {
                 this.#connect(node);
               }
-              const iterator = this.#getWebbitIterator(node as HTMLElement);
-              while (iterator.nextNode()) {
-                this.#connect(iterator.referenceNode as HTMLElement);
-              }
+              this.#connectIterator(node as HTMLElement);
             }
           });
           removedNodes.forEach(node => {
             this.#disconnect(node as HTMLElement);
-            for (let element of this.#elements.keys())
-            if (node.contains(element)) {
-              this.#disconnect(element);
-            }
+            [...this.#elements.keys()].forEach(element => {
+              if (node.contains(element)) {
+                this.#disconnect(element);
+              }
+            });
           });
         } else if (mutation.type === 'attributes' && mutation.target instanceof HTMLElement) {
           if (this.#isWebbit(mutation.target)) {
             this.#connect(mutation.target);
           }
         }
-      }
+      });
     });
 
     observer.observe(this.#rootElement, {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['source-key', 'source-provider']
+      attributeFilter: ['source-key', 'source-provider'],
     });
   }
 
-  #getWebbitIterator(element: HTMLElement) {
-    return getWebbitIterator(element, this.getStore().getDefaultSourceProvider(), this.#elementConfigs);
+  #getWebbitIterator(element: HTMLElement): NodeIterator {
+    return getWebbitIterator(
+      element,
+      this.getStore().getDefaultSourceProvider(),
+      this.#elementConfigs,
+    );
   }
 
-  #isWebbit(element: HTMLElement) {
-    return filterNode(element, this.#store.getDefaultSourceProvider(), this.#elementConfigs) === NodeFilter.FILTER_ACCEPT;
+  #isWebbit(element: HTMLElement): boolean {
+    const filterValue = filterNode(
+      element,
+      this.#store.getDefaultSourceProvider(),
+      this.#elementConfigs,
+    );
+    return filterValue === NodeFilter.FILTER_ACCEPT;
   }
 
-  getMatchingElementConfig(element: HTMLElement) {
+  getMatchingElementConfig(element: HTMLElement): WebbitConfig | undefined {
     const entry = [...this.#elementConfigs.entries()]
       .find(([selector]) => element.matches(selector));
-    return entry?.[1] ?? null;
+    return entry?.[1] ?? undefined;
   }
 
-  getElementConfig(selector: string) {
+  getElementConfig(selector: string): WebbitConfig | undefined {
     return this.#elementConfigs.get(selector);
   }
 
-  hasElementConfig(selector: string) {
+  hasElementConfig(selector: string): boolean {
     return this.#elementConfigs.has(selector);
   }
 
-  setDefaultPropertyValue(element: HTMLElement, property: string, value: any) {
+  setDefaultPropertyValue(element: HTMLElement, property: string, value: unknown): void {
     const webbit = this.getElementWebbit(element);
 
     if (webbit) {
@@ -118,7 +132,7 @@ class WebbitConnector {
     }
   }
 
-  setSourceProvider(element: HTMLElement, sourceProvider: string) {
+  setSourceProvider(element: HTMLElement, sourceProvider: string): void {
     const webbit = this.getElementWebbit(element);
 
     if (webbit) {
@@ -126,7 +140,7 @@ class WebbitConnector {
     }
   }
 
-  setSourceKey(element: HTMLElement, sourceKey: string) {
+  setSourceKey(element: HTMLElement, sourceKey: string): void {
     const webbit = this.getElementWebbit(element);
 
     if (webbit) {
@@ -134,37 +148,37 @@ class WebbitConnector {
     }
   }
 
-  getDefaultPropertyValue(element: HTMLElement, property: string) {
+  getDefaultPropertyValue(element: HTMLElement, property: string): unknown {
     const webbit = this.getElementWebbit(element);
     return webbit
       ? webbit.defaultPropertyValues[property]
-      : null;
+      : undefined;
   }
 
-  getDefaultPropertyValues(element: HTMLElement) {
+  getDefaultPropertyValues(element: HTMLElement): Record<string, unknown> {
     const webbit = this.getElementWebbit(element);
     return webbit ? webbit.defaultPropertyValues : {};
   }
 
-  getSourceProvider(element: HTMLElement) {
+  getSourceProvider(element: HTMLElement): string | undefined {
     const webbit = this.getElementWebbit(element);
     return webbit ? webbit.sourceProvider : this.#store.getDefaultSourceProvider();
   }
 
-  getSourceKey(element: HTMLElement) {
+  getSourceKey(element: HTMLElement): string | undefined {
     const webbit = this.getElementWebbit(element);
-    return webbit ? webbit.sourceKey : null;
+    return webbit ? webbit.sourceKey : undefined;
   }
 
-  getElementWebbit(element: HTMLElement) {
+  getElementWebbit(element: HTMLElement): Webbit | undefined {
     return this.#elements.get(element);
   }
 
-  hasElement(element: HTMLElement) {
+  hasElement(element: HTMLElement): boolean {
     return this.#elements.has(element);
   }
 
-  getStore() {
+  getStore(): Store {
     return this.#store;
   }
 }

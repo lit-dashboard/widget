@@ -9,6 +9,8 @@ type TreeNode = {
   children: TreeNode[]
 };
 
+type TemplateResult = ReturnType<typeof html>;
+
 export function getNodeTree(treeWalker: TreeWalker): TreeNode {
   const node: TreeNode = {
     node: treeWalker.currentNode as HTMLElement,
@@ -27,9 +29,11 @@ export function getNodeTree(treeWalker: TreeWalker): TreeNode {
 
 function renderTreeWalkerNode(
   treeNode: TreeNode,
-  render: (node: HTMLElement, renderedChildren: any[], renderedLevel: number) => any,
+  render: (
+    node: HTMLElement, renderedChildren: TemplateResult[], renderedLevel: number
+  ) => TemplateResult,
   level: number,
-): any {
+): TemplateResult {
   const renderedContent = treeNode.children.map((child) => (
     renderTreeWalkerNode(child, render, level + 1)
   ));
@@ -38,8 +42,8 @@ function renderTreeWalkerNode(
 
 function renderTreeWalker(
   treeWalker: TreeWalker,
-  render: (node: HTMLElement, renderedChildren: any[], level: number) => any,
-): any {
+  render: (node: HTMLElement, renderedChildren: TemplateResult[], level: number) => TemplateResult,
+): TemplateResult {
   const rootTreeNode = getNodeTree(treeWalker);
   return renderTreeWalkerNode(rootTreeNode, render, 0);
 }
@@ -91,7 +95,7 @@ export class ElementTree extends LitElement {
     
   `;
 
-  render() {
+  render(): ReturnType<typeof html> {
     // if (!this.webbitConnector) {
     //   return;
     // }
@@ -99,7 +103,7 @@ export class ElementTree extends LitElement {
     const treeWalker = document.createTreeWalker(
       document.body,
       NodeFilter.SHOW_ELEMENT,
-      null
+      null,
     );
 
     return renderTreeWalker(treeWalker, (element, renderedChildren, level) => html`
