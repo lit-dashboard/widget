@@ -7,6 +7,7 @@
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false",
     "lint": "eslint packages",
+    "lint-staged": "lint-staged",
     "start": "npm start -w examples",
     "prepare": "husky install"
   },
@@ -32,7 +33,9 @@
     "eslint-plugin-testing-library": "^5.0.0",
     "husky": "^7.0.4",
     "jest": "^27.0.6",
+    "lint-staged": "^12.0.3",
     "typescript": "^4.4.4",
     "vite": "^2.3.8"
-  }
+  },
+  "lint-staged": {}
 }
