@@ -11,7 +11,7 @@ type TreeNode = {
   children: TreeNode[]
 };
 
-let a = '';
+const a = '';
 
     type TemplateResult = ReturnType<typeof html>;
 
