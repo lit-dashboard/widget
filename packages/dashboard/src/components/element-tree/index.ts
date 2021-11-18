@@ -1,15 +1,17 @@
+/* eslint import/extensions: off */
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators';
+import { property } from 'lit/decorators/property.js';
+import { customElement } from 'lit/decorators/custom-element.js';
 import { WebbitConnector } from '@webbitjs/webbit';
-import { classMap } from 'lit/directives/class-map';
-import { styleMap } from 'lit/directives/style-map';
+import { classMap } from 'lit/directives/class-map.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 type TreeNode = {
   node: HTMLElement,
   children: TreeNode[]
 };
 
-type TemplateResult = ReturnType<typeof html>;
+  type TemplateResult = ReturnType<typeof html>;
 
 export function getNodeTree(treeWalker: TreeWalker): TreeNode {
   const node: TreeNode = {
