@@ -11,9 +11,7 @@ type TreeNode = {
   children: TreeNode[]
 };
 
-const a = '';
-
-    type TemplateResult = ReturnType<typeof html>;
+type TemplateResult = ReturnType<typeof html>;
 
 export function getNodeTree(treeWalker: TreeWalker): TreeNode {
   const node: TreeNode = {
