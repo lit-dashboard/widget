@@ -37,6 +37,6 @@
     "vite": "^2.3.8"
   },
   "lint-staged": {
-    "*.{js,ts}": "eslint packages --fix"
+    "*.{js,ts}": "eslint --fix"
   }
 }
