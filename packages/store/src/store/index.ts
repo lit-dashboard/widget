@@ -1,37 +1,39 @@
 import Sources from './sources';
+import SourceProvider from '../source-provider';
+
+type ProviderClass = {
+  typeName: string,
+  __WEBBIT_CLASSNAME__: 'SourceProvider',
+};
 
 /**
  @module @webbitjs/store
 */
 class Store {
-
-  constructor() {
-    this.providerTypes = {};
-    this.providers = {};
-    this.defaultSourceProvider = null;
-    this.sourceProviderListeners = [];
-    this.defaultSourceProviderListeners = [];
-    this.sources = new Sources(this);
-  }
+  private providerTypes: Record<string, typeof SourceProvider> = {};
+  private providers: Record<string, SourceProvider> = {};
+  private defaultSourceProvider: string | null = null;
+  private sourceProviderListeners: Array<(provider: string) => unknown> = [];
+  private defaultSourceProviderListeners: Array<(provider: string) => unknown> = [];
+  private sources = new Sources();
 
   /**
  * Adds a provider type.
- * 
+ *
  * @function
  * @example
  * import { SourceProvider, addSourceProviderType } from "@webbitjs/store";
- * 
+ *
  * class MyProvider extends SourceProvider {
  *   // class body
  * }
- * 
+ *
  * addSourceProviderType(MyProvider);
- * 
+ *
  * @param {SourceProvider} constructor - The source provider class
  */
-  addSourceProviderType(constructor) {
-
-    const { typeName } = constructor;
+  addSourceProviderType(constructor: unknown): void {
+    const { typeName, __WEBBIT_CLASSNAME__ } = constructor as typeof SourceProvider;
 
     if (typeof typeName !== 'string') {
       throw new Error('A typeName for your source provider type must be set.');
@@ -41,42 +43,39 @@ class Store {
       throw new Error('A source provider type with the same name has already been added.');
     }
 
-    if (constructor.__WEBBIT_CLASSNAME__ === 'SourceProvider') {
-      this.providerTypes[typeName] = constructor;
+    if (__WEBBIT_CLASSNAME__ === 'SourceProvider') {
+      this.providerTypes[typeName] = constructor as typeof SourceProvider;
     }
   }
 
-  hasSourceProviderType(typeName) {
+  hasSourceProviderType(typeName: string): boolean {
     return typeName in this.providerTypes;
   }
 
-  hasSourceProvider (providerName) {
+  hasSourceProvider(providerName: string): boolean {
     return providerName in this.providers;
   }
 
-  addSourceProvider(providerType, providerName, settings) {
-
-    settings = settings || {};
-  
-    if (typeof providerName !== 'string') {
-      providerName = providerType;
-    }
-  
+  addSourceProvider(
+    providerType: string,
+    providerName: string = providerType,
+    settings: Record<string, unknown> = {},
+  ): SourceProvider {
     if (!this.hasSourceProviderType(providerType)) {
-      throw new Error(`A source provider type with that name hasn't been added.`);
+      throw new Error('A source provider type with that name hasn\'t been added.');
     }
-  
+
     if (this.hasSourceProvider(providerName)) {
       throw new Error('A source provider with that name has already been added.');
     }
-  
+
     const SourceProvider = this.providerTypes[providerType];
-  
+
     this.providers[providerName] = new SourceProvider(this, providerName, {
       ...SourceProvider.settingsDefaults,
-      ...settings
+      ...settings,
     });
-  
+
     this.sourceProviderListeners.forEach(listener => {
       listener(providerName);
     });
@@ -87,7 +86,7 @@ class Store {
     if (typeof listener !== 'function') {
       throw new Error('listener is not a function');
     }
-  
+
     this.sourceProviderListeners.push(listener);
   }
 
@@ -95,7 +94,7 @@ class Store {
     if (!this.hasSourceProvider(providerName)) {
       return;
     }
-  
+
     const provider = this.providers[providerName];
     provider._disconnect();
     delete this.providers[providerName];
@@ -104,18 +103,18 @@ class Store {
   getSourceProvider(providerName) {
     return this.providers[providerName];
   }
-  
+
   getSourceProviderTypeNames() {
     return Object.keys(this.providerTypes);
   }
-  
+
   getSourceProviderNames() {
     return Object.keys(this.providers);
-  };
+  }
 
   setDefaultSourceProvider(providerName) {
     this.defaultSourceProvider = providerName;
-  
+
     this.defaultSourceProviderListeners.forEach(listener => {
       listener(this.defaultSourceProvider);
     });
@@ -125,37 +124,37 @@ class Store {
     if (typeof listener !== 'function') {
       throw new Error('listener is not a function');
     }
-  
+
     this.defaultSourceProviderListeners.push(listener);
   }
 
-  getDefaultSourceProvider () {
+  getDefaultSourceProvider() {
     return this.defaultSourceProvider;
   }
 
   getRawSources(providerName) {
     return this.sources.getRawSources(providerName);
-  };
-  
+  }
+
   getRawSource(providerName, key) {
     return this.sources.getRawSource(providerName, key);
   }
-  
+
   getSources(providerName) {
     return this.sources.getSources(providerName);
-  };
-  
+  }
+
   getSource(providerName, key) {
     return this.sources.getSource(providerName, key);
-  };
-  
+  }
+
   subscribe(providerName, key, callback, callImmediately) {
     return this.sources.subscribe(providerName, key, callback, callImmediately);
-  };
-  
+  }
+
   subscribeAll(providerName, callback, callImmediately) {
     return this.sources.subscribeAll(providerName, callback, callImmediately);
-  };
+  }
 
   sourcesChanged(providerName, sourceChanges) {
     return this.sources.sourcesChanged(providerName, sourceChanges);
@@ -164,7 +163,7 @@ class Store {
   clearSources(providerName) {
     return this.sources.clearSources(providerName);
   }
-  
+
   sourcesRemoved(providerName, sourceRemovals) {
     return this.sources.sourcesRemoved(providerName, sourceRemovals);
   }
