@@ -1,5 +1,4 @@
-/* eslint @typescript-eslint/no-empty-function: off */
-const noop: () => unknown = () => {};
+import { noop } from './util';
 
 type SourceUpdate = {
   type: string,
