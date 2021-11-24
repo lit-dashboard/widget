@@ -1,171 +1,128 @@
 import Sources from './sources';
 import SourceProvider from '../source-provider';
 
-type ProviderClass = {
-  typeName: string,
-  __WEBBIT_CLASSNAME__: 'SourceProvider',
+type HandlerUnsubscribers = {
+  clearSources: () => void,
+  sourcesChanged: () => void,
+  sourcesRemoved: () => void,
 };
 
 /**
  @module @webbitjs/store
 */
 class Store {
-  private providerTypes: Record<string, typeof SourceProvider> = {};
-  private providers: Record<string, SourceProvider> = {};
-  private defaultSourceProvider: string | null = null;
-  private sourceProviderListeners: Array<(provider: string) => unknown> = [];
-  private defaultSourceProviderListeners: Array<(provider: string) => unknown> = [];
-  private sources = new Sources();
-
-  /**
- * Adds a provider type.
- *
- * @function
- * @example
- * import { SourceProvider, addSourceProviderType } from "@webbitjs/store";
- *
- * class MyProvider extends SourceProvider {
- *   // class body
- * }
- *
- * addSourceProviderType(MyProvider);
- *
- * @param {SourceProvider} constructor - The source provider class
- */
-  addSourceProviderType(constructor: unknown): void {
-    const { typeName, __WEBBIT_CLASSNAME__ } = constructor as typeof SourceProvider;
-
-    if (typeof typeName !== 'string') {
-      throw new Error('A typeName for your source provider type must be set.');
-    }
-
-    if (this.hasSourceProviderType(typeName)) {
-      throw new Error('A source provider type with the same name has already been added.');
-    }
-
-    if (__WEBBIT_CLASSNAME__ === 'SourceProvider') {
-      this.providerTypes[typeName] = constructor as typeof SourceProvider;
-    }
-  }
-
-  hasSourceProviderType(typeName: string): boolean {
-    return typeName in this.providerTypes;
-  }
+  #providers: Record<string, SourceProvider> = {};
+  #defaultSourceProvider?: string;
+  #sourceProviderListeners: Array<(provider: string) => unknown> = [];
+  #defaultSourceProviderListeners: Array<(provider: string) => unknown> = [];
+  #sources = new Sources();
+  #handlerUnsubscribersMap: Map<string, HandlerUnsubscribers> = new Map();
 
   hasSourceProvider(providerName: string): boolean {
-    return providerName in this.providers;
+    return providerName in this.#providers;
   }
 
-  addSourceProvider(
-    providerType: string,
-    providerName: string = providerType,
-    settings: Record<string, unknown> = {},
-  ): SourceProvider {
-    if (!this.hasSourceProviderType(providerType)) {
-      throw new Error('A source provider type with that name hasn\'t been added.');
-    }
-
+  addSourceProvider(providerName: string, sourceProvider: SourceProvider): void {
     if (this.hasSourceProvider(providerName)) {
       throw new Error('A source provider with that name has already been added.');
     }
+    this.#providers[providerName] = sourceProvider;
 
-    const SourceProvider = this.providerTypes[providerType];
-
-    this.providers[providerName] = new SourceProvider(this, providerName, {
-      ...SourceProvider.settingsDefaults,
-      ...settings,
-    });
-
-    this.sourceProviderListeners.forEach(listener => {
+    this.#sourceProviderListeners.forEach(listener => {
       listener(providerName);
     });
-    return this.providers[providerName];
+
+    this.#handlerUnsubscribersMap.set(providerName, {
+      clearSources: sourceProvider.addClearSourcesHandler(() => {
+        this.#sources.clearSources(providerName);
+      }),
+      sourcesChanged: sourceProvider.addSourcesChangedHandler(sourceChanges => {
+        this.#sources.sourcesChanged(providerName, sourceChanges);
+      }),
+      sourcesRemoved: sourceProvider.addSourcesRemovedHandler(removals => {
+        this.#sources.sourcesRemoved(providerName, removals);
+      }),
+    });
   }
 
-  sourceProviderAdded(listener) {
-    if (typeof listener !== 'function') {
-      throw new Error('listener is not a function');
-    }
-
-    this.sourceProviderListeners.push(listener);
+  sourceProviderAdded(listener: (providerName: string) => void): void {
+    this.#sourceProviderListeners.push(listener);
   }
 
-  removeSourceProvider(providerName) {
+  removeSourceProvider(providerName: string): void {
     if (!this.hasSourceProvider(providerName)) {
       return;
     }
 
-    const provider = this.providers[providerName];
-    provider._disconnect();
-    delete this.providers[providerName];
+    const provider = this.#providers[providerName];
+    provider.disconnect();
+    delete this.#providers[providerName];
+    const {
+      clearSources,
+      sourcesChanged,
+      sourcesRemoved,
+    } = this.#handlerUnsubscribersMap.get(providerName);
+    clearSources();
+    sourcesChanged();
+    sourcesRemoved();
+    this.#handlerUnsubscribersMap.delete(providerName);
   }
 
-  getSourceProvider(providerName) {
-    return this.providers[providerName];
+  getSourceProvider(providerName: string): SourceProvider {
+    return this.#providers[providerName];
   }
 
-  getSourceProviderTypeNames() {
-    return Object.keys(this.providerTypes);
+  getSourceProviderNames(): Array<string> {
+    return Object.keys(this.#providers);
   }
 
-  getSourceProviderNames() {
-    return Object.keys(this.providers);
-  }
+  setDefaultSourceProvider(providerName: string): void {
+    this.#defaultSourceProvider = providerName;
 
-  setDefaultSourceProvider(providerName) {
-    this.defaultSourceProvider = providerName;
-
-    this.defaultSourceProviderListeners.forEach(listener => {
-      listener(this.defaultSourceProvider);
+    this.#defaultSourceProviderListeners.forEach(listener => {
+      listener(this.#defaultSourceProvider);
     });
   }
 
-  defaultSourceProviderSet(listener) {
+  defaultSourceProviderSet(listener: (providerName: string) => void): void {
     if (typeof listener !== 'function') {
       throw new Error('listener is not a function');
     }
 
-    this.defaultSourceProviderListeners.push(listener);
+    this.#defaultSourceProviderListeners.push(listener);
   }
 
-  getDefaultSourceProvider() {
-    return this.defaultSourceProvider;
+  getDefaultSourceProvider(): string {
+    return this.#defaultSourceProvider;
   }
 
-  getRawSources(providerName) {
-    return this.sources.getRawSources(providerName);
+  getRawSources(providerName: string): Record<string, unknown> {
+    return this.#sources.getRawSources(providerName);
   }
 
-  getRawSource(providerName, key) {
-    return this.sources.getRawSource(providerName, key);
+  getRawSource(providerName: string, key: string): Record<string, unknown> {
+    return this.#sources.getRawSource(providerName, key);
   }
 
-  getSources(providerName) {
-    return this.sources.getSources(providerName);
+  getSources(providerName: string): Record<string, unknown> | undefined {
+    return this.#sources.getSources(providerName);
   }
 
-  getSource(providerName, key) {
-    return this.sources.getSource(providerName, key);
+  getSource(providerName: string, key: string): Record<string, unknown> | undefined {
+    return this.#sources.getSource(providerName, key);
   }
 
-  subscribe(providerName, key, callback, callImmediately) {
-    return this.sources.subscribe(providerName, key, callback, callImmediately);
+  subscribe(
+    providerName: string,
+    key: string,
+    callback: unknown,
+    callImmediately: boolean,
+  ): unknown {
+    return this.#sources.subscribe(providerName, key, callback, callImmediately);
   }
 
-  subscribeAll(providerName, callback, callImmediately) {
-    return this.sources.subscribeAll(providerName, callback, callImmediately);
-  }
-
-  sourcesChanged(providerName, sourceChanges) {
-    return this.sources.sourcesChanged(providerName, sourceChanges);
-  }
-
-  clearSources(providerName) {
-    return this.sources.clearSources(providerName);
-  }
-
-  sourcesRemoved(providerName, sourceRemovals) {
-    return this.sources.sourcesRemoved(providerName, sourceRemovals);
+  subscribeAll(providerName: string, callback: unknown, callImmediately: boolean): unknown {
+    return this.#sources.subscribeAll(providerName, callback, callImmediately);
   }
 }
 

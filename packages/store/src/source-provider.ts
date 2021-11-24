@@ -14,15 +14,12 @@ type SourceUpdates = {
 }
 
 class SourceProvider {
+  #interval = setInterval(this.#sendUpdates.bind(this), 100);
   #sourceUpdates: SourceUpdates = {};
   #clearSourcesTimeoutId?: NodeJS.Timeout;
-  #clearSourcesListeners: Array<() => void> = [];
-  #sourcesChangedListeners: Array<(changes: Record<string, unknown>) => void> = [];
-  #sourcesRemovedListeners: Array<(removals: Array<string>) => void> = [];
-
-  constructor() {
-    setInterval(this.#sendUpdates.bind(this), 100);
-  }
+  #clearSourcesHandlers: Map<symbol, () => void> = new Map();
+  #sourcesChangedHandlers: Map<symbol, (changes: Record<string, unknown>) => void> = new Map();
+  #sourcesRemovedHandlers: Map<symbol, (removals: Array<string>) => void> = new Map();
 
   /**
    * Updates the value of a source in the store. If the source doesn't
@@ -87,7 +84,7 @@ class SourceProvider {
     // send updates now to prevent them from being incorrectly sent after
     // sources were cleared.
     this.#sendUpdates(() => {
-      this.#clearSourcesListeners.forEach(listener => listener());
+      this.#clearSourcesHandlers.forEach(listener => listener());
       callback();
     });
   }
@@ -186,7 +183,7 @@ class SourceProvider {
       }
     });
     if (Object.keys(changes).length > 0) {
-      this.#sourcesChangedListeners.forEach(listener => listener(changes));
+      this.#sourcesChangedHandlers.forEach(listener => listener(changes));
     }
   }
 
@@ -198,20 +195,36 @@ class SourceProvider {
       }
     });
     if (removals.length > 0) {
-      this.#sourcesRemovedListeners.forEach(listener => listener(removals));
+      this.#sourcesRemovedHandlers.forEach(listener => listener(removals));
     }
   }
 
-  addClearSourcesListener(listener: () => unknown): void {
-    this.#clearSourcesListeners.push(listener);
+  addClearSourcesHandler(handler: () => unknown): () => void {
+    const symbol = Symbol('clearSources');
+    this.#clearSourcesHandlers.set(symbol, handler);
+    return () => {
+      this.#clearSourcesHandlers.delete(symbol);
+    };
   }
 
-  addSourcesChangedListener(listener: (changes: Record<string, unknown>) => void): void {
-    this.#sourcesChangedListeners.push(listener);
+  addSourcesChangedHandler(handler: (changes: Record<string, unknown>) => void): () => void {
+    const symbol = Symbol('sourcesChanged');
+    this.#sourcesChangedHandlers.set(symbol, handler);
+    return () => {
+      this.#sourcesChangedHandlers.delete(symbol);
+    };
   }
 
-  addSourcesRemovedListener(listener: (removals: Array<string>) => void): void {
-    this.#sourcesRemovedListeners.push(listener);
+  addSourcesRemovedHandler(handler: (removals: Array<string>) => void): () => void {
+    const symbol = Symbol('sourcesRemoved');
+    this.#sourcesRemovedHandlers.set(symbol, handler);
+    return () => {
+      this.#sourcesRemovedHandlers.delete(symbol);
+    };
+  }
+
+  disconnect(): void {
+    clearTimeout(this.#interval);
   }
 }
 
