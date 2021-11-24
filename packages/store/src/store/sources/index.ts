@@ -1,4 +1,5 @@
 /* eslint-disable no-underscore-dangle */
+/* eslint-disable import/no-cycle */
 import SourceObjects from './source-object';
 import Subscribers from './subscribers';
 import { normalizeKey, noop } from '../../util';
@@ -17,7 +18,7 @@ import Store from '..';
 class Sources {
   readonly #rawSources: Record<string, RawSource> = {};
   readonly #sources: Record<string, ProviderSource> = {};
-  readonly #sourceObjects = new SourceObjects(this.#sources);
+  readonly #sourceObjects = new SourceObjects(this);
   readonly #subscribers = new Subscribers(this);
   readonly #store: Store;
 

@@ -1,5 +1,8 @@
+/* eslint-disable import/no-cycle */
+import { Source } from './sources/source-factory';
 import Sources from './sources';
 import SourceProvider from '../source-provider';
+import { SourceSubscriber, AllSourcesSubscriber } from './sources/subscribers';
 
 type HandlerUnsubscribers = {
   clearSources: () => void,
@@ -15,7 +18,7 @@ class Store {
   #defaultSourceProvider?: string;
   #sourceProviderListeners: Array<(provider: string) => unknown> = [];
   #defaultSourceProviderListeners: Array<(provider: string) => unknown> = [];
-  #sources = new Sources();
+  #sources = new Sources(this);
   #handlerUnsubscribersMap: Map<string, HandlerUnsubscribers> = new Map();
 
   hasSourceProvider(providerName: string): boolean {
@@ -104,24 +107,28 @@ class Store {
     return this.#sources.getRawSource(providerName, key);
   }
 
-  getSources(providerName: string): Record<string, unknown> | undefined {
+  getSources(providerName: string): Record<string, Source> | undefined {
     return this.#sources.getSources(providerName);
   }
 
-  getSource(providerName: string, key: string): Record<string, unknown> | undefined {
+  getSource(providerName: string, key: string): Source | undefined {
     return this.#sources.getSource(providerName, key);
   }
 
   subscribe(
     providerName: string,
     key: string,
-    callback: unknown,
+    callback: SourceSubscriber,
     callImmediately: boolean,
-  ): unknown {
+  ): () => void {
     return this.#sources.subscribe(providerName, key, callback, callImmediately);
   }
 
-  subscribeAll(providerName: string, callback: unknown, callImmediately: boolean): unknown {
+  subscribeAll(
+    providerName: string,
+    callback: AllSourcesSubscriber,
+    callImmediately: boolean,
+  ): () => void {
     return this.#sources.subscribeAll(providerName, callback, callImmediately);
   }
 }

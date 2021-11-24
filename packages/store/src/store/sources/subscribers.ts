@@ -4,8 +4,8 @@ import { normalizeKey } from '../../util';
 import Sources from '.';
 import { Source } from './source-factory';
 
-type SourceSubscriber = (source: Source, parentKey: string, sourceKey: string) => void;
-type AllSourcesSubscriber = (source: Source, sourceKey: string) => void;
+export type SourceSubscriber = (source: Source, parentKey: string, sourceKey: string) => void;
+export type AllSourcesSubscriber = (source: Source, sourceKey: string) => void;
 
 class Subscribers {
   #nextSubscriberId = 0;
