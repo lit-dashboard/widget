@@ -68,6 +68,8 @@ class SourceObjects {
           if (typeof sources[providerName] === 'undefined') {
             return undefined;
           }
+          console.log('get:', rawSource.__normalizedKey__, normalizedKey, rawSubSource.__normalizedKey__);
+
           return sources[providerName].getterValues[rawSubSource.__normalizedKey__];
         },
       });
