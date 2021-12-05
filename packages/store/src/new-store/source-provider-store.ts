@@ -2,11 +2,16 @@ import SourceProvider from '../source-provider';
 import Source from './source';
 import { getNormalizedKey, isSourceDead } from './utils';
 
+type SourceSubscriber = (sourceValue: unknown, parentKey: string, sourceKey: string) => void;
+type AllSourcesSubscriber = (sourceValue: unknown, sourceKey: string) => () => void;
+
 class SourceProviderStore {
   readonly #sourceObjects = new Map<string, Record<string, unknown>>();
   readonly #originalKeys = new Map<string, string>();
   readonly #sources = new Map<string, Source>();
   readonly #provider: SourceProvider;
+  readonly #subscribers: Record<string, Map<symbol, SourceSubscriber>> = {};
+  readonly #allSubscribers: Map<symbol, AllSourcesSubscriber> = new Map();
 
   constructor(provider: SourceProvider) {
     this.#provider = provider;
@@ -32,6 +37,11 @@ class SourceProviderStore {
     const normalizedKey = getNormalizedKey(key);
     const source = this.#sources.get(normalizedKey);
     source.setValue(value);
+    this.#notifySubscribers(key);
+  }
+
+  clearSources(): void {
+    this.#sources.forEach((source, key) => this.removeSource(key));
   }
 
   removeSource(key: string): void {
@@ -39,6 +49,36 @@ class SourceProviderStore {
     const source = this.#sources.get(normalizedKey);
     source.removeValue();
     this.#cleanSources(source);
+    this.#notifySubscribers(key);
+    this.#originalKeys.delete(normalizedKey);
+  }
+
+  subscribe(key: string, callback: SourceSubscriber, callImmediately: boolean): () => void {
+    const normalizedKey = getNormalizedKey(key);
+    if (typeof this.#subscribers[normalizedKey] === 'undefined') {
+      this.#subscribers[normalizedKey] = new Map();
+    }
+    const symbol = Symbol('SourceSubscriber');
+    this.#subscribers[normalizedKey].set(symbol, callback);
+    if (callImmediately) {
+      callback(this.getSourceValue(key), key, key);
+    }
+    return () => {
+      this.#subscribers[normalizedKey].delete(symbol);
+    };
+  }
+
+  subscribeAll(callback: AllSourcesSubscriber, callImmediately: boolean): () => void {
+    const symbol = Symbol('SourceSubscriberAll');
+    this.#allSubscribers.set(symbol, callback);
+    if (callImmediately) {
+      this.#originalKeys.forEach(key => {
+        callback(this.getSourceValue(key), key);
+      });
+    }
+    return () => {
+      this.#allSubscribers.delete(symbol);
+    };
   }
 
   #setOriginalKey(key: string): void {
@@ -84,6 +124,28 @@ class SourceProviderStore {
       this.#sourceObjects.set(normalizedKey, {});
     }
     return this.#sourceObjects.get(normalizedKey);
+  }
+
+  #notifySubscribers(key: string): void {
+    const normalizedKey = getNormalizedKey(key);
+    const keyParts = normalizedKey.split('/');
+    const originalKey = this.#originalKeys.get(normalizedKey);
+    const sourceValue = this.getSourceValue(key);
+
+    keyParts.forEach((keyPart, index) => {
+      const parentKey = keyParts.slice(1, index + 1).join('/');
+      const normalizedParentKey = keyParts.slice(0, index + 1).join('/');
+      if (normalizedParentKey in this.#subscribers) {
+        this.#subscribers[normalizedParentKey].forEach(subscriber => {
+          const originalParentKey = this.#originalKeys.get(normalizedParentKey) ?? parentKey;
+          subscriber(this.getSourceValue(parentKey), originalParentKey, originalKey);
+        });
+      }
+    });
+
+    this.#allSubscribers.forEach(subscriber => {
+      subscriber(sourceValue, originalKey);
+    });
   }
 }
 

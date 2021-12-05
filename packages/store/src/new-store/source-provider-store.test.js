@@ -116,4 +116,59 @@ describe('SourceProviderStore', () => {
     expect(store.getSourceValue('/a')).toEqual({ c: 2 });
     expect(source).toBe(store.getSourceValue('/a'));
   });
+
+  it('subscribes to sources that are added', () => {
+    const subscriber = jest.fn();
+    const parentSubscriber = jest.fn();
+    store.subscribe('/a/b', subscriber);
+    store.subscribe('/a', parentSubscriber);
+    store.updateSource('/a/b', 3);
+    expect(subscriber).toHaveBeenCalledWith(3, '/a/b', '/a/b');
+    expect(parentSubscriber).toHaveBeenCalledWith({ b: 3 }, '/a', '/a/b');
+  });
+
+  it('subscribes immediately to source change values', () => {
+    const subscriberNoValue = jest.fn();
+    const subscriberWithValue = jest.fn();
+    store.subscribe('/a', subscriberNoValue, true);
+    expect(subscriberNoValue).toHaveBeenCalledWith(undefined, '/a', '/a');
+    store.updateSource('/a', 3);
+    store.subscribe('/a', subscriberWithValue, true);
+    expect(subscriberWithValue).toHaveBeenCalledWith(3, '/a', '/a');
+  });
+
+  it('subscribes to all sources that are added', () => {
+    const subscriber = jest.fn();
+    store.subscribeAll(subscriber, true);
+    expect(subscriber).toHaveBeenCalledTimes(0);
+    store.updateSource('/a/b', 3);
+    store.updateSource('/a/c/d', 5);
+    expect(subscriber).toHaveBeenCalledTimes(2);
+    expect(subscriber).toHaveBeenNthCalledWith(1, 3, '/a/b');
+    expect(subscriber).toHaveBeenNthCalledWith(2, 5, '/a/c/d');
+  });
+
+  it('subscribes to source removals', () => {
+    const subscriber = jest.fn();
+    store.updateSource('/a', 3);
+    store.subscribe('/a', subscriber);
+    store.removeSource('/a');
+    expect(subscriber).toHaveBeenCalledTimes(1);
+    expect(subscriber).toHaveBeenCalledWith(undefined, '/a', '/a');
+    store.updateSource('/a', 'b');
+    expect(subscriber).toHaveBeenCalledTimes(2);
+    expect(subscriber).toHaveBeenNthCalledWith(2, 'b', '/a', '/a');
+  });
+
+  it('unsubscribes from sources', () => {
+    const subscriber = jest.fn();
+    const subscriberAll = jest.fn();
+    const unsubscribe = store.subscribe('/a', subscriber);
+    const unsubscribeAll = store.subscribeAll(subscriberAll);
+    unsubscribe();
+    unsubscribeAll();
+    store.updateSource('/a', 3);
+    expect(subscriber).not.toHaveBeenCalled();
+    expect(subscriberAll).not.toHaveBeenCalled();
+  });
 });
