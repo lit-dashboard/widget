@@ -1,8 +1,6 @@
-/* eslint-disable import/no-cycle */
-import { Source } from './sources/source-factory';
-import Sources from './sources';
+import SourceProviderStore, { SourceSubscriber, AllSourcesSubscriber } from './source-provider-store';
 import SourceProvider from '../source-provider';
-import { SourceSubscriber, AllSourcesSubscriber } from './sources/subscribers';
+import Source from './source';
 
 type HandlerUnsubscribers = {
   clearSources: () => void,
@@ -10,26 +8,23 @@ type HandlerUnsubscribers = {
   sourcesRemoved: () => void,
 };
 
-/**
- @module @webbitjs/store
-*/
 class Store {
-  #providers: Record<string, SourceProvider> = {};
-  #defaultSourceProvider?: string;
+  #sourceProviderStores: Record<string, SourceProviderStore> = {};
   #sourceProviderListeners: Array<(provider: string) => unknown> = [];
-  #defaultSourceProviderListeners: Array<(provider: string) => unknown> = [];
-  #sources = new Sources(this);
   #handlerUnsubscribersMap: Map<string, HandlerUnsubscribers> = new Map();
+  #defaultSourceProvider?: string;
+  #defaultSourceProviderListeners: Array<(provider: string) => unknown> = [];
 
   hasSourceProvider(providerName: string): boolean {
-    return providerName in this.#providers;
+    return providerName in this.#sourceProviderStores;
   }
 
   addSourceProvider(providerName: string, sourceProvider: SourceProvider): void {
     if (this.hasSourceProvider(providerName)) {
       throw new Error('A source provider with that name has already been added.');
     }
-    this.#providers[providerName] = sourceProvider;
+    const providerStore = new SourceProviderStore(sourceProvider);
+    this.#sourceProviderStores[providerName] = providerStore;
 
     this.#sourceProviderListeners.forEach(listener => {
       listener(providerName);
@@ -37,13 +32,15 @@ class Store {
 
     this.#handlerUnsubscribersMap.set(providerName, {
       clearSources: sourceProvider.addClearSourcesHandler(() => {
-        this.#sources.clearSources(providerName);
+        providerStore.clearSources();
       }),
       sourcesChanged: sourceProvider.addSourcesChangedHandler(sourceChanges => {
-        this.#sources.sourcesChanged(providerName, sourceChanges);
+        Object.entries(sourceChanges).forEach(([key, value]) => {
+          providerStore.updateSource(key, value);
+        });
       }),
       sourcesRemoved: sourceProvider.addSourcesRemovedHandler(removals => {
-        this.#sources.sourcesRemoved(providerName, removals);
+        removals.forEach(key => providerStore.removeSource(key));
       }),
     });
   }
@@ -56,10 +53,9 @@ class Store {
     if (!this.hasSourceProvider(providerName)) {
       return;
     }
-
-    const provider = this.#providers[providerName];
+    const provider = this.getSourceProvider(providerName);
     provider.disconnect();
-    delete this.#providers[providerName];
+    delete this.#sourceProviderStores[providerName];
     const {
       clearSources,
       sourcesChanged,
@@ -72,11 +68,11 @@ class Store {
   }
 
   getSourceProvider(providerName: string): SourceProvider {
-    return this.#providers[providerName];
+    return this.#sourceProviderStores[providerName].getSourceProvider();
   }
 
   getSourceProviderNames(): Array<string> {
-    return Object.keys(this.#providers);
+    return Object.keys(this.#sourceProviderStores);
   }
 
   setDefaultSourceProvider(providerName: string): void {
@@ -99,20 +95,20 @@ class Store {
     return this.#defaultSourceProvider;
   }
 
-  getRawSources(providerName: string): Record<string, unknown> {
-    return this.#sources.getRawSources(providerName);
+  getRootSource(providerName: string): Source | undefined {
+    return this.#sourceProviderStores[providerName]?.getRootSource();
   }
 
-  getRawSource(providerName: string, key: string): Record<string, unknown> {
-    return this.#sources.getRawSource(providerName, key);
-  }
-
-  getSources(providerName: string): Record<string, Source> | undefined {
-    return this.#sources.getSources(providerName);
+  getRootSourceValue(providerName: string): unknown {
+    return this.#sourceProviderStores[providerName]?.getRootSourceValue();
   }
 
   getSource(providerName: string, key: string): Source | undefined {
-    return this.#sources.getSource(providerName, key);
+    return this.#sourceProviderStores[providerName]?.getSource(key);
+  }
+
+  getSourceValue(providerName: string, key: string): unknown {
+    return this.#sourceProviderStores[providerName]?.getSourceValue(key);
   }
 
   subscribe(
@@ -121,7 +117,7 @@ class Store {
     callback: SourceSubscriber,
     callImmediately: boolean,
   ): () => void {
-    return this.#sources.subscribe(providerName, key, callback, callImmediately);
+    return this.#sourceProviderStores[providerName]?.subscribe(key, callback, callImmediately);
   }
 
   subscribeAll(
@@ -129,7 +125,7 @@ class Store {
     callback: AllSourcesSubscriber,
     callImmediately: boolean,
   ): () => void {
-    return this.#sources.subscribeAll(providerName, callback, callImmediately);
+    return this.#sourceProviderStores[providerName]?.subscribeAll(callback, callImmediately);
   }
 }
 

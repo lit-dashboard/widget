@@ -2,8 +2,8 @@ import SourceProvider from '../source-provider';
 import Source from './source';
 import { getNormalizedKey, isSourceDead } from './utils';
 
-type SourceSubscriber = (sourceValue: unknown, parentKey: string, sourceKey: string) => void;
-type AllSourcesSubscriber = (sourceValue: unknown, sourceKey: string) => () => void;
+export type SourceSubscriber = (sourceValue: unknown, parentKey: string, sourceKey: string) => void;
+export type AllSourcesSubscriber = (sourceValue: unknown, sourceKey: string) => () => void;
 
 class SourceProviderStore {
   readonly #sourceObjects = new Map<string, Record<string, unknown>>();
@@ -18,6 +18,10 @@ class SourceProviderStore {
     this.#sources.set('', new Source(provider, {}, ''));
   }
 
+  getSourceProvider(): SourceProvider {
+    return this.#provider;
+  }
+
   getSource(key: string): Source | undefined {
     const normalizedKey = getNormalizedKey(key);
     return this.#sources.get(normalizedKey);
@@ -27,8 +31,12 @@ class SourceProviderStore {
     return this.getSource(key)?.getSourceValue();
   }
 
+  getRootSource(): Source {
+    return this.#sources.get('');
+  }
+
   getRootSourceValue(): unknown {
-    return this.#sources.get('')?.getSourceValue();
+    return this.getRootSource().getSourceValue();
   }
 
   updateSource(key: string, value: unknown): void {
