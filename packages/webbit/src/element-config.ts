@@ -1,4 +1,3 @@
-type StringOrFalse = string | false;
 type PropertyTypeNames = 'String' | 'Boolean' | 'Number' | 'Array' | 'Object';
 type PropertyTypes = string | boolean | number | Array<any> | Record<string, unknown>;
 
@@ -9,23 +8,23 @@ type TypeWithDefault =
   | { type: 'Array', defaultValue: Array<any> }
   | { type: 'Object', defaultValue: Record<string, unknown> }
 
-type Property = TypeWithDefault & {
+export type WebbitProperty = TypeWithDefault & {
   property: string,
   description: string,
-  attribute: StringOrFalse,
+  attribute?: string,
   reflect: boolean,
   primary: boolean,
-  changeEvent: StringOrFalse,
+  changeEvent?: string,
 };
 
 type PropertyMap = {
-  [propertyName: string]: Partial<Property>
+  [propertyName: string]: Partial<WebbitProperty>
 };
 
 export type WebbitConfig = {
   description: string,
-  defaultSourceKey: StringOrFalse,
-  defaultSourceProvider: StringOrFalse,
+  defaultSourceKey?: string,
+  defaultSourceProvider?: string,
   properties: PropertyMap,
   events: Array<Record<string, unknown>>,
   slots: Array<Record<string, unknown>>,
@@ -54,7 +53,7 @@ const normalizeProperty = (name: string, {
   reflect = false,
   primary = false,
   changeEvent = false,
-}: Partial<Property> = {}): Property => {
+}: Partial<WebbitProperty> = {}): WebbitProperty => {
   const normalizedDefaultType = defaultValue ?? getDefaultValue(type) as any;
   return {
     property,

@@ -31,7 +31,7 @@ class SourceProvider {
    * @param {*} value - The new value.
    */
   updateSource(key: string, value: unknown): void {
-    clearTimeout(this.#clearSourcesTimeoutId);
+    clearTimeout(this.#clearSourcesTimeoutId as unknown as number);
 
     if (this.#sourceUpdates[key] === undefined) {
       this.#sourceUpdates[key] = {
@@ -102,7 +102,7 @@ class SourceProvider {
    * have been cleared.
    */
   clearSourcesWithTimeout(timeout: number, callback: () => void): void {
-    clearTimeout(this.#clearSourcesTimeoutId);
+    clearTimeout(this.#clearSourcesTimeoutId as unknown as number);
     this.#clearSourcesTimeoutId = setTimeout(() => {
       this.clearSources(callback);
     }, timeout);
@@ -150,12 +150,12 @@ class SourceProvider {
       return;
     }
     // send first updates then last
-    const firstUpdates = {};
-    const lastUpdates = {};
+    const firstUpdates: Record<string, SourceUpdate> = {};
+    const lastUpdates: Record<string, SourceUpdate> = {};
 
     Object.entries(this.#sourceUpdates).forEach(([key, values]) => {
       firstUpdates[key] = values.first;
-      if ('last' in values) { lastUpdates[key] = values.last; }
+      if (typeof values.last !== 'undefined') { lastUpdates[key] = values.last; }
     });
 
     this.#sendChanges(firstUpdates);

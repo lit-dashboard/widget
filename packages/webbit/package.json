@@ -10,7 +10,17 @@
   },
   "scripts": {
     "test": "jest",
-    "test:coverage": "npm test -- --coverage --watchAll=false"
+    "test:coverage": "npm test -- --coverage --watchAll=false",
+    "generate-docs": "jsdoc -c jsdoc.conf.json",
+    "build": "vite build && npm run build:types",
+    "build:types": "tsc -p ./ --declaration --emitDeclarationOnly --declarationDir ./dist",
+    "lint": "eslint src/**/*",
+    "lint:format": "eslint src/**/* --fix",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run lint && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "@webbitjs/store": "^2.0.5"

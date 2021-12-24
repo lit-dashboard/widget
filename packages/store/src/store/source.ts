@@ -61,7 +61,11 @@ class Source {
 
   addChild(key: string, source: Source): void {
     this.#children[key] = source;
-    Object.defineProperty(this.#sourceObject, key.split('/').at(-1), {
+    const property = key.split('/').at(-1);
+    if (typeof property === 'undefined') {
+      return;
+    }
+    Object.defineProperty(this.#sourceObject, property, {
       configurable: true,
       enumerable: true,
       set(value: unknown) {
@@ -75,7 +79,10 @@ class Source {
 
   removeChild(key: string): void {
     delete this.#children[key];
-    delete this.#sourceObject[key.split('/').at(-1)];
+    const property = key.split('/').at(-1);
+    if (typeof property !== 'undefined') {
+      delete this.#sourceObject[property];
+    }
   }
 
   getParent(): Source | undefined {

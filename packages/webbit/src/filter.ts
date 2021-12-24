@@ -13,7 +13,7 @@ function isStringOrFalse(value: unknown): value is StringOrFalse {
 
 function isElementConfig(config: Record<string, unknown>): config is ElementConfig {
   const { defaultSourceKey, defaultSourceProvider } = (config as ElementConfig);
-  return isStringOrFalse(defaultSourceKey) && isStringOrFalse(defaultSourceProvider);
+  return isStringOrFalse(defaultSourceKey) && (typeof defaultSourceProvider === 'string' || typeof defaultSourceProvider === 'undefined');
 }
 
 function getMatchingElementConfig(
@@ -27,7 +27,7 @@ function getMatchingElementConfig(
 
 export function filterNode(
   node: Node,
-  defaultSourceProvider: StringOrFalse,
+  defaultSourceProvider: string | undefined,
   elementConfigs: Map<string, WebbitConfig>,
 ): number {
   const element = node as HTMLElement;
@@ -63,7 +63,7 @@ export function filterNode(
 }
 
 function createNodeFilter(
-  defaultSourceProvider: StringOrFalse,
+  defaultSourceProvider: string | undefined,
   elementConfigs: Map<string, WebbitConfig>,
 ): (node: Node) => number {
   return (node: Node): number => (
@@ -73,7 +73,7 @@ function createNodeFilter(
 
 export function getWebbitIterator(
   root: HTMLElement,
-  defaultSourceProvider: StringOrFalse,
+  defaultSourceProvider: string | undefined,
   elementConfigs: Map<string, WebbitConfig>,
 ): NodeIterator {
   return document.createNodeIterator(
@@ -85,7 +85,7 @@ export function getWebbitIterator(
 
 export function getWebbitTreeWalker(
   root: HTMLElement,
-  defaultSourceProvider: StringOrFalse,
+  defaultSourceProvider: string | undefined,
   elementConfigs: Map<string, WebbitConfig>,
 ): TreeWalker {
   return document.createTreeWalker(

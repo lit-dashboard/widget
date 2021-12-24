@@ -19,7 +19,7 @@
     "test:coverage": "npm test -- --coverage --watchAll=false",
     "generate-docs": "jsdoc -c jsdoc.conf.json",
     "build": "vite build && npm run build:types",
-    "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir ./dist",
+    "build:types": "tsc -p ./ --declaration --emitDeclarationOnly --declarationDir ./dist",
     "lint": "eslint src/**/*",
     "lint:format": "eslint src/**/* --fix",
     "prepare": "npm run build",

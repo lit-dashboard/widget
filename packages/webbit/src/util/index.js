@@ -13,14 +13,6 @@ export const camelToKebab = (string) => {
     .toLowerCase();
 };
 
-export const isSourceObject = (value) => {
-  return (
-    value instanceof Object
-    && value !== null
-    && value.constructor.__WEBBIT_CLASSNAME__ === 'Source'
-  );
-};
-
 export const getValueType = value => {
   if (typeof value === 'string') {
     return 'String';
@@ -163,3 +155,5 @@ export const setAttributeValue = (element, attributeName, value) => {
     element.setAttribute(attributeName, value);
   }
 }
+
+export function noop() {}

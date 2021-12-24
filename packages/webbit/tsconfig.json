@@ -8,9 +8,9 @@
 			"dom"
 		],
 		"sourceMap": true,
-		"rootDir": "./",
 		"strict": true,   /* enable all strict type-checking options */
 		"experimentalDecorators": true,
+		"strictNullChecks": true,
 		"allowJs": true,
 		/* Additional Checks */
 		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
@@ -21,9 +21,7 @@
 		"node_modules",
 		".vscode-test", 
 		"dist/**/*.d.ts",
-		"src/**/*.js",
 		"jest.config.js",
-		"tsconfig.json"
 	],
-	"include": ["src/**/*"],
+	"include": ["src/**/*.ts"],
 }

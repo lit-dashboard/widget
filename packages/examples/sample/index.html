@@ -10,14 +10,10 @@
 
 <body>
   <frc-boolean-box source-provider="SampleProvider" source-key="/box"></frc-boolean-box>
-  <frc-accelerometer style="display: none" source-key="/numberBar"></frc-accelerometer>
-  <form autocomplete="on">
-    <input type="checkbox" source-key="/checkbox" />
-    <input type="text" autocomplete="cc-number" name="cc-number" value="sdfsd" />
-    <input name="name" />
-    <button source-key="/button">Submit</button>
-  </form>
-  <webbit-element-tree></webbit-element-tree>
+  <!-- <frc-accelerometer source-key="/numberBar"></frc-accelerometer> -->
+  <input type="checkbox" source-key="/box" source-provider="SampleProvider" />
+  <input type="checkbox" source-key="/box" source-provider="SampleProvider" />
+  <!-- <webbit-element-tree></webbit-element-tree> -->
 </body>
 
 </html>

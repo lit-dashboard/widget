@@ -56,11 +56,11 @@ class Store {
     const provider = this.getSourceProvider(providerName);
     provider.disconnect();
     delete this.#sourceProviderStores[providerName];
-    const {
-      clearSources,
-      sourcesChanged,
-      sourcesRemoved,
-    } = this.#handlerUnsubscribersMap.get(providerName);
+    const unsubscriberMap = this.#handlerUnsubscribersMap.get(providerName);
+    if (typeof unsubscriberMap === 'undefined') {
+      return;
+    }
+    const { clearSources, sourcesChanged, sourcesRemoved } = unsubscriberMap;
     clearSources();
     sourcesChanged();
     sourcesRemoved();
@@ -79,7 +79,7 @@ class Store {
     this.#defaultSourceProvider = providerName;
 
     this.#defaultSourceProviderListeners.forEach(listener => {
-      listener(this.#defaultSourceProvider);
+      listener(providerName);
     });
   }
 
@@ -91,7 +91,7 @@ class Store {
     this.#defaultSourceProviderListeners.push(listener);
   }
 
-  getDefaultSourceProvider(): string {
+  getDefaultSourceProvider(): string | undefined {
     return this.#defaultSourceProvider;
   }
 

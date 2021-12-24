@@ -32,7 +32,7 @@ class SourceProviderStore {
   }
 
   getRootSource(): Source {
-    return this.#sources.get('');
+    return this.#sources.get('') as Source;
   }
 
   getRootSourceValue(): unknown {
@@ -44,7 +44,7 @@ class SourceProviderStore {
     this.#createSources(key);
     const normalizedKey = getNormalizedKey(key);
     const source = this.#sources.get(normalizedKey);
-    source.setValue(value);
+    source?.setValue(value);
     this.#notifySubscribers(key);
   }
 
@@ -55,10 +55,12 @@ class SourceProviderStore {
   removeSource(key: string): void {
     const normalizedKey = getNormalizedKey(key);
     const source = this.#sources.get(normalizedKey);
-    source.removeValue();
-    this.#cleanSources(source);
-    this.#notifySubscribers(key);
-    this.#originalKeys.delete(normalizedKey);
+    if (source) {
+      source.removeValue();
+      this.#cleanSources(source);
+      this.#notifySubscribers(key);
+      this.#originalKeys.delete(normalizedKey);
+    }
   }
 
   subscribe(key: string, callback: SourceSubscriber, callImmediately: boolean): () => void {
@@ -99,7 +101,7 @@ class SourceProviderStore {
   #createSources(key: string): void {
     const normalizedKey = getNormalizedKey(key);
     const keyParts = normalizedKey.split('/');
-    let parentKey;
+    let parentKey: string;
     keyParts.forEach((part, index) => {
       const childKey = keyParts.slice(0, index + 1).join('/');
       if (!this.#sources.has(childKey)) {
@@ -111,7 +113,7 @@ class SourceProviderStore {
           parentSource,
         );
         this.#sources.set(childKey, childSource);
-        parentSource.addChild(childKey, childSource);
+        parentSource?.addChild(childKey, childSource);
       }
       parentKey = childKey;
     });
@@ -131,7 +133,7 @@ class SourceProviderStore {
     if (!this.#sourceObjects.has(normalizedKey)) {
       this.#sourceObjects.set(normalizedKey, {});
     }
-    return this.#sourceObjects.get(normalizedKey);
+    return this.#sourceObjects.get(normalizedKey) as Record<string, unknown>;
   }
 
   #notifySubscribers(key: string): void {
@@ -139,6 +141,10 @@ class SourceProviderStore {
     const keyParts = normalizedKey.split('/');
     const originalKey = this.#originalKeys.get(normalizedKey);
     const sourceValue = this.getSourceValue(key);
+
+    if (!originalKey) {
+      return;
+    }
 
     keyParts.forEach((keyPart, index) => {
       const parentKey = keyParts.slice(1, index + 1).join('/');
