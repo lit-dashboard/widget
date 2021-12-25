@@ -18,7 +18,7 @@ export type WebbitProperty = TypeWithDefault & {
 };
 
 type PropertyMap = {
-  [propertyName: string]: Partial<WebbitProperty>
+  [propertyName: string]: WebbitProperty
 };
 
 export type WebbitConfig = {
@@ -69,8 +69,8 @@ const normalizeProperty = (name: string, {
 
 export const normalizeConfig = ({
   description = '',
-  defaultSourceKey = false,
-  defaultSourceProvider = false,
+  defaultSourceKey,
+  defaultSourceProvider,
   properties = {},
   events = [],
   slots = [],
