@@ -122,6 +122,18 @@ class Webbit {
     this.#updateSubscription();
   }
 
+  setDefaultPropertyValue(property: string, value: unknown): void {
+    this.#defaultPropertyValues[property] = value;
+  }
+
+  getDefaultPropertyValue(property: string): unknown {
+    return this.#defaultPropertyValues[property];
+  }
+
+  getDefaultPropertyValues(): Record<string, unknown> {
+    return this.#defaultPropertyValues;
+  }
+
   #updateSubscription(): void {
     if (!this.#connected) {
       this.#unsubscribe();

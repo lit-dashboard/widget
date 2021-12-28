@@ -128,7 +128,7 @@ class WebbitConnector {
     const webbit = this.getElementWebbit(element);
 
     if (webbit) {
-      webbit.defaultPropertyValues[property] = value;
+      webbit.setDefaultPropertyValue(property, value);
     }
   }
 
@@ -151,13 +151,13 @@ class WebbitConnector {
   getDefaultPropertyValue(element: HTMLElement, property: string): unknown {
     const webbit = this.getElementWebbit(element);
     return webbit
-      ? webbit.defaultPropertyValues[property]
+      ? webbit.getDefaultPropertyValue(property)
       : undefined;
   }
 
   getDefaultPropertyValues(element: HTMLElement): Record<string, unknown> {
     const webbit = this.getElementWebbit(element);
-    return webbit ? webbit.defaultPropertyValues : {};
+    return webbit ? webbit.getDefaultPropertyValues() : {};
   }
 
   getSourceProvider(element: HTMLElement): string | undefined {

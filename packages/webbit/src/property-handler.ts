@@ -1,4 +1,4 @@
-import { isEqual, getValueType,noop } from './util';
+import { isEqual, getValueType, noop } from './util';
 import {
   attr2PropValue,
   prop2AttrValue,
