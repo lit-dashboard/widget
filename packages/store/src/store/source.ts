@@ -48,7 +48,7 @@ class Source {
   }
 
   setSourceValue(value: unknown): void {
-    this.#provider.userUpdate(this.#key, value);
+    this.#provider.userUpdate(this.#key.slice(1), value);
   }
 
   getChildren(): Record<string, Source> {

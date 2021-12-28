@@ -5,6 +5,7 @@ describe('SourceProviderStore', () => {
   let store;
   let provider;
   beforeEach(() => {
+    jest.useFakeTimers();
     provider = new SourceProvider();
     store = new SourceProviderStore(provider);
   });
@@ -170,5 +171,13 @@ describe('SourceProviderStore', () => {
     store.updateSource('/a', 3);
     expect(subscriber).not.toHaveBeenCalled();
     expect(subscriberAll).not.toHaveBeenCalled();
+  });
+
+  it('updates the source value', () => {
+    store.updateSource('/a/b', 3);
+    const source = store.getSourceValue('/a');
+    source.b = 5;
+    jest.advanceTimersByTime(100);
+    expect(store.getSourceValue('/a/b')).toBe(5);
   });
 });

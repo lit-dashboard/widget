@@ -149,6 +149,7 @@ class SourceProvider {
       callback();
       return;
     }
+
     // send first updates then last
     const firstUpdates: Record<string, SourceUpdate> = {};
     const lastUpdates: Record<string, SourceUpdate> = {};

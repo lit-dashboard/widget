@@ -206,30 +206,29 @@ class Webbit {
   }
 
   #onPropertyUpdate({ name, primary }: { name: string, primary: boolean }, value: unknown): void {
-    const { source, sourceProvider, sourceKey } = this;
-    if (typeof sourceProvider === 'undefined' || typeof source === 'undefined' || typeof sourceKey === 'undefined') {
+    if (typeof this.source === 'undefined') {
       return;
     }
-    const provider = this.#store.getSourceProvider(sourceProvider);
     const propType = getValueType(value);
-    const children = source.getChildren();
+    const children = this.source.getChildren();
 
-    if (!source.hasChildren()) {
-      if (primary) {
-        if (value === null) {
-          if (source !== null) {
-            provider.userUpdate(sourceKey, value);
-          }
-        } else {
-          const newSourceValueType = getValueType(source) || propType;
-          const newSourceValue = prop2PropValue(value, newSourceValueType);
-          const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
-          if (
-            isEqual(value, newSourceBackToPropValue)
-            && !isEqual(source, newSourceValue)
-          ) {
-            provider.userUpdate(sourceKey, newSourceValue);
-          }
+    if (!this.source.hasChildren()) {
+      if (!primary) {
+        return;
+      }
+      if (value === null) {
+        if (this.source.getSourceValue() !== null) {
+          this.source.setSourceValue(value);
+        }
+      } else {
+        const newSourceValueType = getValueType(this.source.getSourceValue()) || propType;
+        const newSourceValue = prop2PropValue(value, newSourceValueType);
+        const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
+        if (
+          isEqual(value, newSourceBackToPropValue)
+            && !isEqual(this.source.getSourceValue(), newSourceValue)
+        ) {
+          this.source.setSourceValue(newSourceValue);
         }
       }
     } else if (value === null) {
@@ -237,12 +236,12 @@ class Webbit {
         children[name].setSourceValue(value);
       }
     } else {
-      const newSourceValueType = getValueType(children[name]) || propType;
+      const newSourceValueType = getValueType(children[name].getSourceValue()) || propType;
       const newSourceValue = prop2PropValue(value, newSourceValueType);
       const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
       if (
         isEqual(value, newSourceBackToPropValue)
-        && !isEqual(children[name], newSourceValue)
+        && !isEqual(children[name].getSourceValue(), newSourceValue)
       ) {
         children[name].setSourceValue(newSourceValue);
       }

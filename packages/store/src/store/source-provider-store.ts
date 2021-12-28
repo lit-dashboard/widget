@@ -4,6 +4,11 @@ import { getNormalizedKey, isSourceDead } from './utils';
 
 export type SourceSubscriber = (sourceValue: unknown, parentKey: string, sourceKey: string) => void;
 export type AllSourcesSubscriber = (sourceValue: unknown, sourceKey: string) => () => void;
+type HandlerUnsubscribers = {
+  clearSources: () => void,
+  sourcesChanged: () => void,
+  sourcesRemoved: () => void,
+};
 
 class SourceProviderStore {
   readonly #sourceObjects = new Map<string, Record<string, unknown>>();
@@ -12,10 +17,25 @@ class SourceProviderStore {
   readonly #provider: SourceProvider;
   readonly #subscribers: Record<string, Map<symbol, SourceSubscriber>> = {};
   readonly #allSubscribers: Map<symbol, AllSourcesSubscriber> = new Map();
+  readonly #handlerUnsubscribers: HandlerUnsubscribers;
 
   constructor(provider: SourceProvider) {
     this.#provider = provider;
     this.#sources.set('', new Source(provider, {}, ''));
+
+    this.#handlerUnsubscribers = {
+      clearSources: provider.addClearSourcesHandler(() => {
+        this.clearSources();
+      }),
+      sourcesChanged: provider.addSourcesChangedHandler(sourceChanges => {
+        Object.entries(sourceChanges).forEach(([key, value]) => {
+          this.updateSource(key, value);
+        });
+      }),
+      sourcesRemoved: provider.addSourcesRemovedHandler(removals => {
+        removals.forEach(key => this.removeSource(key));
+      }),
+    };
   }
 
   getSourceProvider(): SourceProvider {
@@ -89,6 +109,13 @@ class SourceProviderStore {
     return () => {
       this.#allSubscribers.delete(symbol);
     };
+  }
+
+  unsubscribeFromProvider(): void {
+    const { clearSources, sourcesChanged, sourcesRemoved } = this.#handlerUnsubscribers;
+    clearSources();
+    sourcesChanged();
+    sourcesRemoved();
   }
 
   #setOriginalKey(key: string): void {

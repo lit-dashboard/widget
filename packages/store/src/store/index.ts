@@ -2,16 +2,9 @@ import SourceProviderStore, { SourceSubscriber, AllSourcesSubscriber } from './s
 import SourceProvider from '../source-provider';
 import Source from './source';
 
-type HandlerUnsubscribers = {
-  clearSources: () => void,
-  sourcesChanged: () => void,
-  sourcesRemoved: () => void,
-};
-
 class Store {
   #sourceProviderStores: Record<string, SourceProviderStore> = {};
   #sourceProviderListeners: Array<(provider: string) => unknown> = [];
-  #handlerUnsubscribersMap: Map<string, HandlerUnsubscribers> = new Map();
   #defaultSourceProvider?: string;
   #defaultSourceProviderListeners: Array<(provider: string) => unknown> = [];
 
@@ -29,20 +22,6 @@ class Store {
     this.#sourceProviderListeners.forEach(listener => {
       listener(providerName);
     });
-
-    this.#handlerUnsubscribersMap.set(providerName, {
-      clearSources: sourceProvider.addClearSourcesHandler(() => {
-        providerStore.clearSources();
-      }),
-      sourcesChanged: sourceProvider.addSourcesChangedHandler(sourceChanges => {
-        Object.entries(sourceChanges).forEach(([key, value]) => {
-          providerStore.updateSource(key, value);
-        });
-      }),
-      sourcesRemoved: sourceProvider.addSourcesRemovedHandler(removals => {
-        removals.forEach(key => providerStore.removeSource(key));
-      }),
-    });
   }
 
   sourceProviderAdded(listener: (providerName: string) => void): void {
@@ -55,16 +34,9 @@ class Store {
     }
     const provider = this.getSourceProvider(providerName);
     provider.disconnect();
+    const providerStore = this.#sourceProviderStores[providerName];
+    providerStore.unsubscribeFromProvider();
     delete this.#sourceProviderStores[providerName];
-    const unsubscriberMap = this.#handlerUnsubscribersMap.get(providerName);
-    if (typeof unsubscriberMap === 'undefined') {
-      return;
-    }
-    const { clearSources, sourcesChanged, sourcesRemoved } = unsubscriberMap;
-    clearSources();
-    sourcesChanged();
-    sourcesRemoved();
-    this.#handlerUnsubscribersMap.delete(providerName);
   }
 
   getSourceProvider(providerName: string): SourceProvider {

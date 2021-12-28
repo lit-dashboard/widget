@@ -1,21 +1,5 @@
 import { WebbitConfig } from './element-config';
 
-type StringOrFalse = false | string;
-
-type ElementConfig = {
-  defaultSourceKey: StringOrFalse,
-  defaultSourceProvider: StringOrFalse,
-};
-
-function isStringOrFalse(value: unknown): value is StringOrFalse {
-  return value === false || typeof value === 'string';
-}
-
-function isElementConfig(config: Record<string, unknown>): config is ElementConfig {
-  const { defaultSourceKey, defaultSourceProvider } = (config as ElementConfig);
-  return isStringOrFalse(defaultSourceKey) && (typeof defaultSourceProvider === 'string' || typeof defaultSourceProvider === 'undefined');
-}
-
 function getMatchingElementConfig(
   elementConfigs: Map<string, WebbitConfig>,
   element: HTMLElement,
@@ -35,10 +19,7 @@ export function filterNode(
   const elementConfig = getMatchingElementConfig(elementConfigs, element);
 
   // Skip if there's no valid element config
-  if (
-    typeof elementConfig === 'undefined'
-    || !isElementConfig(elementConfig)
-  ) {
+  if (typeof elementConfig === 'undefined') {
     return NodeFilter.FILTER_SKIP;
   }
 
