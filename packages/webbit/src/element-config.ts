@@ -52,7 +52,7 @@ const normalizeProperty = (name: string, {
   attribute = name.toLowerCase(),
   reflect = false,
   primary = false,
-  changeEvent = false,
+  changeEvent,
 }: Partial<WebbitProperty> = {}): WebbitProperty => {
   const normalizedDefaultType = defaultValue ?? getDefaultValue(type) as any;
   return {

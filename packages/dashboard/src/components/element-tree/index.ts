@@ -3,8 +3,15 @@ import { LitElement, html, css } from 'lit';
 import { property } from 'lit/decorators/property.js';
 import { customElement } from 'lit/decorators/custom-element.js';
 import { WebbitConnector } from '@webbitjs/webbit';
-import { classMap } from 'lit/directives/class-map.js';
-import { styleMap } from 'lit/directives/style-map.js';
+// import { classMap } from 'lit/directives/class-map.js';
+// import { styleMap } from 'lit/directives/style-map.js';
+
+function classMap(classes: Record<string, boolean>): string {
+  const filteredClasses = Object.entries(classes)
+    .filter(([, filter]) => filter)
+    .map(([className]) => className);
+  return filteredClasses.join(' ');
+}
 
 type TreeNode = {
   node: HTMLElement,
@@ -53,7 +60,6 @@ function renderTreeWalker(
 @customElement('webbit-element-tree')
 export class ElementTree extends LitElement {
   @property() webbitConnector?: WebbitConnector;
-
   @property() selectedElement?: HTMLElement;
 
   static styles = css`
@@ -110,7 +116,7 @@ export class ElementTree extends LitElement {
 
     return renderTreeWalker(treeWalker, (element, renderedChildren, level) => html`
       <details 
-        style=${styleMap({ '--level': `${level}` })}
+        style=${`--level: ${level}`}
         class=${classMap({
           childless: renderedChildren.length === 0,
           selected: this.selectedElement === element,

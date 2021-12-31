@@ -18,6 +18,7 @@
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false",
     "build": "vite build && npm run build:types",
+    "build:vite": "vite build",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir ./dist",
     "lint": "eslint src/**/*",
     "lint:format": "eslint src/**/* --fix",
@@ -31,7 +32,7 @@
     "@vaadin/vaadin": "^21.0.3",
     "@webbitjs/store": "^2.0.5",
     "@webbitjs/webbit": "^2.0.7",
-    "lit": "^2.0.0-rc.2"
+    "lit": "^2.0.2"
   },
   "repository": {
     "type": "git",
