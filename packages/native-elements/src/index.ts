@@ -10,6 +10,14 @@ export default {
       title: { type: 'String', reflect: true },
     },
   },
+  'input[type=number]': {
+    properties: {
+      value: { type: 'Number', primary: true, changeEvent: 'change' },
+      min: { type: 'Number', reflect: true },
+      max: { type: 'Number', reflect: true },
+      step: { type: 'Number', reflect: true },
+    },
+  },
   button: {
     properties: {
       value: { type: 'String', reflect: true },

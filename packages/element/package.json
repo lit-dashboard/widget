@@ -1,6 +1,6 @@
 {
-  "name": "@webbitjs/dashboard",
-  "version": "1.0.0",
+  "name": "@webbitjs/element",
+  "version": "1.0.2",
   "description": "",
   "files": [
     "dist"
@@ -17,10 +17,8 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false",
-    "watch": "vite",
     "build": "vite build && npm run build:types",
-    "build:vite": "vite build",
-    "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir ./dist",
+    "build:types": "tsc src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist",
     "lint": "eslint src/**/*",
     "lint:format": "eslint src/**/* --fix",
     "prepare": "npm run build",
@@ -30,10 +28,8 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@vaadin/vaadin": "^21.0.3",
-    "@webbitjs/store": "^2.0.5",
-    "@webbitjs/webbit": "^2.0.7",
-    "lit": "^2.0.2"
+    "lit": "^2.0.2",
+    "resize-observer-polyfill": "^1.5.1"
   },
   "repository": {
     "type": "git",

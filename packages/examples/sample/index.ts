@@ -12,7 +12,7 @@ store.setDefaultSourceProvider('SampleProvider');
 window.store = store;
 window.provider = store.getSourceProvider('SampleProvider');
 
-// provider.updateSource('/numberBar', 3);
+provider.updateSource('/numberBar/value', 3);
 // provider.updateSource('/checkbox/checked', true);
 // provider.updateSource('/checkbox/title', 'box');
 // provider.updateSource('/button/value', 'eee');

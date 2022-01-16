@@ -14,6 +14,8 @@
     "@webbitjs/store": "^2.0.5",
     "@webbitjs/webbit": "^2.0.7",
     "lit": "^2.0.2",
-    "@vaadin/vaadin-icons": "^20.0.0"
+    "@vaadin/vaadin-icons": "^20.0.0",
+    "@webbitjs/native-elements": "^1.0.0",
+    "@webbitjs/dashboard": "^1.0.0"
   }
 }
