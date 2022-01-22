@@ -15,7 +15,7 @@
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "jest",
+    "test": "",
     "test:coverage": "npm test -- --coverage --watchAll=false",
     "build": "vite build && npm run build:types",
     "build:types": "tsc src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist",
