@@ -1,5 +1,6 @@
 import { LitElement } from 'lit';
-import ResizeObserver from 'resize-observer-polyfill';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ResizeObserverPolyfill = require('resize-observer-polyfill');
 
 type WebbitConstructor = {
   properties: {
@@ -23,7 +24,8 @@ const getDefaultValue = (type?: (...args: unknown[]) => unknown | string) => {
   if (!type) {
     return '';
   }
-  return defaultValues[type?.name ?? type] ?? '';
+  const typeName: string = typeof type === 'function' ? type.name : type;
+  return defaultValues[typeName] ?? '';
 };
 
 export default abstract class WebbitElement extends LitElement {
@@ -64,7 +66,7 @@ export default abstract class WebbitElement extends LitElement {
       element[name] = typeof defaultValue !== 'undefined' ? defaultValue : getDefaultValue(type);
     });
 
-    const resizeObserver = new ResizeObserver(() => {
+    const resizeObserver: ResizeObserver = new ResizeObserverPolyfill(() => {
       this.resized();
     });
     resizeObserver.observe(this);
