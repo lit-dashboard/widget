@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/element",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "files": [
     "dist"
@@ -28,8 +28,7 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "lit": "^2.0.2",
-    "resize-observer-polyfill": "^1.5.1"
+    "lit": "^2.0.2"
   },
   "repository": {
     "type": "git",
