@@ -65,7 +65,9 @@ export default abstract class WebbitElement extends LitElement {
     });
 
     const resizeObserver = new ResizeObserver(() => {
-      this.resized();
+      if (this.resized) {
+        this.resized();
+      }
     });
     resizeObserver.observe(this);
   }
