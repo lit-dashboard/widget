@@ -1,13 +1,19 @@
 {
   "name": "@webbitjs/webbit",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "",
-  "files": ["src"],
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    }
   },
+  "types": "./dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false",
