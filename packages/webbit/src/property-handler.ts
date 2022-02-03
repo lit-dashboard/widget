@@ -132,6 +132,10 @@ class PropertyHandler {
     }
   }
 
+  isConnected(): boolean {
+    return this.#connected;
+  }
+
   update(value: unknown): void {
     this.connect();
     this.value = value;
@@ -139,6 +143,10 @@ class PropertyHandler {
 
   subscribe(callback: Subscriber): void {
     this.#subscribers.push(callback);
+  }
+
+  getProperty(): WebbitProperty {
+    return this.#property;
   }
 
   #notifySubscribers(): void {

@@ -110,6 +110,10 @@ class Webbit {
     };
   }
 
+  getPropertyHandler(name: string): PropertyHandler | undefined {
+    return this.#propertyHandlers.get(name);
+  }
+
   connect(): void {
     this.#connected = true;
     this.#sourceChangeObserver.connect();
