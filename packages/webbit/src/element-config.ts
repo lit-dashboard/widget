@@ -53,6 +53,7 @@ const normalizeProperty = (name: string, {
   reflect = false,
   primary = false,
   changeEvent,
+  ...args
 }: Partial<WebbitProperty> = {}): WebbitProperty => {
   const normalizedDefaultType = defaultValue ?? getDefaultValue(type) as any;
   return {
@@ -64,6 +65,7 @@ const normalizeProperty = (name: string, {
     reflect: !!reflect,
     primary: !!primary,
     changeEvent,
+    ...args,
   };
 };
 
@@ -76,6 +78,7 @@ export const normalizeConfig = ({
   slots = [],
   cssProperties = [],
   cssParts = [],
+  ...args
 }: Partial<WebbitConfig> = {}): WebbitConfig => ({
   description,
   defaultSourceKey,
@@ -88,4 +91,5 @@ export const normalizeConfig = ({
   slots,
   cssProperties,
   cssParts,
+  ...args,
 });

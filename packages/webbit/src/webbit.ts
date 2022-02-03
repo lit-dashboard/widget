@@ -138,6 +138,10 @@ class Webbit {
     return this.#defaultPropertyValues;
   }
 
+  getConfig(): WebbitConfig {
+    return this.#config;
+  }
+
   #updateSubscription(): void {
     if (!this.#connected) {
       this.#unsubscribe();
