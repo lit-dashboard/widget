@@ -32,7 +32,7 @@ export type WebbitConfig = {
   cssParts: Array<Record<string, unknown>>,
 };
 
-function getDefaultValue(type: PropertyTypeNames): PropertyTypes {
+function getDefaultValue(type: string): PropertyTypes {
   switch (type) {
     case 'String': return '';
     case 'Boolean': return false;
@@ -55,11 +55,12 @@ const normalizeProperty = (name: string, {
   changeEvent,
   ...args
 }: Partial<WebbitProperty> = {}): WebbitProperty => {
-  const normalizedDefaultType = defaultValue ?? getDefaultValue(type) as any;
+  const typeString: string = typeof type === 'function' ? (type as () => unknown).name : type;
+  const normalizedDefaultType = defaultValue ?? getDefaultValue(typeString) as any;
   return {
     property,
     description,
-    type,
+    type: typeString as PropertyTypeNames,
     defaultValue: normalizedDefaultType,
     attribute,
     reflect: !!reflect,

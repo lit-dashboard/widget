@@ -33,12 +33,12 @@ export function filterNode(
   }
 
   // Skip if the element does not have a source key
-  if (
-    !element.hasAttribute('source-key')
-    && typeof elementConfig.defaultSourceKey === 'undefined'
-  ) {
-    return NodeFilter.FILTER_SKIP;
-  }
+  // if (
+  //   !element.hasAttribute('source-key')
+  //   && typeof elementConfig.defaultSourceKey === 'undefined'
+  // ) {
+  //   return NodeFilter.FILTER_SKIP;
+  // }
 
   return NodeFilter.FILTER_ACCEPT;
 }
