@@ -1,4 +1,4 @@
-import { isEqual, getValueType, noop } from './util';
+import { isEqual, getValueType } from './util';
 import {
   attr2PropValue,
   prop2AttrValue,
@@ -6,11 +6,9 @@ import {
 } from './value-converters/convert-to-type';
 import { WebbitProperty } from './element-config';
 
-type Subscriber = (value: unknown) => void;
-
-type PropertyObserver = {
-  connect: () => void;
-  disconnect: () => void;
+type Subscriber = {
+  callback: (value: unknown) => void,
+  listenWhenDisconnected: boolean,
 };
 
 class PropertyHandler {
@@ -19,7 +17,6 @@ class PropertyHandler {
   #connected = false;
   #defaultValue: unknown;
   #subscribers: Subscriber[] = [];
-  #propertyObserver: PropertyObserver;
 
   get value(): unknown {
     const {
@@ -75,42 +72,26 @@ class PropertyHandler {
     this.#connected = false;
     this.#defaultValue = this.#property.defaultValue;
     this.#subscribers = [];
-    this.#propertyObserver = this.#getPropertyObserver();
+    this.#getPropertyObserver();
   }
 
-  #getPropertyObserver(): PropertyObserver {
+  #getPropertyObserver(): void {
     const { changeEvent, attribute } = this.#property;
 
     if (changeEvent) {
       const listener = () => {
         this.#notifySubscribers();
       };
-      return {
-        connect: () => {
-          this.#element.addEventListener(changeEvent, listener, false);
-        },
-        disconnect: () => {
-          this.#element.removeEventListener(changeEvent, listener, false);
-        },
-      };
-    } if (attribute) {
+      this.#element.addEventListener(changeEvent, listener, false);
+    } else if (attribute) {
       const observer = new MutationObserver(() => {
         this.#notifySubscribers();
       });
-
-      return {
-        connect: () => {
-          observer.observe(this.#element, {
-            attributes: true,
-            attributeFilter: [attribute],
-          });
-        },
-        disconnect: () => {
-          observer.disconnect();
-        },
-      };
+      observer.observe(this.#element, {
+        attributes: true,
+        attributeFilter: [attribute],
+      });
     }
-    return { connect: noop, disconnect: noop };
   }
 
   connect(): void {
@@ -119,7 +100,6 @@ class PropertyHandler {
       this.#defaultValue = typeof currentValue !== 'undefined'
         ? currentValue
         : this.#property.defaultValue;
-      this.#propertyObserver.connect();
       this.#connected = true;
     }
   }
@@ -127,7 +107,6 @@ class PropertyHandler {
   disconnect(): void {
     if (this.#connected) {
       this.#connected = false;
-      this.#propertyObserver.disconnect();
       this.#setToDefault();
     }
   }
@@ -141,8 +120,11 @@ class PropertyHandler {
     this.value = value;
   }
 
-  subscribe(callback: Subscriber): void {
-    this.#subscribers.push(callback);
+  subscribe(callback: (value: unknown) => void, listenWhenDisconnected = false): void {
+    this.#subscribers.push({
+      callback,
+      listenWhenDisconnected,
+    });
   }
 
   getProperty(): WebbitProperty {
@@ -151,8 +133,10 @@ class PropertyHandler {
 
   #notifySubscribers(): void {
     const { value } = this;
-    this.#subscribers.forEach(subscriber => {
-      subscriber(value);
+    this.#subscribers.forEach(({ callback, listenWhenDisconnected }) => {
+      if (this.#connected || listenWhenDisconnected) {
+        callback(value);
+      }
     });
   }
 

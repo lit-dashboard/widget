@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/webbit",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "",
   "files": [
     "dist"
@@ -15,7 +15,7 @@
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "jest",
+    "test": "test",
     "test:coverage": "npm test -- --coverage --watchAll=false",
     "generate-docs": "jsdoc -c jsdoc.conf.json",
     "build": "vite build && npm run build:types",
