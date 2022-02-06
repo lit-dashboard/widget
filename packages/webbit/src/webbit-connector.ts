@@ -110,6 +110,10 @@ class WebbitConnector {
     return filterValue === NodeFilter.FILTER_ACCEPT;
   }
 
+  getRootElement(): HTMLElement {
+    return this.#rootElement;
+  }
+
   getMatchingElementConfig(element: HTMLElement): WebbitConfig | undefined {
     const entry = [...this.#elementConfigs.entries()]
       .find(([selector]) => element.matches(selector));
