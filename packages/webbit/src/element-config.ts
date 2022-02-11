@@ -21,13 +21,18 @@ type PropertyMap = {
   [propertyName: string]: WebbitProperty
 };
 
+type Slot = {
+  name: string,
+  description?: string
+};
+
 export type WebbitConfig = {
   description: string,
   defaultSourceKey?: string,
   defaultSourceProvider?: string,
   properties: PropertyMap,
   events: Array<Record<string, unknown>>,
-  slots: Array<Record<string, unknown>>,
+  slots: Array<Slot>,
   cssProperties: Array<Record<string, unknown>>,
   cssParts: Array<Record<string, unknown>>,
 };

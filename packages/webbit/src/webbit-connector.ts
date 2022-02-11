@@ -1,4 +1,5 @@
 import Store from '@webbitjs/store';
+import { compare } from 'specificity';
 import { normalizeConfig, WebbitConfig } from './element-config';
 import Webbit from './webbit';
 import { getWebbitIterator, filterNode } from './filter';
@@ -114,10 +115,21 @@ class WebbitConnector {
     return this.#rootElement;
   }
 
+  /**
+   * Gets the element config with the most specific selector that matches the element
+   * @param element
+   * @returns The element config or undefined if none is found
+   */
   getMatchingElementConfig(element: HTMLElement): WebbitConfig | undefined {
-    const entry = [...this.#elementConfigs.entries()]
-      .find(([selector]) => element.matches(selector));
-    return entry?.[1] ?? undefined;
+    const selectors = [
+      ...this.#elementConfigs.keys(),
+    ].filter(selector => element.matches(selector));
+    const mostSpecificSelector = selectors.sort(compare).at(-1);
+    return mostSpecificSelector ? this.getElementConfig(mostSpecificSelector) : undefined;
+  }
+
+  getElementConfigSelectors(): Array<string> {
+    return [...this.#elementConfigs.keys()];
   }
 
   getElementConfig(selector: string): WebbitConfig | undefined {

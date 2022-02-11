@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/webbit",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "",
   "files": [
     "dist"
@@ -29,7 +29,8 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@webbitjs/store": "^3.0.0"
+    "@webbitjs/store": "^3.0.0",
+    "specificity": "^0.4.1"
   },
   "repository": {
     "type": "git",
