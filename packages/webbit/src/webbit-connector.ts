@@ -128,6 +128,18 @@ class WebbitConnector {
     return mostSpecificSelector ? this.getElementConfig(mostSpecificSelector) : undefined;
   }
 
+  /**
+   * Gets the most specific selector that matches the element
+   * @param element
+   * @returns The selector or undefined if none is found
+   */
+  getMatchingElementSelector(element: HTMLElement): string | undefined {
+    const selectors = [
+      ...this.#elementConfigs.keys(),
+    ].filter(selector => element.matches(selector));
+    return selectors.sort(compare).at(-1);
+  }
+
   getElementConfigSelectors(): Array<string> {
     return [...this.#elementConfigs.keys()];
   }
