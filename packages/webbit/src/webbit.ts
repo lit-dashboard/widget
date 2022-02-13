@@ -1,3 +1,4 @@
+import * as PubSub from 'pubsub-js';
 import Store, { Source } from '@webbitjs/store';
 import { normalizeConfig, WebbitConfig, WebbitProperty } from './element-config';
 import { isEqual, getValueType, noop } from './util';
@@ -24,6 +25,7 @@ class Webbit {
   #sourceChangeObserver: SourceChangeObserver;
   #defaultPropertyValues: Record<string, unknown> = {};
   #unsubscribe: () => void = noop;
+  readonly #PROPERTY_CHANGE_TOPIC = Symbol('PROPERTY_CHANGE');
 
   get sourceProvider(): string | undefined {
     return this.#element.getAttribute('source-provider') ?? undefined;
@@ -73,6 +75,11 @@ class Webbit {
         const handler = new PropertyHandler(this.#element, property);
         handler.subscribe(value => {
           this.#onPropertyUpdate(property, value);
+          PubSub.publish(this.#PROPERTY_CHANGE_TOPIC, {
+            property,
+            value,
+            connected: this.#connected,
+          });
         });
         return [property.name, handler];
       }),
@@ -108,6 +115,12 @@ class Webbit {
         observer.disconnect();
       },
     };
+  }
+
+  subscribe(callback: (value: unknown) => void): void {
+    PubSub.subscribe(this.#PROPERTY_CHANGE_TOPIC, (msg, value) => {
+      callback(value);
+    });
   }
 
   getPropertyHandler(name: string): PropertyHandler | undefined {
@@ -234,7 +247,7 @@ class Webbit {
         const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
         if (
           isEqual(value, newSourceBackToPropValue)
-            && !isEqual(this.source.getSourceValue(), newSourceValue)
+          && !isEqual(this.source.getSourceValue(), newSourceValue)
         ) {
           this.source.setSourceValue(newSourceValue);
         }

@@ -1,3 +1,4 @@
+import * as PubSub from 'pubsub-js';
 import { isEqual, getValueType } from './util';
 import {
   attr2PropValue,
@@ -6,17 +7,12 @@ import {
 } from './value-converters/convert-to-type';
 import { WebbitProperty } from './element-config';
 
-type Subscriber = {
-  callback: (value: unknown) => void,
-  listenWhenDisconnected: boolean,
-};
-
 class PropertyHandler {
   readonly #element: HTMLElement;
   readonly #property: WebbitProperty;
   #connected = false;
   #defaultValue: unknown;
-  #subscribers: Subscriber[] = [];
+  readonly #PROPERTY_CHANGE_TOPIC = Symbol('PROPERTY_CHANGE');
 
   get value(): unknown {
     const {
@@ -71,7 +67,6 @@ class PropertyHandler {
     this.#property = property;
     this.#connected = false;
     this.#defaultValue = this.#property.defaultValue;
-    this.#subscribers = [];
     this.#getPropertyObserver();
   }
 
@@ -121,9 +116,10 @@ class PropertyHandler {
   }
 
   subscribe(callback: (value: unknown) => void, listenWhenDisconnected = false): void {
-    this.#subscribers.push({
-      callback,
-      listenWhenDisconnected,
+    PubSub.subscribe(this.#PROPERTY_CHANGE_TOPIC, (msg, value) => {
+      if (this.#connected || listenWhenDisconnected) {
+        callback(value);
+      }
     });
   }
 
@@ -133,11 +129,7 @@ class PropertyHandler {
 
   #notifySubscribers(): void {
     const { value } = this;
-    this.#subscribers.forEach(({ callback, listenWhenDisconnected }) => {
-      if (this.#connected || listenWhenDisconnected) {
-        callback(value);
-      }
-    });
+    PubSub.publish(this.#PROPERTY_CHANGE_TOPIC, value);
   }
 
   #setToDefault(): void {
