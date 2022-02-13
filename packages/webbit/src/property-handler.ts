@@ -12,7 +12,7 @@ class PropertyHandler {
   readonly #property: WebbitProperty;
   #connected = false;
   #defaultValue: unknown;
-  readonly #PROPERTY_CHANGE_TOPIC = Symbol('PROPERTY_CHANGE');
+  readonly #PROPERTY_CHANGE_TOPIC = Symbol('WEBBIT_PROPERTY_CHANGE');
 
   get value(): unknown {
     const {

@@ -25,7 +25,7 @@ class Webbit {
   #sourceChangeObserver: SourceChangeObserver;
   #defaultPropertyValues: Record<string, unknown> = {};
   #unsubscribe: () => void = noop;
-  readonly #PROPERTY_CHANGE_TOPIC = Symbol('PROPERTY_CHANGE');
+  readonly #PROPERTY_CHANGE_TOPIC = Symbol('WEBBIT_ANY_PROPERTY_CHANGE');
 
   get sourceProvider(): string | undefined {
     return this.#element.getAttribute('source-provider') ?? undefined;
@@ -74,13 +74,15 @@ class Webbit {
       properties.map(property => {
         const handler = new PropertyHandler(this.#element, property);
         handler.subscribe(value => {
-          this.#onPropertyUpdate(property, value);
+          if (handler.isConnected()) {
+            this.#onPropertyUpdate(property, value);
+          }
           PubSub.publish(this.#PROPERTY_CHANGE_TOPIC, {
             property,
             value,
             connected: this.#connected,
           });
-        });
+        }, true);
         return [property.name, handler];
       }),
     );

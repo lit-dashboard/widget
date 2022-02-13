@@ -1,3 +1,4 @@
+import * as PubSub from 'pubsub-js';
 import Store from '@webbitjs/store';
 import { compare } from 'specificity';
 import { normalizeConfig, WebbitConfig } from './element-config';
@@ -9,6 +10,8 @@ class WebbitConnector {
   readonly #elementConfigs = new Map<string, WebbitConfig>();
   readonly #elements = new Map<HTMLElement, Webbit>();
   readonly #rootElement: HTMLElement;
+  readonly #ELEMENT_CONNECTED_TOPIC = Symbol('WEBBIT_CONNECTOR_ELEMENT_CONNECTED');
+  readonly #ELEMENT_DISCONNECTED_TOPIC = Symbol('WEBBIT_CONNECTOR_ELEMENT_DISCONNECTED');
 
   constructor(
     rootElement: HTMLElement,
@@ -30,6 +33,14 @@ class WebbitConnector {
     this.#connectChildren();
   }
 
+  subscribeElementConnected(callback: (value: unknown) => void): void {
+    PubSub.subscribe(this.#ELEMENT_CONNECTED_TOPIC, callback);
+  }
+
+  subscribeElementDisconnected(callback: (value: unknown) => void): void {
+    PubSub.subscribe(this.#ELEMENT_DISCONNECTED_TOPIC, callback);
+  }
+
   #connect(element: HTMLElement): void {
     const elementConfig = this.getMatchingElementConfig(element);
     if (this.hasElement(element) || !elementConfig) {
@@ -37,6 +48,7 @@ class WebbitConnector {
     }
     const webbit = new Webbit(element, this.#store, elementConfig);
     this.#elements.set(element, webbit);
+    PubSub.publish(this.#ELEMENT_CONNECTED_TOPIC, { element });
   }
 
   #disconnect(element: HTMLElement): void {
@@ -44,6 +56,7 @@ class WebbitConnector {
     if (elementWebbit) {
       elementWebbit.disconnect();
       this.#elements.delete(element);
+      PubSub.publish(this.#ELEMENT_DISCONNECTED_TOPIC, { element });
     }
   }
 
