@@ -133,7 +133,10 @@ class WebbitConnector {
    * @param element
    * @returns The element config or undefined if none is found
    */
-  getMatchingElementConfig(element: HTMLElement): WebbitConfig | undefined {
+  getMatchingElementConfig(element: HTMLElement | undefined): WebbitConfig | undefined {
+    if (!element) {
+      return undefined;
+    }
     const selectors = [
       ...this.#elementConfigs.keys(),
     ].filter(selector => element.matches(selector));
@@ -146,7 +149,10 @@ class WebbitConnector {
    * @param element
    * @returns The selector or undefined if none is found
    */
-  getMatchingElementSelector(element: HTMLElement): string | undefined {
+  getMatchingElementSelector(element: HTMLElement | undefined): string | undefined {
+    if (!element) {
+      return undefined;
+    }
     const selectors = [
       ...this.#elementConfigs.keys(),
     ].filter(selector => element.matches(selector));
