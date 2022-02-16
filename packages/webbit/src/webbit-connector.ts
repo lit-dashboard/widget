@@ -34,11 +34,15 @@ class WebbitConnector {
   }
 
   subscribeElementConnected(callback: (value: unknown) => void): void {
-    PubSub.subscribe(this.#ELEMENT_CONNECTED_TOPIC, callback);
+    PubSub.subscribe(this.#ELEMENT_CONNECTED_TOPIC, (message, data) => {
+      callback(data);
+    });
   }
 
   subscribeElementDisconnected(callback: (value: unknown) => void): void {
-    PubSub.subscribe(this.#ELEMENT_DISCONNECTED_TOPIC, callback);
+    PubSub.subscribe(this.#ELEMENT_DISCONNECTED_TOPIC, (message, data) => {
+      callback(data);
+    });
   }
 
   #connect(element: HTMLElement): void {
