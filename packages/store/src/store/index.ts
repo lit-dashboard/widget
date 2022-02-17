@@ -67,14 +67,6 @@ class Store {
     return this.#defaultSourceProvider;
   }
 
-  getRootSource(providerName: string): Source | undefined {
-    return this.#sourceProviderStores[providerName]?.getRootSource();
-  }
-
-  getRootSourceValue(providerName: string): unknown {
-    return this.#sourceProviderStores[providerName]?.getRootSourceValue();
-  }
-
   getSource(providerName: string, key: string): Source | undefined {
     return this.#sourceProviderStores[providerName]?.getSource(key);
   }

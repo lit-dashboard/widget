@@ -48,7 +48,7 @@ class Source {
   }
 
   setSourceValue(value: unknown): void {
-    this.#provider.userUpdate(this.#key.slice(1), value);
+    this.#provider.userUpdate(this.#key, value);
   }
 
   getChildren(): Record<string, Source> {
@@ -60,8 +60,11 @@ class Source {
   }
 
   addChild(key: string, source: Source): void {
-    this.#children[key] = source;
     const property = key.split('/').at(-1);
+    if (typeof property === 'undefined') {
+      return;
+    }
+    this.#children[property] = source;
     if (typeof property === 'undefined') {
       return;
     }
@@ -78,9 +81,9 @@ class Source {
   }
 
   removeChild(key: string): void {
-    delete this.#children[key];
     const property = key.split('/').at(-1);
     if (typeof property !== 'undefined') {
+      delete this.#children[property];
       delete this.#sourceObject[property];
     }
   }

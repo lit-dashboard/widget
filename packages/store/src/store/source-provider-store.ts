@@ -21,7 +21,6 @@ class SourceProviderStore {
 
   constructor(provider: SourceProvider) {
     this.#provider = provider;
-    this.#sources.set('', new Source(provider, {}, ''));
 
     this.#handlerUnsubscribers = {
       clearSources: provider.addClearSourcesHandler(() => {
@@ -49,14 +48,6 @@ class SourceProviderStore {
 
   getSourceValue(key: string): unknown {
     return this.getSource(key)?.getSourceValue();
-  }
-
-  getRootSource(): Source {
-    return this.#sources.get('') as Source;
-  }
-
-  getRootSourceValue(): unknown {
-    return this.getRootSource().getSourceValue();
   }
 
   updateSource(key: string, value: unknown): void {
@@ -174,11 +165,10 @@ class SourceProviderStore {
     }
 
     keyParts.forEach((keyPart, index) => {
-      const parentKey = keyParts.slice(1, index + 1).join('/');
-      const normalizedParentKey = keyParts.slice(0, index + 1).join('/');
-      if (normalizedParentKey in this.#subscribers) {
-        this.#subscribers[normalizedParentKey].forEach(subscriber => {
-          const originalParentKey = this.#originalKeys.get(normalizedParentKey) ?? parentKey;
+      const parentKey = keyParts.slice(0, index + 1).join('/');
+      if (parentKey in this.#subscribers) {
+        this.#subscribers[parentKey].forEach(subscriber => {
+          const originalParentKey = this.#originalKeys.get(parentKey) ?? parentKey;
           subscriber(this.getSourceValue(parentKey), originalParentKey, originalKey);
         });
       }

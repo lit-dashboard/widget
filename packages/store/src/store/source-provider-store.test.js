@@ -22,11 +22,9 @@ describe('SourceProviderStore', () => {
 
   it(`allows you to get a source value in multiple ways`, () => {
     store.updateSource('/a/b/c', 2);
-    expect(store.getRootSourceValue()).toEqual({
-      '': {
-        a: {
-          b: { c: 2 }
-        }
+    expect(store.getSourceValue('')).toEqual({
+      a: {
+        b: { c: 2 }
       }
     });
     expect(store.getSourceValue('/a')).toEqual({
@@ -34,7 +32,7 @@ describe('SourceProviderStore', () => {
     });
     expect(store.getSourceValue('/a/b')).toEqual({ c: 2 });
     expect(store.getSourceValue('/a/b/c')).toEqual(2);
-    expect(store.getRootSourceValue()[''].a.b.c).toBe(2);
+    expect(store.getSourceValue('').a.b.c).toBe(2);
     expect(store.getSourceValue('/a').b.c).toBe(2);
     expect(store.getSourceValue('/a/b').c).toBe(2);
   });
@@ -57,28 +55,22 @@ describe('SourceProviderStore', () => {
     store.updateSource('/a', 5);
     store.updateSource('/b', 'hi');
     expect(store.getSourceValue('/a')).toBe(5);
-    expect(store.getRootSourceValue()).toEqual({
-      '': { a: 5, b: 'hi' }
-    });
+    expect(store.getSourceValue('')).toEqual({ a: 5, b: 'hi' });
     store.updateSource('/a/b/c', true);
     expect(store.getSourceValue('/a')).toEqual({
       b: { c: true }
     });
-    expect(store.getRootSourceValue()).toEqual({
-      '': { 
-        a: { 
-          b: { c: true }
-        }, 
-        b: 'hi' 
-      }
+    expect(store.getSourceValue('')).toEqual({ 
+      a: { 
+        b: { c: true }
+      }, 
+      b: 'hi' 
     });
     store.removeSource('/a/b/c');
     expect(store.getSourceValue('/a')).toBe(5);
-    expect(store.getRootSourceValue()).toEqual({
-      '': { a: 5, b: 'hi' }
-    });
+    expect(store.getSourceValue('')).toEqual({ a: 5, b: 'hi' });
     store.removeSource('/b');
-    expect(store.getRootSourceValue()).toEqual({ '': { a: 5 }});
+    expect(store.getSourceValue('')).toEqual({ a: 5 });
   });
   
   it('normalizes keys', () => {
@@ -88,17 +80,15 @@ describe('SourceProviderStore', () => {
     expect(store.getSourceValue('/a')).toBe(5);
     expect(store.getSourceValue('/b/b/c')).toBe(false);
     expect(store.getSourceValue('   C/ ..??b')).toBe(1);
-    expect(store.getRootSourceValue()).toEqual({
-      '': {
-        a: 5,
+    expect(store.getSourceValue('')).toEqual({
+      a: 5,
+      b: {
         b: {
-          b: {
-            c: false
-          }
+          c: false
         }
-      },
-      c: { b: 1 }
+      }
     });
+    expect(store.getSourceValue('c')).toEqual({ b: 1 });
   });
 
   it('caches the source object', () => {
