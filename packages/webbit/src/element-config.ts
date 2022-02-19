@@ -30,7 +30,9 @@ export type WebbitConfig = {
   description: string,
   defaultSourceKey?: string,
   defaultSourceProvider?: string,
-  topLevel: boolean,
+  dashboard: {
+    topLevel?: boolean,
+  },
   properties: PropertyMap,
   events: Array<Record<string, unknown>>,
   slots: Array<Slot>,
@@ -80,7 +82,7 @@ export const normalizeConfig = ({
   description = '',
   defaultSourceKey,
   defaultSourceProvider,
-  topLevel = true,
+  dashboard,
   properties = {},
   events = [],
   slots = [],
@@ -91,7 +93,10 @@ export const normalizeConfig = ({
   description,
   defaultSourceKey,
   defaultSourceProvider,
-  topLevel,
+  dashboard: {
+    topLevel: true,
+    ...dashboard,
+  },
   properties: Object.fromEntries(
     Object.entries(properties)
       .map(([name, property]) => [name, normalizeProperty(name, property)]),

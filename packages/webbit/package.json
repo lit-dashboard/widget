@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/webbit",
-  "version": "3.1.0",
+  "version": "3.1.2",
   "description": "",
   "files": [
     "dist"
@@ -32,7 +32,8 @@
     "@types/pubsub-js": "^1.8.3",
     "@webbitjs/store": "^3.1.0",
     "pubsub-js": "^1.9.4",
-    "specificity": "^0.4.1"
+    "specificity": "^0.4.1",
+    "type-fest": "^2.11.2"
   },
   "repository": {
     "type": "git",

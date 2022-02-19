@@ -196,7 +196,6 @@ class Webbit {
   }
 
   #subscriber(parentKey: string, sourceKey: string): void {
-    console.log('subscribe:', parentKey, sourceKey);
     if (typeof this.source === 'undefined') {
       // source has been removed, so set attributes to defaults
       this.#propertyHandlers.forEach(handler => {
