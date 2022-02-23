@@ -11,7 +11,7 @@ class PropertyHandler {
   readonly #element: HTMLElement;
   readonly #property: WebbitProperty;
   #connected = false;
-  #defaultValue: unknown;
+  #storedValue: unknown;
   readonly #PROPERTY_CHANGE_TOPIC = Symbol('WEBBIT_PROPERTY_CHANGE');
 
   get value(): unknown {
@@ -66,7 +66,7 @@ class PropertyHandler {
     this.#element = element;
     this.#property = property;
     this.#connected = false;
-    this.#defaultValue = this.#property.defaultValue;
+    this.#storedValue = this.#property.defaultValue;
     this.#getPropertyObserver();
   }
 
@@ -89,10 +89,19 @@ class PropertyHandler {
     }
   }
 
+  isAttribute(): boolean {
+    return typeof this.#property.attribute === 'string';
+  }
+
+  getStoredAttribute(): string | null {
+    const { type } = this.#property;
+    return prop2AttrValue(this.#storedValue, type);
+  }
+
   connect(): void {
     if (!this.#connected) {
       const currentValue = this.value;
-      this.#defaultValue = typeof currentValue !== 'undefined'
+      this.#storedValue = typeof currentValue !== 'undefined'
         ? currentValue
         : this.#property.defaultValue;
       this.#connected = true;
@@ -102,7 +111,7 @@ class PropertyHandler {
   disconnect(): void {
     if (this.#connected) {
       this.#connected = false;
-      this.#setToDefault();
+      this.#setToStored();
     }
   }
 
@@ -127,13 +136,20 @@ class PropertyHandler {
     return this.#property;
   }
 
+  setStoredValue(value: unknown): void {
+    this.#storedValue = value;
+    if (!this.isConnected()) {
+      this.#setToStored();
+    }
+  }
+
   #notifySubscribers(): void {
     const { value } = this;
     PubSub.publish(this.#PROPERTY_CHANGE_TOPIC, value);
   }
 
-  #setToDefault(): void {
-    this.value = this.#defaultValue;
+  #setToStored(): void {
+    this.value = this.#storedValue;
   }
 }
 
