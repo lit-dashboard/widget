@@ -168,8 +168,7 @@ class SourceProviderStore {
       const parentKey = keyParts.slice(0, index + 1).join('/');
       if (parentKey in this.#subscribers) {
         this.#subscribers[parentKey].forEach(subscriber => {
-          const originalParentKey = this.#originalKeys.get(parentKey) ?? parentKey;
-          subscriber(this.getSourceValue(parentKey), originalParentKey, originalKey);
+          subscriber(this.getSourceValue(parentKey), parentKey, normalizedKey);
         });
       }
     });
