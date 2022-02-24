@@ -66,7 +66,7 @@ class PropertyHandler {
     this.#element = element;
     this.#property = property;
     this.#connected = false;
-    this.#storedValue = this.#property.defaultValue;
+    this.#storedValue = this.value;
     this.#getPropertyObserver();
   }
 
@@ -149,6 +149,9 @@ class PropertyHandler {
 
   #notifySubscribers(): void {
     const { value } = this;
+    if (!this.isConnected()) {
+      this.#storedValue = value;
+    }
     PubSub.publish(this.#PROPERTY_CHANGE_TOPIC, value);
   }
 
