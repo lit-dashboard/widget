@@ -143,6 +143,10 @@ class PropertyHandler {
     }
   }
 
+  getStoredValue(): unknown {
+    return this.#storedValue;
+  }
+
   #notifySubscribers(): void {
     const { value } = this;
     PubSub.publish(this.#PROPERTY_CHANGE_TOPIC, value);
