@@ -19,9 +19,6 @@ class WebbitConnector {
     elementConfigs: Partial<WebbitConfig>[] = [],
   ) {
     this.#store = store;
-    Object.entries(elementConfigs).forEach(([selector, config]) => {
-      this.#elementConfigs.set(selector, normalizeConfig(config));
-    });
     this.#store.defaultSourceProviderSet((sourceProvider: string) => {
       this.#elements.forEach((elementObject, element) => {
         if (elementObject.sourceProvider === null) {
@@ -30,7 +27,16 @@ class WebbitConnector {
       });
     });
     this.#rootElement = rootElement;
-    this.#connectChildren();
+
+    this.#addObserser();
+    this.addElementConfigs(elementConfigs);
+  }
+
+  addElementConfigs(elementConfigs: Partial<WebbitConfig>[] = []): void {
+    Object.entries(elementConfigs).forEach(([selector, config]) => {
+      this.#elementConfigs.set(selector, normalizeConfig(config));
+    });
+    this.#connectIterator(this.#rootElement);
   }
 
   subscribeElementConnected(callback: (value: unknown) => void): void {
@@ -71,9 +77,7 @@ class WebbitConnector {
     }
   }
 
-  #connectChildren(): void {
-    this.#connectIterator(this.#rootElement);
-
+  #addObserser(): void {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
         if (mutation.type === 'childList') {
