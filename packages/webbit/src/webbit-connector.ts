@@ -6,18 +6,22 @@ import Webbit from './webbit';
 import { getWebbitIterator, filterNode } from './filter';
 
 class WebbitConnector {
+  static UNIQUE_ID = 0;
   readonly #store: Store;
   readonly #elementConfigs = new Map<string, WebbitConfig>();
   readonly #elements = new Map<HTMLElement, Webbit>();
   readonly #rootElement: HTMLElement;
-  readonly #ELEMENT_CONNECTED_TOPIC = Symbol('WEBBIT_CONNECTOR_ELEMENT_CONNECTED');
-  readonly #ELEMENT_DISCONNECTED_TOPIC = Symbol('WEBBIT_CONNECTOR_ELEMENT_DISCONNECTED');
+  readonly #ELEMENT_CONNECTED_TOPIC;
+  readonly #ELEMENT_DISCONNECTED_TOPIC;
 
   constructor(
     rootElement: HTMLElement,
     store: Store,
     elementConfigs: Partial<WebbitConfig>[] = [],
   ) {
+    WebbitConnector.UNIQUE_ID += 1;
+    this.#ELEMENT_CONNECTED_TOPIC = Symbol(`WEBBIT_CONNECTOR_ELEMENT_CONNECTED_${WebbitConnector.UNIQUE_ID}`);
+    this.#ELEMENT_DISCONNECTED_TOPIC = Symbol(`WEBBIT_CONNECTOR_ELEMENT_DISCONNECTED_${WebbitConnector.UNIQUE_ID}`);
     this.#store = store;
     this.#store.defaultSourceProviderSet((sourceProvider: string) => {
       this.#elements.forEach((elementObject, element) => {

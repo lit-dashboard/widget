@@ -8,11 +8,12 @@ import {
 import { WebbitProperty } from './element-config';
 
 class PropertyHandler {
+  static UNIQUE_ID = 0;
   readonly #element: HTMLElement;
   readonly #property: WebbitProperty;
   #connected = false;
   #storedValue: unknown;
-  readonly #PROPERTY_CHANGE_TOPIC = Symbol('WEBBIT_PROPERTY_CHANGE');
+  readonly #PROPERTY_CHANGE_TOPIC;
 
   get value(): unknown {
     const {
@@ -63,6 +64,8 @@ class PropertyHandler {
   }
 
   constructor(element: HTMLElement, property: WebbitProperty) {
+    PropertyHandler.UNIQUE_ID += 1;
+    this.#PROPERTY_CHANGE_TOPIC = Symbol(`WEBBIT_PROPERTY_CHANGE_${PropertyHandler.UNIQUE_ID}`);
     this.#element = element;
     this.#property = property;
     this.#connected = false;

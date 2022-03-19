@@ -15,6 +15,7 @@ type SourceChangeObserver = {
 };
 
 class Webbit {
+  static UNIQUE_ID = 0;
   readonly #element: HTMLElement;
   readonly #store: Store;
   readonly #config: WebbitConfig;
@@ -25,7 +26,7 @@ class Webbit {
   #sourceChangeObserver: SourceChangeObserver;
   #defaultPropertyValues: Record<string, unknown> = {};
   #unsubscribe: () => void = noop;
-  readonly #PROPERTY_CHANGE_TOPIC = Symbol('WEBBIT_ANY_PROPERTY_CHANGE');
+  readonly #PROPERTY_CHANGE_TOPIC;
 
   get sourceProvider(): string | undefined {
     return this.#element.getAttribute('source-provider') ?? undefined;
@@ -63,6 +64,8 @@ class Webbit {
   }
 
   constructor(element: HTMLElement, store: Store, config: WebbitConfig) {
+    Webbit.UNIQUE_ID += 1;
+    this.#PROPERTY_CHANGE_TOPIC = Symbol(`WEBBIT_ANY_PROPERTY_CHANGE_${Webbit.UNIQUE_ID}`);
     this.#element = element;
     this.#store = store;
     this.#config = normalizeConfig(config || {
