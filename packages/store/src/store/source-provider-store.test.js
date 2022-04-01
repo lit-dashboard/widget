@@ -73,17 +73,15 @@ describe('SourceProviderStore', () => {
     expect(store.getSourceValue('')).toEqual({ a: 5 });
   });
   
-  it('normalizes keys', () => {
+  it('does not normalize keys', () => {
     store.updateSource(' ??/ .A', 5);
     store.updateSource('/b/ b /c', false);
     store.updateSource('c/b', 1);
-    expect(store.getSourceValue('/a')).toBe(5);
-    expect(store.getSourceValue('/b/b/c')).toBe(false);
-    expect(store.getSourceValue('   C/ ..??b')).toBe(1);
+    expect(store.getSourceValue('/a')).toBe(undefined);
+    expect(store.getSourceValue(' ??/ .A')).toBe(5);
     expect(store.getSourceValue('')).toEqual({
-      a: 5,
       b: {
-        b: {
+        ' b ': {
           c: false
         }
       }

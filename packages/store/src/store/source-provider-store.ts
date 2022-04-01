@@ -1,6 +1,6 @@
 import SourceProvider from '../source-provider';
 import Source from './source';
-import { getNormalizedKey, isSourceDead } from './utils';
+import { isSourceDead } from './utils';
 
 export type SourceSubscriber = (sourceValue: unknown, parentKey: string, sourceKey: string) => void;
 export type AllSourcesSubscriber = (sourceValue: unknown, sourceKey: string) => () => void;
@@ -12,7 +12,7 @@ type HandlerUnsubscribers = {
 
 class SourceProviderStore {
   readonly #sourceObjects = new Map<string, Record<string, unknown>>();
-  readonly #originalKeys = new Map<string, string>();
+  readonly #originalKeys = new Set<string>();
   readonly #sources = new Map<string, Source>();
   readonly #provider: SourceProvider;
   readonly #subscribers: Record<string, Map<symbol, SourceSubscriber>> = {};
@@ -42,8 +42,7 @@ class SourceProviderStore {
   }
 
   getSource(key: string): Source | undefined {
-    const normalizedKey = getNormalizedKey(key);
-    return this.#sources.get(normalizedKey);
+    return this.#sources.get(key);
   }
 
   getSourceValue(key: string): unknown {
@@ -53,8 +52,7 @@ class SourceProviderStore {
   updateSource(key: string, value: unknown): void {
     this.#setOriginalKey(key);
     this.#createSources(key);
-    const normalizedKey = getNormalizedKey(key);
-    const source = this.#sources.get(normalizedKey);
+    const source = this.#sources.get(key);
     source?.setValue(value);
     this.#notifySubscribers(key);
   }
@@ -64,28 +62,26 @@ class SourceProviderStore {
   }
 
   removeSource(key: string): void {
-    const normalizedKey = getNormalizedKey(key);
-    const source = this.#sources.get(normalizedKey);
+    const source = this.#sources.get(key);
     if (source) {
       source.removeValue();
       this.#cleanSources(source);
       this.#notifySubscribers(key);
-      this.#originalKeys.delete(normalizedKey);
+      this.#originalKeys.delete(key);
     }
   }
 
   subscribe(key: string, callback: SourceSubscriber, callImmediately: boolean): () => void {
-    const normalizedKey = getNormalizedKey(key);
-    if (typeof this.#subscribers[normalizedKey] === 'undefined') {
-      this.#subscribers[normalizedKey] = new Map();
+    if (typeof this.#subscribers[key] === 'undefined') {
+      this.#subscribers[key] = new Map();
     }
     const symbol = Symbol('SourceSubscriber');
-    this.#subscribers[normalizedKey].set(symbol, callback);
+    this.#subscribers[key].set(symbol, callback);
     if (callImmediately) {
       callback(this.getSourceValue(key), key, key);
     }
     return () => {
-      this.#subscribers[normalizedKey].delete(symbol);
+      this.#subscribers[key].delete(symbol);
     };
   }
 
@@ -110,15 +106,13 @@ class SourceProviderStore {
   }
 
   #setOriginalKey(key: string): void {
-    const normalizedKey = getNormalizedKey(key);
-    if (!this.#originalKeys.has(normalizedKey)) {
-      this.#originalKeys.set(normalizedKey, key);
+    if (!this.#originalKeys.has(key)) {
+      this.#originalKeys.add(key);
     }
   }
 
   #createSources(key: string): void {
-    const normalizedKey = getNormalizedKey(key);
-    const keyParts = normalizedKey.split('/');
+    const keyParts = key.split('/');
     let parentKey: string;
     keyParts.forEach((part, index) => {
       const childKey = keyParts.slice(0, index + 1).join('/');
@@ -155,26 +149,20 @@ class SourceProviderStore {
   }
 
   #notifySubscribers(key: string): void {
-    const normalizedKey = getNormalizedKey(key);
-    const keyParts = normalizedKey.split('/');
-    const originalKey = this.#originalKeys.get(normalizedKey);
+    const keyParts = key.split('/');
     const sourceValue = this.getSourceValue(key);
-
-    if (!originalKey) {
-      return;
-    }
 
     keyParts.forEach((keyPart, index) => {
       const parentKey = keyParts.slice(0, index + 1).join('/');
       if (parentKey in this.#subscribers) {
         this.#subscribers[parentKey].forEach(subscriber => {
-          subscriber(this.getSourceValue(parentKey), parentKey, normalizedKey);
+          subscriber(this.getSourceValue(parentKey), parentKey, key);
         });
       }
     });
 
     this.#allSubscribers.forEach(subscriber => {
-      subscriber(sourceValue, originalKey);
+      subscriber(sourceValue, key);
     });
   }
 }
