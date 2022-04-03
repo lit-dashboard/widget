@@ -1,9 +1,14 @@
 import * as PubSub from 'pubsub-js';
 import Store, { Source } from '@webbitjs/store';
+import { camelCase, camelCaseTransformMerge } from 'camel-case';
 import { normalizeConfig, WebbitConfig, WebbitProperty } from './element-config';
 import { isEqual, getValueType, noop } from './util';
 import PropertyHandler from './property-handler';
 import { prop2PropValue } from './value-converters/convert-to-type';
+
+function formatProp(propName: string): string {
+  return camelCase(propName, { transform: camelCaseTransformMerge });
+}
 
 type PropertyConfig = WebbitProperty & {
   name: string,
@@ -208,13 +213,16 @@ class Webbit {
       const children = this.source.getChildren();
       // if parentKey and key are equal, map all props to attributes
       if (parentKey === sourceKey) {
-        Object.getOwnPropertyNames(children).forEach(prop => {
-          if (this.#propertyHandlers.has(prop)) {
-            this.#propertyHandlers.get(prop)?.update(children[prop].getSourceValue());
+        const childEntries = Object.entries(children);
+        [...this.#propertyHandlers.entries()].forEach(([propName, handler]) => {
+          const childEntry = childEntries.find(([name]) => formatProp(name) === propName);
+          if (childEntry) {
+            const [, source] = childEntry;
+            handler.update(source.getSourceValue());
           }
         });
       } else {
-        const prop = sourceKey.replace(`${parentKey}/`, '');
+        const prop = formatProp(sourceKey.replace(`${parentKey}/`, ''));
 
         if (this.#propertyHandlers.has(prop)) {
           const handler = this.#propertyHandlers.get(prop);
@@ -237,6 +245,7 @@ class Webbit {
     }
     const propType = getValueType(value);
     const children = this.source.getChildren();
+    const childEntries = Object.entries(children);
 
     if (!this.source.hasChildren()) {
       if (!primary) {
@@ -258,8 +267,12 @@ class Webbit {
         }
       }
     } else if (value === null) {
-      if (children[name].getSourceValue() !== null) {
-        children[name].setSourceValue(value);
+      const childEntry = childEntries.find(([childName]) => formatProp(childName) === name);
+      if (childEntry) {
+        const [, source] = childEntry;
+        if (source.getSourceValue() !== null) {
+          source.setSourceValue(value);
+        }
       }
     } else {
       const newSourceValueType = getValueType(children[name].getSourceValue()) || propType;
@@ -269,7 +282,11 @@ class Webbit {
         isEqual(value, newSourceBackToPropValue)
         && !isEqual(children[name].getSourceValue(), newSourceValue)
       ) {
-        children[name].setSourceValue(newSourceValue);
+        const childEntry = childEntries.find(([childName]) => formatProp(childName) === name);
+        if (childEntry) {
+          const [, source] = childEntry;
+          source.setSourceValue(value);
+        }
       }
     }
   }
