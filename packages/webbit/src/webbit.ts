@@ -10,6 +10,19 @@ function formatProp(propName: string): string {
   return camelCase(propName, { transform: camelCaseTransformMerge });
 }
 
+function getChildWithName(
+  children: Record<string, Source>,
+  propName: string,
+): { name: string, source: Source } | undefined {
+  const childEntries = Object.entries(children);
+  const childEntry = childEntries.find(([childName]) => formatProp(childName) === propName);
+  if (!childEntry) {
+    return undefined;
+  }
+  const [name, source] = childEntry;
+  return { name, source };
+}
+
 type PropertyConfig = WebbitProperty & {
   name: string,
 }
@@ -223,10 +236,9 @@ class Webbit {
         });
       } else {
         const prop = formatProp(sourceKey.replace(`${parentKey}/`, ''));
-
         if (this.#propertyHandlers.has(prop)) {
           const handler = this.#propertyHandlers.get(prop);
-          const value = children[prop].getSourceValue();
+          const value = getChildWithName(children, prop)?.source?.getSourceValue();
           if (typeof value === 'undefined') {
             handler?.disconnect();
           } else {
