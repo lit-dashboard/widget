@@ -290,15 +290,14 @@ class Webbit {
       const newSourceValueType = getValueType(children[name].getSourceValue()) || propType;
       const newSourceValue = prop2PropValue(value, newSourceValueType);
       const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
+      const child = getChildWithName(children, name);
+
       if (
-        isEqual(value, newSourceBackToPropValue)
-        && !isEqual(children[name].getSourceValue(), newSourceValue)
+        child
+        && isEqual(value, newSourceBackToPropValue)
+        && !isEqual(child.source.getSourceValue(), newSourceValue)
       ) {
-        const childEntry = childEntries.find(([childName]) => formatProp(childName) === name);
-        if (childEntry) {
-          const [, source] = childEntry;
-          source.setSourceValue(value);
-        }
+        child.source.setSourceValue(value);
       }
     }
   }
