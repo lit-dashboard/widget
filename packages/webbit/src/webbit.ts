@@ -292,6 +292,8 @@ class Webbit {
       const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
       const child = getChildWithName(children, name);
 
+      console.log('change:', child, value, newSourceBackToPropValue, child?.source?.getSourceValue(), newSourceValue);
+
       if (
         child
         && isEqual(value, newSourceBackToPropValue)
