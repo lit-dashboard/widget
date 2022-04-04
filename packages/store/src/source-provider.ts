@@ -150,11 +150,14 @@ class SourceProvider {
       return;
     }
 
+    const sourceUpdates = { ...this.#sourceUpdates };
+    this.#sourceUpdates = {};
+
     // send first updates then last
     const firstUpdates: Record<string, SourceUpdate> = {};
     const lastUpdates: Record<string, SourceUpdate> = {};
 
-    Object.entries(this.#sourceUpdates).forEach(([key, values]) => {
+    Object.entries(sourceUpdates).forEach(([key, values]) => {
       firstUpdates[key] = values.first;
       if (typeof values.last !== 'undefined') { lastUpdates[key] = values.last; }
     });
@@ -166,11 +169,9 @@ class SourceProvider {
       setTimeout(() => {
         this.#sendChanges(lastUpdates);
         this.#sendRemovals(lastUpdates);
-        this.#sourceUpdates = {};
         callback();
       });
     } else {
-      this.#sourceUpdates = {};
       callback();
     }
   }
