@@ -15,6 +15,10 @@ export type WebbitProperty = TypeWithDefault & {
   reflect: boolean,
   primary: boolean,
   changeEvent?: string,
+  input?: {
+    type: string,
+    [option: string]: unknown
+  }
 };
 
 type PropertyMap = {
@@ -23,7 +27,8 @@ type PropertyMap = {
 
 type Slot = {
   name: string,
-  description?: string
+  description?: string,
+  allowedChildren?: Array<string>,
 };
 
 export type WebbitConfig = {
@@ -32,6 +37,21 @@ export type WebbitConfig = {
   defaultSourceProvider?: string,
   dashboard: {
     topLevel?: boolean,
+    displayName?: string | ((element: HTMLElement) => string),
+    layout?: {
+      type?: string,
+      resizable?: {
+        vertical: boolean,
+        horizontal: boolean,
+      },
+      movable?: boolean,
+      size?: {
+        minHeight?: number,
+        minWidth?: number,
+        maxHeight?: number,
+        maxWidth?: number,
+      }
+    }
   },
   properties: PropertyMap,
   events: Array<Record<string, unknown>>,
