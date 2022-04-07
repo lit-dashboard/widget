@@ -9,7 +9,7 @@ type TypeWithDefault =
   | { type: 'Object', defaultValue: Record<string, unknown> }
 
 export type WebbitProperty = TypeWithDefault & {
-  property: string,
+  property?: string | null | false,
   description: string,
   attribute?: string,
   reflect: boolean,

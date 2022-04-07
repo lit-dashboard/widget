@@ -20,7 +20,7 @@ class PropertyHandler {
       reflect, attribute, property, type,
     } = this.#property;
 
-    if (property in this.#element) {
+    if (typeof property === 'string' && property in this.#element) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (this.#element as any)[property];
     } if (attribute && reflect) {
