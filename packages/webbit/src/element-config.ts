@@ -16,7 +16,7 @@ export type WebbitProperty = TypeWithDefault & {
   primary: boolean,
   changeEvent?: string,
   input?: {
-    type: string,
+    type?: string,
     [option: string]: unknown
   }
 };

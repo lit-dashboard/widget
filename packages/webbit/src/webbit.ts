@@ -287,14 +287,18 @@ class Webbit {
         }
       }
     } else {
-      const newSourceValueType = getValueType(children[name].getSourceValue()) || propType;
-      const newSourceValue = prop2PropValue(value, newSourceValueType);
-      const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
       const child = getChildWithName(children, name);
 
+      if (!child) {
+        return;
+      }
+
+      const newSourceValueType = getValueType(child.source.getSourceValue()) || propType;
+      const newSourceValue = prop2PropValue(value, newSourceValueType);
+      const newSourceBackToPropValue = prop2PropValue(newSourceValue, propType);
+
       if (
-        child
-        && isEqual(value, newSourceBackToPropValue)
+        isEqual(value, newSourceBackToPropValue)
         && !isEqual(child.source.getSourceValue(), newSourceValue)
       ) {
         child.source.setSourceValue(value);
