@@ -140,10 +140,11 @@ class Webbit {
     };
   }
 
-  subscribe(callback: (value: unknown) => void): void {
-    PubSub.subscribe(this.#PROPERTY_CHANGE_TOPIC, (msg, value) => {
+  subscribe(callback: (value: unknown) => void): () => void {
+    const token = PubSub.subscribe(this.#PROPERTY_CHANGE_TOPIC, (msg, value) => {
       callback(value);
     });
+    return () => PubSub.unsubscribe(token);
   }
 
   getPropertyHandler(name: string): PropertyHandler | undefined {
