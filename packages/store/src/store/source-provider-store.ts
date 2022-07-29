@@ -28,11 +28,18 @@ class SourceProviderStore {
       }),
       sourcesChanged: provider.addSourcesChangedHandler(sourceChanges => {
         Object.entries(sourceChanges).forEach(([key, value]) => {
-          this.updateSource(key, value);
+          this.updateSource(key, value, false);
+        });
+        Object.entries(sourceChanges).forEach(([key]) => {
+          this.#notifySubscribers(key);
         });
       }),
       sourcesRemoved: provider.addSourcesRemovedHandler(removals => {
-        removals.forEach(key => this.removeSource(key));
+        const filteredRemovals = removals.filter(key => this.#sources.has(key));
+        filteredRemovals.forEach(key => this.removeSource(key), false);
+        filteredRemovals.forEach(key => {
+          this.#notifySubscribers(key);
+        });
       }),
     };
   }
@@ -49,24 +56,33 @@ class SourceProviderStore {
     return this.getSource(key)?.getSourceValue();
   }
 
-  updateSource(key: string, value: unknown): void {
+  updateSource(key: string, value: unknown, notify = true): void {
     this.#setOriginalKey(key);
     this.#createSources(key);
     const source = this.#sources.get(key);
     source?.setValue(value);
-    this.#notifySubscribers(key);
+    if (notify) {
+      this.#notifySubscribers(key);
+    }
   }
 
   clearSources(): void {
-    this.#sources.forEach((source, key) => this.removeSource(key));
+    const keys: string[] = [];
+    this.#sources.forEach((source, key) => {
+      keys.push(key);
+      this.removeSource(key, false);
+    });
+    keys.forEach(key => this.#notifySubscribers(key));
   }
 
-  removeSource(key: string): void {
+  removeSource(key: string, notify = true): void {
     const source = this.#sources.get(key);
     if (source) {
       source.removeValue();
       this.#cleanSources(source);
-      this.#notifySubscribers(key);
+      if (notify) {
+        this.#notifySubscribers(key);
+      }
       this.#originalKeys.delete(key);
     }
   }
