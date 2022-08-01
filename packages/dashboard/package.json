@@ -23,16 +23,16 @@
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir ./dist",
     "lint": "eslint src/**/*",
     "lint:format": "eslint src/**/* --fix",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
+    "prepublishOnly": "npm test && npm run lint && npm run build",
     "preversion": "npm run lint",
     "version": "npm run lint && git add -A src",
     "postversion": "git push && git push --tags"
+
   },
   "dependencies": {
     "@vaadin/vaadin": "^21.0.3",
-    "@webbitjs/store": "^2.0.5",
-    "@webbitjs/webbit": "^2.0.7",
+    "@webbitjs/store": "^4.0.3",
+    "@webbitjs/webbit": "^4.0.9",
     "lit": "^2.0.2"
   },
   "repository": {

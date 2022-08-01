@@ -22,8 +22,7 @@
     "build:types": "tsc -p ./ --declaration --emitDeclarationOnly --declarationDir ./dist",
     "lint": "eslint src/**/*",
     "lint:format": "eslint src/**/* --fix",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
+    "prepublishOnly": "npm test && npm run lint && npm run build",
     "preversion": "npm run lint",
     "version": "npm run lint && git add -A src",
     "postversion": "git push && git push --tags"

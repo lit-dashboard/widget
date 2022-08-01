@@ -5,14 +5,14 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "npm test -- --coverage --watchAll=false",
-    "start": "vite",
+    "dev": "vite",
     "build": "vite build"
   },
   "dependencies": {
     "@frc-web-components/components": "^1.0.6",
     "@frc-web-components/source-providers": "^1.0.2",
-    "@webbitjs/store": "^2.0.5",
-    "@webbitjs/webbit": "^2.0.7",
+    "@webbitjs/store": "^4.0.3",
+    "@webbitjs/webbit": "^4.0.9",
     "lit": "^2.0.2",
     "@vaadin/vaadin-icons": "^20.0.0",
     "@webbitjs/native-elements": "^1.0.0",
