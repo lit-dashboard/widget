@@ -92,6 +92,7 @@ export class ElementTree extends LitElement {
     }
 
     button {
+      height: 100%;
       display: none;
       border-radius: 10px;
       background-color: lightblue;
