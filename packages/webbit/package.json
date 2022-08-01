@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/webbit",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "",
   "files": [
     "dist"
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@types/pubsub-js": "^1.8.3",
-    "@webbitjs/store": "^5.0.2",
+    "@webbitjs/store": "^5.0.3",
     "camel-case": "^4.1.2",
     "pubsub-js": "^1.9.4",
     "specificity": "^0.4.1",
@@ -46,5 +46,5 @@
     "url": "https://github.com/webbitjs/webbit/issues"
   },
   "homepage": "https://github.com/webbitjs/webbit#readme",
-  "gitHead": "9835c79b18ded01d52edafc2386c7621bead98cb"
+  "gitHead": "6dc64ca1cab7dfd81ce12a79cca221fbe91fb083"
 }

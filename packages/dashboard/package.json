@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/dashboard",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "",
   "files": [
     "dist"
@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@vaadin/vaadin": "^21.0.3",
-    "@webbitjs/store": "^5.0.2",
-    "@webbitjs/webbit": "^5.0.2",
+    "@webbitjs/store": "^5.0.3",
+    "@webbitjs/webbit": "^5.0.3",
     "lit": "^2.0.2"
   },
   "repository": {
@@ -44,5 +44,5 @@
     "url": "https://github.com/webbitjs/webbit/issues"
   },
   "homepage": "https://github.com/webbitjs/webbit#readme",
-  "gitHead": "9835c79b18ded01d52edafc2386c7621bead98cb"
+  "gitHead": "6dc64ca1cab7dfd81ce12a79cca221fbe91fb083"
 }
