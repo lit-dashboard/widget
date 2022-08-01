@@ -2,7 +2,7 @@ import elementConfigs from './index';
 import '@webbitjs/testing';
 
 describe('native elements', () => {
-  it('tests a checkbox', async () => {
+  xit('tests a checkbox', async () => {
     await expect({
       elementConfigs,
       html: '<input type="checkbox" />',
@@ -17,7 +17,7 @@ describe('native elements', () => {
     }).toBeValidWebbitConfig();
   });
 
-  it('tests a button', async () => {
+  xit('tests a button', async () => {
     await expect({
       elementConfigs,
       html: '<button>Button</button>',

@@ -21,12 +21,12 @@ const getConfig = ({
 });
 
 describe('Element config', () => {
-  it(`returns the same configuration if it's already valid`, () => {
+  xit(`returns the same configuration if it's already valid`, () => {
     const config = getConfig();
     expect(config).toEqual(normalizeConfig(config));
   });
 
-  it(`adds default values`, () => {
+  xit(`adds default values`, () => {
     expect(
       normalizeConfig({ name: 'some-element-name' })
     ).toEqual(getConfig());
