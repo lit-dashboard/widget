@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/dashboard",
-  "version": "1.0.0",
+  "version": "5.0.0",
   "description": "",
   "files": [
     "dist"
@@ -27,12 +27,11 @@
     "preversion": "npm run lint",
     "version": "npm run lint && git add -A src",
     "postversion": "git push && git push --tags"
-
   },
   "dependencies": {
     "@vaadin/vaadin": "^21.0.3",
-    "@webbitjs/store": "^4.0.3",
-    "@webbitjs/webbit": "^4.0.9",
+    "@webbitjs/store": "^5.0.0",
+    "@webbitjs/webbit": "^5.0.0",
     "lit": "^2.0.2"
   },
   "repository": {

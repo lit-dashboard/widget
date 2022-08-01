@@ -11,11 +11,12 @@
   "dependencies": {
     "@frc-web-components/components": "^1.0.6",
     "@frc-web-components/source-providers": "^1.0.2",
-    "@webbitjs/store": "^4.0.3",
-    "@webbitjs/webbit": "^4.0.9",
-    "lit": "^2.0.2",
     "@vaadin/vaadin-icons": "^20.0.0",
-    "@webbitjs/native-elements": "^1.0.0",
-    "@webbitjs/dashboard": "^1.0.0"
-  }
+    "@webbitjs/dashboard": "^5.0.0",
+    "@webbitjs/native-elements": "^5.0.0",
+    "@webbitjs/store": "^5.0.0",
+    "@webbitjs/webbit": "^5.0.0",
+    "lit": "^2.0.2"
+  },
+  "version": "5.0.0"
 }

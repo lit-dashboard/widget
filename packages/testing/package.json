@@ -1,8 +1,10 @@
 {
   "name": "@webbitjs/testing",
-  "version": "1.0.0",
+  "version": "5.0.0",
   "description": "",
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "main": "./src/index.js",
   "module": "./src/index.js",
   "exports": {
@@ -13,8 +15,8 @@
     "test:coverage": "npm test -- --coverage --watchAll=false"
   },
   "devDependencies": {
-    "@webbitjs/webbit": "^4.0.9",
-    "@webbitjs/store": "^4.0.3"
+    "@webbitjs/store": "^5.0.0",
+    "@webbitjs/webbit": "^5.0.0"
   },
   "repository": {
     "type": "git",
