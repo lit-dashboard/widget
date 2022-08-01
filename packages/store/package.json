@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/store",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "",
   "files": [
     "dist"
@@ -39,5 +39,6 @@
   "bugs": {
     "url": "https://github.com/webbitjs/webbit/issues"
   },
-  "homepage": "https://github.com/webbitjs/webbit#readme"
+  "homepage": "https://github.com/webbitjs/webbit#readme",
+  "gitHead": "9835c79b18ded01d52edafc2386c7621bead98cb"
 }

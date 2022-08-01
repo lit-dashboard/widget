@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/native-elements",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "",
   "files": [
     "dist"
@@ -28,9 +28,9 @@
     "postversion": "git push && git push --tags"
   },
   "devDependencies": {
-    "@webbitjs/store": "^5.0.1",
-    "@webbitjs/testing": "^5.0.1",
-    "@webbitjs/webbit": "^5.0.1"
+    "@webbitjs/store": "^5.0.2",
+    "@webbitjs/testing": "^5.0.2",
+    "@webbitjs/webbit": "^5.0.2"
   },
   "repository": {
     "type": "git",
@@ -41,5 +41,6 @@
   "bugs": {
     "url": "https://github.com/webbitjs/webbit/issues"
   },
-  "homepage": "https://github.com/webbitjs/webbit#readme"
+  "homepage": "https://github.com/webbitjs/webbit#readme",
+  "gitHead": "9835c79b18ded01d52edafc2386c7621bead98cb"
 }
