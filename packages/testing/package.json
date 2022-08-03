@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/testing",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "",
   "files": [
     "src"
@@ -15,8 +15,8 @@
     "test:coverage": "npm test -- --coverage --watchAll=false"
   },
   "devDependencies": {
-    "@webbitjs/store": "^5.0.4",
-    "@webbitjs/webbit": "^5.0.5"
+    "@webbitjs/store": "^5.0.6",
+    "@webbitjs/webbit": "^5.0.6"
   },
   "repository": {
     "type": "git",

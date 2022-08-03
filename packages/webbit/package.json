@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/webbit",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "description": "",
   "files": [
     "dist"
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@types/pubsub-js": "^1.8.3",
-    "@webbitjs/store": "^5.0.4",
+    "@webbitjs/store": "^5.0.6",
     "camel-case": "^4.1.2",
     "pubsub-js": "^1.9.4",
     "specificity": "^0.4.1",
