@@ -3,7 +3,7 @@ import Source from './source';
 import { isSourceDead } from './utils';
 
 export type SourceSubscriber = (sourceValue: unknown, parentKey: string, sourceKey: string) => void;
-export type AllSourcesSubscriber = (sourceValue: unknown, sourceKey: string) => () => void;
+export type AllSourcesSubscriber = (sourceValue: unknown, sourceKey: string) => unknown;
 type HandlerUnsubscribers = {
   clearSources: () => void,
   sourcesChanged: () => void,
