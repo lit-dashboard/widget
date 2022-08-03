@@ -1,4 +1,5 @@
 {
+  "name": "webbit",
   "private": true,
   "workspaces": [
     "./packages/*"
@@ -41,6 +42,5 @@
   },
   "lint-staged": {
     "*.{js,ts}": "eslint --fix"
-  },
-  "name": "webbit"
+  }
 }
