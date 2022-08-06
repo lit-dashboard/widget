@@ -17,7 +17,7 @@ class WebbitConnector {
   constructor(
     rootElement: HTMLElement,
     store: Store,
-    elementConfigs: Partial<WebbitConfig>[] = [],
+    elementConfigs: Record<string, Partial<WebbitConfig>> = {},
   ) {
     WebbitConnector.UNIQUE_ID += 1;
     this.#ELEMENT_CONNECTED_TOPIC = Symbol(`WEBBIT_CONNECTOR_ELEMENT_CONNECTED_${WebbitConnector.UNIQUE_ID}`);
@@ -36,7 +36,7 @@ class WebbitConnector {
     this.addElementConfigs(elementConfigs);
   }
 
-  addElementConfigs(elementConfigs: Partial<WebbitConfig>[] = []): void {
+  addElementConfigs(elementConfigs: Record<string, Partial<WebbitConfig>> = {}): void {
     Object.entries(elementConfigs).forEach(([selector, config]) => {
       this.#elementConfigs.set(selector, normalizeConfig(config));
     });
