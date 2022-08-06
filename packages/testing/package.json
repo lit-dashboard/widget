@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/testing",
-  "version": "5.0.6",
+  "version": "5.0.7",
   "description": "",
   "files": [
     "src"
@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@webbitjs/store": "^5.0.6",
-    "@webbitjs/webbit": "^5.0.6"
+    "@webbitjs/webbit": "^5.0.7"
   },
   "repository": {
     "type": "git",
