@@ -1,19 +1,19 @@
 type PropertyTypeNames = 'String' | 'Boolean' | 'Number' | 'Array' | 'Object';
-type PropertyTypes = string | boolean | number | Array<any> | Record<string, unknown>;
+type PropertyTypes = string | boolean | number | Array<unknown> | Record<string, unknown>;
 
 type TypeWithDefault =
-  { type: 'String', defaultValue: string }
-  | { type: 'Boolean', defaultValue: boolean }
-  | { type: 'Number', defaultValue: number }
-  | { type: 'Array', defaultValue: Array<any> }
-  | { type: 'Object', defaultValue: Record<string, unknown> }
+  { type: 'String', defaultValue?: string }
+  | { type: 'Boolean', defaultValue?: boolean }
+  | { type: 'Number', defaultValue?: number }
+  | { type: 'Array', defaultValue?: Array<unknown> }
+  | { type: 'Object', defaultValue?: Record<string, unknown> }
 
 export type WebbitProperty = TypeWithDefault & {
   property?: string | null | false,
-  description: string,
+  description?: string,
   attribute?: string,
-  reflect: boolean,
-  primary: boolean,
+  reflect?: boolean,
+  primary?: boolean,
   changeEvent?: string,
   input?: {
     type?: string,

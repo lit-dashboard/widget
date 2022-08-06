@@ -252,7 +252,7 @@ class Webbit {
     }
   }
 
-  #onPropertyUpdate({ name, primary }: { name: string, primary: boolean }, value: unknown): void {
+  #onPropertyUpdate({ name, primary }: { name: string, primary?: boolean }, value: unknown): void {
     if (typeof this.source === 'undefined') {
       return;
     }
