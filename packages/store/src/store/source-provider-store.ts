@@ -94,6 +94,9 @@ class SourceProviderStore {
     const symbol = Symbol('SourceSubscriber');
     this.#subscribers[key].set(symbol, callback);
     if (callImmediately) {
+      if (!this.getSource(key)?.hasValue()) {
+        this.#provider.requestSource(key);
+      }
       callback(this.getSourceValue(key), key, key);
     }
     return () => {

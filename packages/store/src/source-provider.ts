@@ -123,6 +123,16 @@ class SourceProvider {
   }
 
   /**
+   * This optional method is called when a key is subscribed to that the store does not
+   * already have. A SourceProvider can override this method to update the store with
+   * the requested source.
+   * @Override
+   * @param {string} key
+   */
+  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-empty-function
+  requestSource(key: string): void {}
+
+  /**
    * Helper function to get the type of a variable represented
    * by a string.
    *
