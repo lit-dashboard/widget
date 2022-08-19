@@ -33,7 +33,7 @@ type Slot = {
 
 export type WebbitConfig = {
   description: string,
-  group?: string,
+  group: string,
   defaultSourceKey?: string,
   defaultSourceProvider?: string,
   dashboard: {
@@ -101,7 +101,7 @@ const normalizeProperty = (name: string, {
 
 export const normalizeConfig = ({
   description = '',
-  group,
+  group = 'default',
   defaultSourceKey,
   defaultSourceProvider,
   dashboard,
