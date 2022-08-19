@@ -11,7 +11,7 @@ type TypeWithDefault =
 export type WebbitProperty = TypeWithDefault & {
   property?: string | null | false,
   description?: string,
-  attribute?: string,
+  attribute?: string | null | false,
   reflect?: boolean,
   primary?: boolean,
   changeEvent?: string,
@@ -33,6 +33,7 @@ type Slot = {
 
 export type WebbitConfig = {
   description: string,
+  group?: string,
   defaultSourceKey?: string,
   defaultSourceProvider?: string,
   dashboard: {
@@ -100,6 +101,7 @@ const normalizeProperty = (name: string, {
 
 export const normalizeConfig = ({
   description = '',
+  group,
   defaultSourceKey,
   defaultSourceProvider,
   dashboard,
@@ -111,6 +113,7 @@ export const normalizeConfig = ({
   ...args
 }: Partial<WebbitConfig> = {}): WebbitConfig => ({
   description,
+  group,
   defaultSourceKey,
   defaultSourceProvider,
   dashboard: {
