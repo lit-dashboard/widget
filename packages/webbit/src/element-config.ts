@@ -1,5 +1,14 @@
-type PropertyTypeNames = 'String' | 'Boolean' | 'Number' | 'Array' | 'Object';
-type PropertyTypes = string | boolean | number | Array<unknown> | Record<string, unknown>;
+import { SourceProvider } from '@webbitjs/store';
+
+type PropertyTypeNames = 'String' | 'Boolean' | 'Number' | 'Array' | 'Object' | 'SourceProvider';
+type PropertyTypes = (
+  string
+  | boolean
+  | number
+  | Array<unknown>
+  | Record<string, unknown>
+  | undefined
+);
 
 type TypeWithDefault =
   { type: 'String', defaultValue?: string }
@@ -7,6 +16,7 @@ type TypeWithDefault =
   | { type: 'Number', defaultValue?: number }
   | { type: 'Array', defaultValue?: Array<unknown> }
   | { type: 'Object', defaultValue?: Record<string, unknown> }
+  | { type: 'SourceProvider', defaultValue?: SourceProvider }
 
 export type WebbitProperty = TypeWithDefault & {
   property?: string | null | false,
@@ -67,6 +77,7 @@ function getDefaultValue(type: string): PropertyTypes {
     case 'Boolean': return false;
     case 'Number': return 0;
     case 'Array': return [];
+    case 'SourceProvider': return undefined;
     case 'Object':
     default:
       return {};

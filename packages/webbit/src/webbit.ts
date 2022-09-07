@@ -90,6 +90,7 @@ class Webbit {
       name: element.tagName.toLowerCase(),
     });
     const properties: PropertyConfig[] = Object.entries(this.#config.properties)
+      .filter(([, property]) => property.type !== 'SourceProvider')
       .map(([name, property]) => ({ ...property, name }));
     this.#propertyHandlers = new Map(
       properties.map(property => {
@@ -180,6 +181,7 @@ class Webbit {
   }
 
   #updateSubscription(): void {
+    this.#updateSourceProviderProperties();
     if (!this.#connected) {
       this.#unsubscribe();
       this.#unsubscribe = noop;
@@ -215,6 +217,19 @@ class Webbit {
         true,
       );
     }
+  }
+
+  #updateSourceProviderProperties(): void {
+    const sourceProviderObject = this.sourceProvider
+      ? this.#store.getSourceProvider(this.sourceProvider)
+      : undefined;
+
+    Object.entries(this.#config.properties)
+      .forEach(([, { property, type }]) => {
+        if (type === 'SourceProvider' && property) {
+          (this.#element as any)[property] = sourceProviderObject;
+        }
+      });
   }
 
   #subscriber(parentKey: string, sourceKey: string): void {
