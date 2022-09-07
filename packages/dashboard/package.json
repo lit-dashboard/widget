@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/dashboard",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "description": "",
   "files": [
     "dist"
@@ -31,7 +31,7 @@
   "dependencies": {
     "@vaadin/vaadin": "^21.0.3",
     "@webbitjs/store": "^5.1.0",
-    "@webbitjs/webbit": "^5.2.0",
+    "@webbitjs/webbit": "^5.3.0",
     "lit": "^2.0.2"
   },
   "repository": {
