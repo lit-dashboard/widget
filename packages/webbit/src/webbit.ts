@@ -90,7 +90,7 @@ class Webbit {
       name: element.tagName.toLowerCase(),
     });
     const properties: PropertyConfig[] = Object.entries(this.#config.properties)
-      .filter(([, property]) => property.type !== 'SourceProvider')
+      .filter(([, property]) => !['SourceProvider', 'Store'].includes(property.type))
       .map(([name, property]) => ({ ...property, name }));
     this.#propertyHandlers = new Map(
       properties.map(property => {
@@ -226,8 +226,12 @@ class Webbit {
 
     Object.entries(this.#config.properties)
       .forEach(([, { property, type }]) => {
-        if (type === 'SourceProvider' && property) {
-          (this.#element as any)[property] = sourceProviderObject;
+        if (property) {
+          if (type === 'SourceProvider') {
+            (this.#element as any)[property] = sourceProviderObject;
+          } else if (type === 'Store') {
+            (this.#element as any)[property] = this.#store;
+          }
         }
       });
   }
