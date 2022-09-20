@@ -1,6 +1,6 @@
 {
   "name": "@webbitjs/native-elements",
-  "version": "5.3.1",
+  "version": "5.4.0",
   "description": "",
   "files": [
     "dist"
@@ -29,8 +29,8 @@
   },
   "devDependencies": {
     "@webbitjs/store": "^5.1.0",
-    "@webbitjs/testing": "^5.3.1",
-    "@webbitjs/webbit": "^5.3.1"
+    "@webbitjs/testing": "^5.4.0",
+    "@webbitjs/webbit": "^5.4.0"
   },
   "repository": {
     "type": "git",
