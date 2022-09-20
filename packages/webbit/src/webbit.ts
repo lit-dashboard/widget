@@ -180,6 +180,11 @@ class Webbit {
     return this.#config;
   }
 
+  #getParentDefaultSourceProvider(): string | undefined {
+    const providerElement = this.#element.closest('[default-source-provider]');
+    return providerElement?.getAttribute('default-source-provider') ?? undefined;
+  }
+
   #updateSubscription(): void {
     this.#updateSourceProviderProperties();
     if (!this.#connected) {
@@ -195,7 +200,9 @@ class Webbit {
 
     if (!this.sourceProvider) {
       this.sourceProvider = (
-        this.#config.defaultSourceProvider || this.#store.getDefaultSourceProvider()
+        this.#config.defaultSourceProvider
+        || this.#getParentDefaultSourceProvider()
+        || this.#store.getDefaultSourceProvider()
       );
     }
 
