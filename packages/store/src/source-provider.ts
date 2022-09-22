@@ -20,7 +20,7 @@ class SourceProvider {
   #sourcesChangedHandlers: Map<symbol, (changes: Record<string, unknown>) => void> = new Map();
   #sourcesRemovedHandlers: Map<symbol, (removals: Array<string>) => void> = new Map();
 
-  constructor(initialSources: Record<string, unknown> = {}, interval = 1000 / 60) {
+  constructor(initialSources: Record<string, unknown> = {}, interval = 0) {
     if (interval) {
       this.#interval = setInterval(this.#sendUpdates.bind(this), interval);
     }
