@@ -13,12 +13,21 @@ type SourceUpdates = {
 }
 
 class SourceProvider {
-  #interval = setInterval(this.#sendUpdates.bind(this), 100);
+  #interval?;
   #sourceUpdates: SourceUpdates = {};
   #clearSourcesTimeoutId?: NodeJS.Timeout;
   #clearSourcesHandlers: Map<symbol, () => void> = new Map();
   #sourcesChangedHandlers: Map<symbol, (changes: Record<string, unknown>) => void> = new Map();
   #sourcesRemovedHandlers: Map<symbol, (removals: Array<string>) => void> = new Map();
+
+  constructor(initialSources: Record<string, unknown> = {}, interval = 1000 / 60) {
+    if (interval) {
+      this.#interval = setInterval(this.#sendUpdates.bind(this), interval);
+    }
+    Object.entries(initialSources).forEach(([key, value]) => {
+      this.updateSource(key, value);
+    });
+  }
 
   /**
    * Updates the value of a source in the store. If the source doesn't
@@ -46,6 +55,10 @@ class SourceProvider {
         value,
       };
     }
+
+    if (!this.#interval) {
+      this.#sendUpdates();
+    }
   }
 
   /**
@@ -68,6 +81,10 @@ class SourceProvider {
       this.#sourceUpdates[key].last = {
         type: 'removal',
       };
+    }
+
+    if (!this.#interval) {
+      this.#sendUpdates();
     }
   }
 
