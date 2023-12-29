@@ -5,6 +5,7 @@ import { normalizeConfig, WebbitConfig, WebbitProperty } from './element-config'
 import { isEqual, getValueType, noop } from './util';
 import PropertyHandler from './property-handler';
 import { prop2PropValue } from './value-converters/convert-to-type';
+import PropertySourceHandler from './property-source-handler';
 
 function formatProp(propName: string): string {
   return camelCase(propName, { transform: camelCaseTransformMerge });
@@ -38,6 +39,7 @@ class Webbit {
   readonly #store: Store;
   readonly #config: WebbitConfig;
   readonly #propertyHandlers: Map<string, PropertyHandler>;
+  readonly #propertySources: Map<string, PropertySourceHandler> = new Map();
   readonly #primaryPropertyConfig?: PropertyConfig;
   readonly #primaryPropertyHandler?: PropertyHandler;
   #connected = false;
