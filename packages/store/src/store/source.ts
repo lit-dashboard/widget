@@ -91,6 +91,17 @@ class Source {
   getParent(): Source | undefined {
     return this.#parent;
   }
+
+  getJson(): unknown | Record<string, unknown> {
+    if (this.hasChildren()) {
+      const json: Record<string, unknown> = {};
+      Object.entries(this.#children).forEach(([key, child]) => {
+        json[key] = child.getJson();
+      });
+      return json;
+    }
+    return this.#value;
+  }
 }
 
 export default Source;
