@@ -1,3 +1,4 @@
+import camelCase from '../camel-case';
 import SourceProvider from '../source-provider';
 
 class Source {
@@ -96,7 +97,7 @@ class Source {
     if (this.hasChildren()) {
       const json: Record<string, unknown> = {};
       Object.entries(this.#children).forEach(([key, child]) => {
-        json[key] = child.getJson();
+        json[camelCase(key)] = child.getJson();
       });
       return json;
     }

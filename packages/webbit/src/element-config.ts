@@ -1,4 +1,4 @@
-import Store, { SourceProvider } from '@webbitjs/store';
+import Store, { Source, SourceProvider } from '@webbitjs/store';
 
 type PropertyTypeNames = 'String' | 'Boolean' | 'Number' | 'Array' | 'Object' | 'SourceProvider' | 'Store';
 type PropertyTypes = (
@@ -18,6 +18,7 @@ type TypeWithDefault =
   | { type: 'Object', defaultValue?: Record<string, unknown> }
   | { type: 'SourceProvider', defaultValue?: SourceProvider }
   | { type: 'Store', defaultValue?: Store }
+  | { type: 'Source', defaultValue?: Source };
 
 export type WebbitProperty = TypeWithDefault & {
   property?: string | null | false,
