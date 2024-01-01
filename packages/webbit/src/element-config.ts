@@ -50,7 +50,7 @@ export type WebbitConfig = {
   defaultSourceProvider?: string,
   dashboard: {
     topLevel?: boolean,
-    displayName?: string | ((element: HTMLElement) => string),
+    displayName?: string | ((element?: HTMLElement) => string),
     layout?: {
       type?: string,
       resizable?: {

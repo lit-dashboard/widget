@@ -15,7 +15,7 @@
     "@webbitjs/dashboard": "^5.7.0",
     "@webbitjs/native-elements": "^5.7.0",
     "@webbitjs/store": "^5.7.0",
-    "@webbitjs/webbit": "^5.7.0",
+    "@webbitjs/webbit": "^5.8.0",
     "lit": "^2.0.2"
   },
   "version": "5.7.0"
