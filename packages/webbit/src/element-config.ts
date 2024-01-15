@@ -51,7 +51,8 @@ export type WebbitConfig = {
   dashboard: {
     topLevel?: boolean,
     displayName?: string | ((element?: HTMLElement) => string),
-    defaultHtml?: string;
+    defaultHtml?: string,
+    onInit?: (element: HTMLElement) => void,
     layout?: {
       type?: string,
       resizable?: {
